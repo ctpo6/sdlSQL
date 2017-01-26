@@ -1,0 +1,18 @@
+build/
+
+*.pyc
+*.pyo
+*.cpp.1
+*.h.1
+*.hpp.1
+
+# QtCreator
+CMakeLists.txt.user
+
+# Visual Studio Code
+.vscode/
+
+# CMake
+CMakeFiles/
+CMakeCache.txt
+

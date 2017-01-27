@@ -18,16 +18,13 @@
 
 %option noyywrap nodefault yylineno case-insensitive reentrant
 %option bison-bridge bison-locations
-
-/* the full path of this file must be set as a command line option: if here, the
- * file is being created in the project root dir */
-/*%option header-file="sql.lex.h"*/
+/*%option header-file="sql.lex.hpp"*/
 
 %{
 #include <stdarg.h>
 #include <string.h>
-#include "sql.tab.h"
-#include "sql-parser.h"
+#include "sql.tab.hpp"
+#include "sql-parser.hpp"
 
 void yyerror(YYLTYPE *, struct psql_state *pstate, const char *s, ...);
 
@@ -51,7 +48,7 @@ int yycolumn = 1;
 
 %%
 %{
-	struct psql_state *pstate = yyextra;
+    struct psql_state *pstate = (struct psql_state *)yyextra;
 %}
 
   /* keywords */
@@ -341,7 +338,7 @@ DATE_SUB/"(" { return FDATE_SUB; }
 	/* 
          * peek ahead and return function if name(
          */
-COUNT    { int c = input(pstate->scanner); unput(c);
+COUNT    { int c = yyinput(pstate->scanner); unput(c);
            if(c == '(') return FCOUNT;
            yylval->strval = strdup(yytext);
            return NAME; }

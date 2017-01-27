@@ -2,58 +2,69 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include "sql.tab.h"
-#include "sql-parser.h"
 
-static const char *attr_names[] = {
-	[SCA_NOTNULL]		= "SCA_NOTNULL",
-	[SCA_DEF_STR]		= "SCA_DEF_STR",
-	[SCA_DEF_NUM]		= "SCA_DEF_NUM",
-	[SCA_DEF_FLOAT]		= "SCA_DEF_FLOAT",
-	[SCA_DEF_BOOL]		= "SCA_DEF_BOOL",
-	[SCA_AUTOINC]		= "SCA_AUTOINC",
-	[SCA_UNIQUE_KEY]	= "SCA_UNIQUE_KEY",
-	[SCA_PRIMARY_KEY]	= "SCA_PRIMARY_KEY",
-	[SCA_COMMENT]		= "SCA_COMMENT",
+#include <unordered_map>
+
+#include "sql.tab.hpp"
+#include "sql-parser.hpp"
+
+using namespace std;
+
+
+unordered_map<int, const char *> attr_names_map =
+{
+    {SCA_NOTNULL, "SCA_NOTNULL"},
+    {SCA_DEF_STR, "SCA_DEF_STR"},
+    {SCA_DEF_NUM, "SCA_DEF_NUM"},
+    {SCA_DEF_FLOAT, "SCA_DEF_FLOAT"},
+    {SCA_DEF_BOOL, "SCA_DEF_BOOL"},
+    {SCA_AUTOINC, "SCA_AUTOINC"},
+    {SCA_UNIQUE_KEY, "SCA_UNIQUE_KEY"},
+    {SCA_PRIMARY_KEY, "SCA_PRIMARY_KEY"},
+    {SCA_COMMENT, "SCA_COMMENT"},
 };
 
-static const char *op_names[] = {
-	[SEO_ADD]	= "SEO_ADD",
-	[SEO_SUB]	= "SEO_SUB",
-	[SEO_MUL]	= "SEO_MUL",
-	[SEO_DIV]	= "SEO_DIV",
-	[SEO_MOD]	= "SEO_MOD",
-	[SEO_NEG]	= "SEO_NEG",
-	[SEO_AND]	= "SEO_AND",
-	[SEO_OR]	= "SEO_OR",
-	[SEO_XOR]	= "SEO_XOR",
-	[SEO_BITOR]	= "SEO_BITOR",
-	[SEO_BITAND]	= "SEO_BITAND",
-	[SEO_BITXOR]	= "SEO_BITXOR",
-	[SEO_SHIFT]	= "SEO_SHIFT",
-	[SEO_NOT]	= "SEO_NOT",
-	[SEO_ASSIGN]	= "SEO_ASSIGN",
-	[SEO_IS_NULL]	= "SEO_IS_NULL",
-	[SEO_SHR]	= "SEO_SHR",
-	[SEO_SHL]	= "SEO_SHL",
-	[SEO_BETWEEN]	= "SEO_BETWEEN",
-	[SEO_EXISTS]	= "SEO_EXISTS",
-	[SEO_IN_SELECT]	= "SEO_IN_SELECT",
-	[SEO_LIKE]	= "SEO_LIKE",
-	[SEO_REGEX]	= "SEO_REGEX",
-	[SEO_STRTOBIN]	= "SEO_STRTOBIN",
+
+unordered_map<int, const char *> op_names_map =
+{
+    {SEO_ADD, "SEO_ADD"},
+    {SEO_SUB, "SEO_SUB"},
+    {SEO_MUL, "SEO_MUL"},
+    {SEO_DIV, "SEO_DIV"},
+    {SEO_MOD, "SEO_MOD"},
+    {SEO_NEG, "SEO_NEG"},
+    {SEO_AND, "SEO_AND"},
+    {SEO_OR, "SEO_OR"},
+    {SEO_XOR, "SEO_XOR"},
+    {SEO_BITOR, "SEO_BITOR"},
+    {SEO_BITAND, "SEO_BITAND"},
+    {SEO_BITXOR, "SEO_BITXOR"},
+    {SEO_SHIFT, "SEO_SHIFT"},
+    {SEO_NOT, "SEO_NOT"},
+    {SEO_ASSIGN, "SEO_ASSIGN"},
+    {SEO_IS_NULL, "SEO_IS_NULL"},
+    {SEO_SHR, "SEO_SHR"},
+    {SEO_SHL, "SEO_SHL"},
+    {SEO_BETWEEN, "SEO_BETWEEN"},
+    {SEO_EXISTS, "SEO_EXISTS"},
+    {SEO_IN_SELECT, "SEO_IN_SELECT"},
+    {SEO_LIKE, "SEO_LIKE"},
+    {SEO_REGEX, "SEO_REGEX"},
+    {SEO_STRTOBIN, "SEO_STRTOBIN"},
 };
 
-static const char *interval_names[] = {
-	[SDI_DAY_HOUR]		= "SDI_DAY_HOUR",
-	[SDI_DAY_MICROSECOND]	= "SDI_DAY_MICROSECOND",
-	[SDI_DAY_MINUTE]	= "SDI_DAY_MINUTE",
-	[SDI_DAY_SECOND]	= "SDI_DAY_SECOND",
-	[SDI_YEAR_MONTH]	= "SDI_YEAR_MONTH",
-	[SDI_YEAR]		= "SDI_YEAR",
-	[SDI_HOUR_MICROSECOND]	= "SDI_HOUR_MICROSECOND",
-	[SDI_HOUR_MINUTE]	= "SDI_HOUR_MINUTE",
-	[SDI_HOUR_SECOND]	= "SDI_HOUR_SECOND",
+
+unordered_map<int, const char *> interval_names_map =
+{
+    {SDI_DAY_HOUR, "SDI_DAY_HOUR"},
+    {SDI_DAY_MICROSECOND, "SDI_DAY_MICROSECOND"},
+    {SDI_DAY_MINUTE, "SDI_DAY_MINUTE"},
+    {SDI_DAY_SECOND, "SDI_DAY_SECOND"},
+    {SDI_YEAR_MONTH, "SDI_YEAR_MONTH"},
+    {SDI_YEAR, "SDI_YEAR"},
+    {SDI_HOUR_MICROSECOND, "SDI_HOUR_MICROSECOND"},
+    {SDI_HOUR_MINUTE, "SDI_HOUR_MINUTE"},
+    {SDI_HOUR_SECOND, "SDI_HOUR_SECOND"},
 };
 
 void sqlp_alias(struct psql_state *pstate, const char *alias)
@@ -108,7 +119,7 @@ void sqlp_caseval(struct psql_state *pstate, int n_list, int have_else)
 
 void sqlp_col_attr(struct psql_state *pstate, enum sqlp_col_attribs attr)
 {
-	printf("exec ATTR %s\n", attr_names[attr]);
+    printf("exec ATTR %s\n", attr_names_map[attr]);
 }
 
 void sqlp_col_attr_uniq(struct psql_state *pstate, int n_cols)
@@ -146,9 +157,9 @@ void sqlp_col_def_float(struct psql_state *pstate, float num)
 	printf("exec ATTR DEFAULT-FLOAT %g\n", num);
 }
 
-void sqlp_col_def_bool(struct psql_state *pstate, int bool)
+void sqlp_col_def_bool(struct psql_state *pstate, int bool_)
 {
-	printf("exec ATTR DEFAULT-BOOL %d\n", bool);
+    printf("exec ATTR DEFAULT-BOOL %d\n", bool_);
 }
 
 void sqlp_col_key_pri(struct psql_state *pstate, int n_cols)
@@ -203,7 +214,7 @@ void sqlp_create_tbl_sel(struct psql_state *pstate, int temp, int if_n_exists, i
 
 void sqlp_date_interval(struct psql_state *pstate, enum sqlp_date_intervals interval)
 {
-	printf("exec DATE-INTERVAL %s\n", interval_names[interval]);
+    printf("exec DATE-INTERVAL %s\n", interval_names_map[interval]);
 }
 
 void sqlp_def_col(struct psql_state *pstate, int flags, const char *name)
@@ -253,7 +264,7 @@ void sqlp_expr_is_in(struct psql_state *pstate, int val)
 
 void sqlp_expr_op(struct psql_state *pstate, enum sqlp_expr_ops op)
 {
-	printf("exec EXPR-OP %s\n", op_names[op]);
+    printf("exec EXPR-OP %s\n", op_names_map[op]);
 }
 
 void sqlp_expr_cmp_sel(struct psql_state *pstate, int sel_type, int comp)

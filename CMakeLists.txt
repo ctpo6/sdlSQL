@@ -83,8 +83,9 @@ set(SQL1_C_SRC
     )
 
 set(SQL1_SRC
-    src/exec.cpp
-    src/sql-parser.hpp
+    src/driver.cpp
+    src/driver1.cpp
+    src/sql1.cpp
     )
 
 set(BISON_GENERATED_FILES

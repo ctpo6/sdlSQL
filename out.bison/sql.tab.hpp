@@ -1,369 +1,1347 @@
-/* A Bison parser, made by GNU Bison 3.0.4.  */
+// A Bison parser, made by GNU Bison 3.0.4.
 
-/* Bison interface for Yacc-like parsers in C
+// Skeleton interface for Bison LALR(1) parsers in C++
 
-   Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
+// Copyright (C) 2002-2015 Free Software Foundation, Inc.
 
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-/* As a special exception, you may create a larger work that contains
-   part or all of the Bison parser skeleton and distribute that work
-   under terms of your choice, so long as that work isn't itself a
-   parser generator using the skeleton or a modified version thereof
-   as a parser skeleton.  Alternatively, if you modify or redistribute
-   the parser skeleton itself, you may (at your option) remove this
-   special exception, which will cause the skeleton and the resulting
-   Bison output files to be licensed under the GNU General Public
-   License without this special exception.
+// As a special exception, you may create a larger work that contains
+// part or all of the Bison parser skeleton and distribute that work
+// under terms of your choice, so long as that work isn't itself a
+// parser generator using the skeleton or a modified version thereof
+// as a parser skeleton.  Alternatively, if you modify or redistribute
+// the parser skeleton itself, you may (at your option) remove this
+// special exception, which will cause the skeleton and the resulting
+// Bison output files to be licensed under the GNU General Public
+// License without this special exception.
 
-   This special exception was added by the Free Software Foundation in
-   version 2.2 of Bison.  */
+// This special exception was added by the Free Software Foundation in
+// version 2.2 of Bison.
+
+/**
+ ** \file /home/yuri/work/bison/sdlSQL/out.bison/sql.tab.hpp
+ ** Define the yy::parser class.
+ */
+
+// C++ LALR(1) parser skeleton written by Akim Demaille.
 
 #ifndef YY_YY_HOME_YURI_WORK_BISON_SDLSQL_OUT_BISON_SQL_TAB_HPP_INCLUDED
 # define YY_YY_HOME_YURI_WORK_BISON_SDLSQL_OUT_BISON_SQL_TAB_HPP_INCLUDED
+// //                    "%code requires" blocks.
+#line 12 "src/sql.yy" // lalr1.cc:377
+
+#include <string>
+
+class Driver;
+
+#line 50 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.hpp" // lalr1.cc:377
+
+# include <cassert>
+# include <cstdlib> // std::abort
+# include <iostream>
+# include <stdexcept>
+# include <string>
+# include <vector>
+# include "stack.hh"
+# include "location.hh"
+#include <typeinfo>
+#ifndef YYASSERT
+# include <cassert>
+# define YYASSERT assert
+#endif
+
+
+#ifndef YY_ATTRIBUTE
+# if (defined __GNUC__                                               \
+      && (2 < __GNUC__ || (__GNUC__ == 2 && 96 <= __GNUC_MINOR__)))  \
+     || defined __SUNPRO_C && 0x5110 <= __SUNPRO_C
+#  define YY_ATTRIBUTE(Spec) __attribute__(Spec)
+# else
+#  define YY_ATTRIBUTE(Spec) /* empty */
+# endif
+#endif
+
+#ifndef YY_ATTRIBUTE_PURE
+# define YY_ATTRIBUTE_PURE   YY_ATTRIBUTE ((__pure__))
+#endif
+
+#ifndef YY_ATTRIBUTE_UNUSED
+# define YY_ATTRIBUTE_UNUSED YY_ATTRIBUTE ((__unused__))
+#endif
+
+#if !defined _Noreturn \
+     && (!defined __STDC_VERSION__ || __STDC_VERSION__ < 201112)
+# if defined _MSC_VER && 1200 <= _MSC_VER
+#  define _Noreturn __declspec (noreturn)
+# else
+#  define _Noreturn YY_ATTRIBUTE ((__noreturn__))
+# endif
+#endif
+
+/* Suppress unused-variable warnings by "using" E.  */
+#if ! defined lint || defined __GNUC__
+# define YYUSE(E) ((void) (E))
+#else
+# define YYUSE(E) /* empty */
+#endif
+
+#if defined __GNUC__ && 407 <= __GNUC__ * 100 + __GNUC_MINOR__
+/* Suppress an incorrect diagnostic about yylval being uninitialized.  */
+# define YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN \
+    _Pragma ("GCC diagnostic push") \
+    _Pragma ("GCC diagnostic ignored \"-Wuninitialized\"")\
+    _Pragma ("GCC diagnostic ignored \"-Wmaybe-uninitialized\"")
+# define YY_IGNORE_MAYBE_UNINITIALIZED_END \
+    _Pragma ("GCC diagnostic pop")
+#else
+# define YY_INITIAL_VALUE(Value) Value
+#endif
+#ifndef YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
+# define YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
+# define YY_IGNORE_MAYBE_UNINITIALIZED_END
+#endif
+#ifndef YY_INITIAL_VALUE
+# define YY_INITIAL_VALUE(Value) /* Nothing. */
+#endif
+
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 1
 #endif
-#if YYDEBUG
-extern int yydebug;
-#endif
-/* "%code requires" blocks.  */
-#line 32 "src/sql.yy" /* yacc.c:1909  */
 
 
-extern const char *filename;
+namespace yy {
+#line 127 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.hpp" // lalr1.cc:377
 
-typedef struct YYLTYPE {
-  int first_line;
-  int first_column;
-  int last_line;
-  int last_column;
-  const char *filename;
-} YYLTYPE;
-# define YYLTYPE_IS_DECLARED 1
 
-# define YYLLOC_DEFAULT(Current, Rhs, N)				\
-    do									\
-      if (N)                                                            \
-	{								\
-	  (Current).first_line   = YYRHSLOC (Rhs, 1).first_line;	\
-	  (Current).first_column = YYRHSLOC (Rhs, 1).first_column;	\
-	  (Current).last_line    = YYRHSLOC (Rhs, N).last_line;		\
-	  (Current).last_column  = YYRHSLOC (Rhs, N).last_column;	\
-	  (Current).filename     = YYRHSLOC (Rhs, 1).filename;	        \
-	}								\
-      else								\
-	{ /* empty RHS */						\
-	  (Current).first_line   = (Current).last_line   =		\
-	    YYRHSLOC (Rhs, 0).last_line;				\
-	  (Current).first_column = (Current).last_column =		\
-	    YYRHSLOC (Rhs, 0).last_column;				\
-	  (Current).filename  = NULL;					\
-	}								\
-    while (0)
 
-#ifndef YY_TYPEDEF_YY_SCANNER_T
-#define YY_TYPEDEF_YY_SCANNER_T
-typedef void* yyscan_t;
-#endif
-
-struct psql_state;
-
-#line 85 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.hpp" /* yacc.c:1909  */
-
-/* Token type.  */
-#ifndef YYTOKENTYPE
-# define YYTOKENTYPE
-  enum yytokentype
+  /// A char[S] buffer to store and retrieve objects.
+  ///
+  /// Sort of a variant, but does not keep track of the nature
+  /// of the stored data, since that knowledge is available
+  /// via the current state.
+  template <size_t S>
+  struct variant
   {
-    NAME = 258,
-    STRING = 259,
-    INTNUM = 260,
-    BOOL = 261,
-    APPROXNUM = 262,
-    USERVAR = 263,
-    ASSIGN = 264,
-    OR = 265,
-    XOR = 266,
-    ANDOP = 267,
-    IN = 268,
-    IS = 269,
-    LIKE = 270,
-    REGEXP = 271,
-    NOT = 272,
-    BETWEEN = 273,
-    COMPARISON = 274,
-    SHIFT = 275,
-    MOD = 276,
-    UMINUS = 277,
-    ADD = 278,
-    ALL = 279,
-    ALTER = 280,
-    ANALYZE = 281,
-    AND = 282,
-    ANY = 283,
-    AS = 284,
-    ASC = 285,
-    AUTO_INCREMENT = 286,
-    BEFORE = 287,
-    BIGINT = 288,
-    BINARY = 289,
-    BIT = 290,
-    BLOB = 291,
-    BOTH = 292,
-    BY = 293,
-    CALL = 294,
-    CASCADE = 295,
-    CASE = 296,
-    CHANGE = 297,
-    CHAR = 298,
-    CHECK = 299,
-    COLLATE = 300,
-    COLUMN = 301,
-    COMMENT = 302,
-    CONDITION = 303,
-    CONSTRAINT = 304,
-    CONTINUE = 305,
-    CONVERT = 306,
-    CREATE = 307,
-    CROSS = 308,
-    CURRENT_DATE = 309,
-    CURRENT_TIME = 310,
-    CURRENT_TIMESTAMP = 311,
-    CURRENT_USER = 312,
-    CURSOR = 313,
-    DATABASE = 314,
-    DATABASES = 315,
-    DATE = 316,
-    DATETIME = 317,
-    DAY_HOUR = 318,
-    DAY_MICROSECOND = 319,
-    DAY_MINUTE = 320,
-    DAY_SECOND = 321,
-    DECIMAL = 322,
-    DECLARE = 323,
-    DEFAULT = 324,
-    DELAYED = 325,
-    DELETE = 326,
-    DESC = 327,
-    DESCRIBE = 328,
-    DETERMINISTIC = 329,
-    DISTINCT = 330,
-    DISTINCTROW = 331,
-    DIV = 332,
-    DOUBLE = 333,
-    DROP = 334,
-    DUAL = 335,
-    EACH = 336,
-    ELSE = 337,
-    ELSEIF = 338,
-    ENCLOSED = 339,
-    END = 340,
-    ENUM = 341,
-    ESCAPED = 342,
-    EXISTS = 343,
-    EXIT = 344,
-    EXPLAIN = 345,
-    FETCH = 346,
-    FLOAT = 347,
-    FOR = 348,
-    FORCE = 349,
-    FOREIGN = 350,
-    FROM = 351,
-    FULLTEXT = 352,
-    GRANT = 353,
-    GROUP = 354,
-    HAVING = 355,
-    HIGH_PRIORITY = 356,
-    HOUR_MICROSECOND = 357,
-    HOUR_MINUTE = 358,
-    HOUR_SECOND = 359,
-    IF = 360,
-    IGNORE = 361,
-    INDEX = 362,
-    INFILE = 363,
-    INNER = 364,
-    INOUT = 365,
-    INSENSITIVE = 366,
-    INSERT = 367,
-    INT = 368,
-    INTEGER = 369,
-    INTERVAL = 370,
-    INTO = 371,
-    ITERATE = 372,
-    JOIN = 373,
-    KEY = 374,
-    KEYS = 375,
-    KILL = 376,
-    LEADING = 377,
-    LEAVE = 378,
-    LEFT = 379,
-    LIMIT = 380,
-    LINES = 381,
-    LOAD = 382,
-    LOCALTIME = 383,
-    LOCALTIMESTAMP = 384,
-    LOCK = 385,
-    LONG = 386,
-    LONGBLOB = 387,
-    LONGTEXT = 388,
-    LOOP = 389,
-    LOW_PRIORITY = 390,
-    MATCH = 391,
-    MEDIUMBLOB = 392,
-    MEDIUMINT = 393,
-    MEDIUMTEXT = 394,
-    MINUTE_MICROSECOND = 395,
-    MINUTE_SECOND = 396,
-    MODIFIES = 397,
-    NATURAL = 398,
-    NO_WRITE_TO_BINLOG = 399,
-    NULLX = 400,
-    NUMBER = 401,
-    ON = 402,
-    ONDUPLICATE = 403,
-    OPTIMIZE = 404,
-    OPTION = 405,
-    OPTIONALLY = 406,
-    ORDER = 407,
-    OUT = 408,
-    OUTER = 409,
-    OUTFILE = 410,
-    PRECISION = 411,
-    PRIMARY = 412,
-    PROCEDURE = 413,
-    PURGE = 414,
-    QUICK = 415,
-    READ = 416,
-    READS = 417,
-    REAL = 418,
-    REFERENCES = 419,
-    RELEASE = 420,
-    RENAME = 421,
-    REPEAT = 422,
-    REPLACE = 423,
-    REQUIRE = 424,
-    RESTRICT = 425,
-    RETURN = 426,
-    REVOKE = 427,
-    RIGHT = 428,
-    ROLLUP = 429,
-    SCHEMA = 430,
-    SCHEMAS = 431,
-    SECOND_MICROSECOND = 432,
-    SELECT = 433,
-    SENSITIVE = 434,
-    SEPARATOR = 435,
-    SET = 436,
-    SHOW = 437,
-    SMALLINT = 438,
-    SOME = 439,
-    SONAME = 440,
-    SPATIAL = 441,
-    SPECIFIC = 442,
-    SQL = 443,
-    SQLEXCEPTION = 444,
-    SQLSTATE = 445,
-    SQLWARNING = 446,
-    SQL_BIG_RESULT = 447,
-    SQL_CALC_FOUND_ROWS = 448,
-    SQL_SMALL_RESULT = 449,
-    SSL = 450,
-    STARTING = 451,
-    STRAIGHT_JOIN = 452,
-    TABLE = 453,
-    TEMPORARY = 454,
-    TEXT = 455,
-    TERMINATED = 456,
-    THEN = 457,
-    TIME = 458,
-    TIMESTAMP = 459,
-    TINYBLOB = 460,
-    TINYINT = 461,
-    TINYTEXT = 462,
-    TO = 463,
-    TRAILING = 464,
-    TRIGGER = 465,
-    UNDO = 466,
-    UNION = 467,
-    UNIQUE = 468,
-    UNLOCK = 469,
-    UNSIGNED = 470,
-    UPDATE = 471,
-    USAGE = 472,
-    USE = 473,
-    USING = 474,
-    UTC_DATE = 475,
-    UTC_TIME = 476,
-    UTC_TIMESTAMP = 477,
-    VALUES = 478,
-    VARBINARY = 479,
-    VARCHAR = 480,
-    VARYING = 481,
-    WHEN = 482,
-    WHERE = 483,
-    WHILE = 484,
-    WITH = 485,
-    WRITE = 486,
-    YEAR = 487,
-    YEAR_MONTH = 488,
-    ZEROFILL = 489,
-    FSUBSTRING = 490,
-    FTRIM = 491,
-    FDATE_ADD = 492,
-    FDATE_SUB = 493,
-    FCOUNT = 494
+    /// Type of *this.
+    typedef variant<S> self_type;
+
+    /// Empty construction.
+    variant ()
+      : yytypeid_ (YY_NULLPTR)
+    {}
+
+    /// Construct and fill.
+    template <typename T>
+    variant (const T& t)
+      : yytypeid_ (&typeid (T))
+    {
+      YYASSERT (sizeof (T) <= S);
+      new (yyas_<T> ()) T (t);
+    }
+
+    /// Destruction, allowed only if empty.
+    ~variant ()
+    {
+      YYASSERT (!yytypeid_);
+    }
+
+    /// Instantiate an empty \a T in here.
+    template <typename T>
+    T&
+    build ()
+    {
+      YYASSERT (!yytypeid_);
+      YYASSERT (sizeof (T) <= S);
+      yytypeid_ = & typeid (T);
+      return *new (yyas_<T> ()) T;
+    }
+
+    /// Instantiate a \a T in here from \a t.
+    template <typename T>
+    T&
+    build (const T& t)
+    {
+      YYASSERT (!yytypeid_);
+      YYASSERT (sizeof (T) <= S);
+      yytypeid_ = & typeid (T);
+      return *new (yyas_<T> ()) T (t);
+    }
+
+    /// Accessor to a built \a T.
+    template <typename T>
+    T&
+    as ()
+    {
+      YYASSERT (*yytypeid_ == typeid (T));
+      YYASSERT (sizeof (T) <= S);
+      return *yyas_<T> ();
+    }
+
+    /// Const accessor to a built \a T (for %printer).
+    template <typename T>
+    const T&
+    as () const
+    {
+      YYASSERT (*yytypeid_ == typeid (T));
+      YYASSERT (sizeof (T) <= S);
+      return *yyas_<T> ();
+    }
+
+    /// Swap the content with \a other, of same type.
+    ///
+    /// Both variants must be built beforehand, because swapping the actual
+    /// data requires reading it (with as()), and this is not possible on
+    /// unconstructed variants: it would require some dynamic testing, which
+    /// should not be the variant's responsability.
+    /// Swapping between built and (possibly) non-built is done with
+    /// variant::move ().
+    template <typename T>
+    void
+    swap (self_type& other)
+    {
+      YYASSERT (yytypeid_);
+      YYASSERT (*yytypeid_ == *other.yytypeid_);
+      std::swap (as<T> (), other.as<T> ());
+    }
+
+    /// Move the content of \a other to this.
+    ///
+    /// Destroys \a other.
+    template <typename T>
+    void
+    move (self_type& other)
+    {
+      build<T> ();
+      swap<T> (other);
+      other.destroy<T> ();
+    }
+
+    /// Copy the content of \a other to this.
+    template <typename T>
+    void
+    copy (const self_type& other)
+    {
+      build<T> (other.as<T> ());
+    }
+
+    /// Destroy the stored \a T.
+    template <typename T>
+    void
+    destroy ()
+    {
+      as<T> ().~T ();
+      yytypeid_ = YY_NULLPTR;
+    }
+
+  private:
+    /// Prohibit blind copies.
+    self_type& operator=(const self_type&);
+    variant (const self_type&);
+
+    /// Accessor to raw memory as \a T.
+    template <typename T>
+    T*
+    yyas_ ()
+    {
+      void *yyp = yybuffer_.yyraw;
+      return static_cast<T*> (yyp);
+     }
+
+    /// Const accessor to raw memory as \a T.
+    template <typename T>
+    const T*
+    yyas_ () const
+    {
+      const void *yyp = yybuffer_.yyraw;
+      return static_cast<const T*> (yyp);
+     }
+
+    union
+    {
+      /// Strongest alignment constraints.
+      long double yyalign_me;
+      /// A buffer large enough to store any of the semantic values.
+      char yyraw[S];
+    } yybuffer_;
+
+    /// Whether the content is built: if defined, the name of the stored type.
+    const std::type_info *yytypeid_;
   };
-#endif
 
-/* Value type.  */
-#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 
-union YYSTYPE
-{
-#line 73 "src/sql.yy" /* yacc.c:1909  */
+  /// A Bison parser.
+  class SqlParser
+  {
+  public:
+#ifndef YYSTYPE
+    /// An auxiliary type to compute the largest semantic type.
+    union union_type
+    {
+      // APPROXNUM
+      char dummy1[sizeof(double)];
 
-	int intval;
-	double floatval;
-	char *strval;
-	int subtok;
+      // INTNUM
+      // BOOL
+      // COMPARISON
+      // groupby_list
+      // opt_asc_desc
+      // select_opts
+      // select_expr_list
+      // table_references
+      // val_list
+      // opt_val_list
+      char dummy2[sizeof(int)];
 
-#line 344 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.hpp" /* yacc.c:1909  */
+      // NAME
+      // STRING
+      char dummy3[sizeof(std::string)];
 };
 
-typedef union YYSTYPE YYSTYPE;
-# define YYSTYPE_IS_TRIVIAL 1
-# define YYSTYPE_IS_DECLARED 1
+    /// Symbol semantic values.
+    typedef variant<sizeof(union_type)> semantic_type;
+#else
+    typedef YYSTYPE semantic_type;
+#endif
+    /// Symbol locations.
+    typedef location location_type;
+
+    /// Syntax errors thrown from user actions.
+    struct syntax_error : std::runtime_error
+    {
+      syntax_error (const location_type& l, const std::string& m);
+      location_type location;
+    };
+
+    /// Tokens.
+    struct token
+    {
+      enum yytokentype
+      {
+        TOK_END = 0,
+        TOK_S_STAR = 258,
+        TOK_S_LPAREN = 259,
+        TOK_S_RPAREN = 260,
+        TOK_S_COMMA = 261,
+        TOK_S_DOT = 262,
+        TOK_S_SEMICOLON = 263,
+        TOK_NAME = 264,
+        TOK_STRING = 265,
+        TOK_INTNUM = 266,
+        TOK_BOOL = 267,
+        TOK_APPROXNUM = 268,
+        TOK_OP_OR = 269,
+        TOK_OP_AND = 270,
+        TOK_IS = 271,
+        TOK_NOT = 272,
+        TOK_COMPARISON = 273,
+        TOK_UMINUS = 274,
+        TOK_ALL = 275,
+        TOK_AS = 276,
+        TOK_ASC = 277,
+        TOK_BY = 278,
+        TOK_COMMENT = 279,
+        TOK_DESC = 280,
+        TOK_FROM = 281,
+        TOK_GROUP = 282,
+        TOK_HAVING = 283,
+        TOK_IN = 284,
+        TOK_NULLX = 285,
+        TOK_ORDER = 286,
+        TOK_SELECT = 287,
+        TOK_WHERE = 288
+      };
+    };
+
+    /// (External) token type, as returned by yylex.
+    typedef token::yytokentype token_type;
+
+    /// Symbol type: an internal symbol number.
+    typedef int symbol_number_type;
+
+    /// The symbol type number to denote an empty symbol.
+    enum { empty_symbol = -2 };
+
+    /// Internal symbol number for tokens (subsumed by symbol_number_type).
+    typedef unsigned char token_number_type;
+
+    /// A complete symbol.
+    ///
+    /// Expects its Base type to provide access to the symbol type
+    /// via type_get().
+    ///
+    /// Provide access to semantic value and location.
+    template <typename Base>
+    struct basic_symbol : Base
+    {
+      /// Alias to Base.
+      typedef Base super_type;
+
+      /// Default constructor.
+      basic_symbol ();
+
+      /// Copy constructor.
+      basic_symbol (const basic_symbol& other);
+
+      /// Constructor for valueless symbols, and symbols from each type.
+
+  basic_symbol (typename Base::kind_type t, const location_type& l);
+
+  basic_symbol (typename Base::kind_type t, const double v, const location_type& l);
+
+  basic_symbol (typename Base::kind_type t, const int v, const location_type& l);
+
+  basic_symbol (typename Base::kind_type t, const std::string v, const location_type& l);
+
+
+      /// Constructor for symbols with semantic value.
+      basic_symbol (typename Base::kind_type t,
+                    const semantic_type& v,
+                    const location_type& l);
+
+      /// Destroy the symbol.
+      ~basic_symbol ();
+
+      /// Destroy contents, and record that is empty.
+      void clear ();
+
+      /// Whether empty.
+      bool empty () const;
+
+      /// Destructive move, \a s is emptied into this.
+      void move (basic_symbol& s);
+
+      /// The semantic value.
+      semantic_type value;
+
+      /// The location.
+      location_type location;
+
+    private:
+      /// Assignment operator.
+      basic_symbol& operator= (const basic_symbol& other);
+    };
+
+    /// Type access provider for token (enum) based symbols.
+    struct by_type
+    {
+      /// Default constructor.
+      by_type ();
+
+      /// Copy constructor.
+      by_type (const by_type& other);
+
+      /// The symbol type as needed by the constructor.
+      typedef token_type kind_type;
+
+      /// Constructor from (external) token numbers.
+      by_type (kind_type t);
+
+      /// Record that this symbol is empty.
+      void clear ();
+
+      /// Steal the symbol type from \a that.
+      void move (by_type& that);
+
+      /// The (internal) type number (corresponding to \a type).
+      /// \a empty when empty.
+      symbol_number_type type_get () const;
+
+      /// The token.
+      token_type token () const;
+
+      /// The symbol type.
+      /// \a empty_symbol when empty.
+      /// An int, not token_number_type, to be able to store empty_symbol.
+      int type;
+    };
+
+    /// "External" symbols: returned by the scanner.
+    typedef basic_symbol<by_type> symbol_type;
+
+    // Symbol constructors declarations.
+    static inline
+    symbol_type
+    make_END (const location_type& l);
+
+    static inline
+    symbol_type
+    make_S_STAR (const location_type& l);
+
+    static inline
+    symbol_type
+    make_S_LPAREN (const location_type& l);
+
+    static inline
+    symbol_type
+    make_S_RPAREN (const location_type& l);
+
+    static inline
+    symbol_type
+    make_S_COMMA (const location_type& l);
+
+    static inline
+    symbol_type
+    make_S_DOT (const location_type& l);
+
+    static inline
+    symbol_type
+    make_S_SEMICOLON (const location_type& l);
+
+    static inline
+    symbol_type
+    make_NAME (const std::string& v, const location_type& l);
+
+    static inline
+    symbol_type
+    make_STRING (const std::string& v, const location_type& l);
+
+    static inline
+    symbol_type
+    make_INTNUM (const int& v, const location_type& l);
+
+    static inline
+    symbol_type
+    make_BOOL (const int& v, const location_type& l);
+
+    static inline
+    symbol_type
+    make_APPROXNUM (const double& v, const location_type& l);
+
+    static inline
+    symbol_type
+    make_OP_OR (const location_type& l);
+
+    static inline
+    symbol_type
+    make_OP_AND (const location_type& l);
+
+    static inline
+    symbol_type
+    make_IS (const location_type& l);
+
+    static inline
+    symbol_type
+    make_NOT (const location_type& l);
+
+    static inline
+    symbol_type
+    make_COMPARISON (const int& v, const location_type& l);
+
+    static inline
+    symbol_type
+    make_UMINUS (const location_type& l);
+
+    static inline
+    symbol_type
+    make_ALL (const location_type& l);
+
+    static inline
+    symbol_type
+    make_AS (const location_type& l);
+
+    static inline
+    symbol_type
+    make_ASC (const location_type& l);
+
+    static inline
+    symbol_type
+    make_BY (const location_type& l);
+
+    static inline
+    symbol_type
+    make_COMMENT (const location_type& l);
+
+    static inline
+    symbol_type
+    make_DESC (const location_type& l);
+
+    static inline
+    symbol_type
+    make_FROM (const location_type& l);
+
+    static inline
+    symbol_type
+    make_GROUP (const location_type& l);
+
+    static inline
+    symbol_type
+    make_HAVING (const location_type& l);
+
+    static inline
+    symbol_type
+    make_IN (const location_type& l);
+
+    static inline
+    symbol_type
+    make_NULLX (const location_type& l);
+
+    static inline
+    symbol_type
+    make_ORDER (const location_type& l);
+
+    static inline
+    symbol_type
+    make_SELECT (const location_type& l);
+
+    static inline
+    symbol_type
+    make_WHERE (const location_type& l);
+
+
+    /// Build a parser object.
+    SqlParser (Driver& driver_yyarg);
+    virtual ~SqlParser ();
+
+    /// Parse.
+    /// \returns  0 iff parsing succeeded.
+    virtual int parse ();
+
+#if YYDEBUG
+    /// The current debugging stream.
+    std::ostream& debug_stream () const YY_ATTRIBUTE_PURE;
+    /// Set the current debugging stream.
+    void set_debug_stream (std::ostream &);
+
+    /// Type for debugging levels.
+    typedef int debug_level_type;
+    /// The current debugging level.
+    debug_level_type debug_level () const YY_ATTRIBUTE_PURE;
+    /// Set the current debugging level.
+    void set_debug_level (debug_level_type l);
 #endif
 
-/* Location type.  */
-#if ! defined YYLTYPE && ! defined YYLTYPE_IS_DECLARED
-typedef struct YYLTYPE YYLTYPE;
-struct YYLTYPE
-{
-  int first_line;
-  int first_column;
-  int last_line;
-  int last_column;
-};
-# define YYLTYPE_IS_DECLARED 1
-# define YYLTYPE_IS_TRIVIAL 1
+    /// Report a syntax error.
+    /// \param loc    where the syntax error is found.
+    /// \param msg    a description of the syntax error.
+    virtual void error (const location_type& loc, const std::string& msg);
+
+    /// Report a syntax error.
+    void error (const syntax_error& err);
+
+  private:
+    /// This class is not copyable.
+    SqlParser (const SqlParser&);
+    SqlParser& operator= (const SqlParser&);
+
+    /// State numbers.
+    typedef int state_type;
+
+    /// Generate an error message.
+    /// \param yystate   the state where the error occurred.
+    /// \param yyla      the lookahead token.
+    virtual std::string yysyntax_error_ (state_type yystate,
+                                         const symbol_type& yyla) const;
+
+    /// Compute post-reduction state.
+    /// \param yystate   the current state
+    /// \param yysym     the nonterminal to push on the stack
+    state_type yy_lr_goto_state_ (state_type yystate, int yysym);
+
+    /// Whether the given \c yypact_ value indicates a defaulted state.
+    /// \param yyvalue   the value to check
+    static bool yy_pact_value_is_default_ (int yyvalue);
+
+    /// Whether the given \c yytable_ value indicates a syntax error.
+    /// \param yyvalue   the value to check
+    static bool yy_table_value_is_error_ (int yyvalue);
+
+    static const signed char yypact_ninf_;
+    static const signed char yytable_ninf_;
+
+    /// Convert a scanner token number \a t to a symbol number.
+    static token_number_type yytranslate_ (token_type t);
+
+    // Tables.
+  // YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
+  // STATE-NUM.
+  static const short int yypact_[];
+
+  // YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
+  // Performed when YYTABLE does not specify something else to do.  Zero
+  // means the default is an error.
+  static const unsigned char yydefact_[];
+
+  // YYPGOTO[NTERM-NUM].
+  static const short int yypgoto_[];
+
+  // YYDEFGOTO[NTERM-NUM].
+  static const signed char yydefgoto_[];
+
+  // YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
+  // positive, shift that token.  If negative, reduce the rule whose
+  // number is the opposite.  If YYTABLE_NINF, syntax error.
+  static const unsigned char yytable_[];
+
+  static const signed char yycheck_[];
+
+  // YYSTOS[STATE-NUM] -- The (internal number of the) accessing
+  // symbol of state STATE-NUM.
+  static const unsigned char yystos_[];
+
+  // YYR1[YYN] -- Symbol number of symbol that rule YYN derives.
+  static const unsigned char yyr1_[];
+
+  // YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.
+  static const unsigned char yyr2_[];
+
+
+    /// Convert the symbol name \a n to a form suitable for a diagnostic.
+    static std::string yytnamerr_ (const char *n);
+
+
+    /// For a symbol, its name in clear.
+    static const char* const yytname_[];
+#if YYDEBUG
+  // YYRLINE[YYN] -- Source line where rule number YYN was defined.
+  static const unsigned char yyrline_[];
+    /// Report on the debug stream that the rule \a r is going to be reduced.
+    virtual void yy_reduce_print_ (int r);
+    /// Print the state stack on the debug stream.
+    virtual void yystack_print_ ();
+
+    // Debugging.
+    int yydebug_;
+    std::ostream* yycdebug_;
+
+    /// \brief Display a symbol type, value and location.
+    /// \param yyo    The output stream.
+    /// \param yysym  The symbol.
+    template <typename Base>
+    void yy_print_ (std::ostream& yyo, const basic_symbol<Base>& yysym) const;
 #endif
 
+    /// \brief Reclaim the memory associated to a symbol.
+    /// \param yymsg     Why this token is reclaimed.
+    ///                  If null, print nothing.
+    /// \param yysym     The symbol.
+    template <typename Base>
+    void yy_destroy_ (const char* yymsg, basic_symbol<Base>& yysym) const;
+
+  private:
+    /// Type access provider for state based symbols.
+    struct by_state
+    {
+      /// Default constructor.
+      by_state ();
+
+      /// The symbol type as needed by the constructor.
+      typedef state_type kind_type;
+
+      /// Constructor.
+      by_state (kind_type s);
+
+      /// Copy constructor.
+      by_state (const by_state& other);
+
+      /// Record that this symbol is empty.
+      void clear ();
+
+      /// Steal the symbol type from \a that.
+      void move (by_state& that);
+
+      /// The (internal) type number (corresponding to \a state).
+      /// \a empty_symbol when empty.
+      symbol_number_type type_get () const;
+
+      /// The state number used to denote an empty symbol.
+      enum { empty_state = -1 };
+
+      /// The state.
+      /// \a empty when empty.
+      state_type state;
+    };
+
+    /// "Internal" symbol: element of the stack.
+    struct stack_symbol_type : basic_symbol<by_state>
+    {
+      /// Superclass.
+      typedef basic_symbol<by_state> super_type;
+      /// Construct an empty symbol.
+      stack_symbol_type ();
+      /// Steal the contents from \a sym to build this.
+      stack_symbol_type (state_type s, symbol_type& sym);
+      /// Assignment, needed by push_back.
+      stack_symbol_type& operator= (const stack_symbol_type& that);
+    };
+
+    /// Stack type.
+    typedef stack<stack_symbol_type> stack_type;
+
+    /// The stack.
+    stack_type yystack_;
+
+    /// Push a new state on the stack.
+    /// \param m    a debug message to display
+    ///             if null, no trace is output.
+    /// \param s    the symbol
+    /// \warning the contents of \a s.value is stolen.
+    void yypush_ (const char* m, stack_symbol_type& s);
+
+    /// Push a new look ahead token on the state on the stack.
+    /// \param m    a debug message to display
+    ///             if null, no trace is output.
+    /// \param s    the state
+    /// \param sym  the symbol (for its value and location).
+    /// \warning the contents of \a s.value is stolen.
+    void yypush_ (const char* m, state_type s, symbol_type& sym);
+
+    /// Pop \a n symbols the three stacks.
+    void yypop_ (unsigned int n = 1);
+
+    /// Constants.
+    enum
+    {
+      yyeof_ = 0,
+      yylast_ = 178,     ///< Last index in yytable_.
+      yynnts_ = 20,  ///< Number of nonterminal symbols.
+      yyfinal_ = 8, ///< Termination state number.
+      yyterror_ = 1,
+      yyerrcode_ = 256,
+      yyntokens_ = 44  ///< Number of tokens.
+    };
 
 
-int yyparse (yyscan_t scanner, struct psql_state *pstate);
+    // User arguments.
+    Driver& driver;
+  };
 
-#endif /* !YY_YY_HOME_YURI_WORK_BISON_SDLSQL_OUT_BISON_SQL_TAB_HPP_INCLUDED  */
+  // Symbol number corresponding to token number t.
+  inline
+  SqlParser::token_number_type
+  SqlParser::yytranslate_ (token_type t)
+  {
+    static
+    const token_number_type
+    translate_table[] =
+    {
+     0,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,    23,     2,     2,
+      42,    43,    21,    19,    40,    20,    41,    22,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,    39,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
+       5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
+      15,    16,    17,    18,    24,    25,    26,    27,    28,    29,
+      30,    31,    32,    33,    34,    35,    36,    37,    38
+    };
+    const unsigned int user_token_number_max_ = 288;
+    const token_number_type undef_token_ = 2;
+
+    if (static_cast<int>(t) <= yyeof_)
+      return yyeof_;
+    else if (static_cast<unsigned int> (t) <= user_token_number_max_)
+      return translate_table[t];
+    else
+      return undef_token_;
+  }
+
+  inline
+  SqlParser::syntax_error::syntax_error (const location_type& l, const std::string& m)
+    : std::runtime_error (m)
+    , location (l)
+  {}
+
+  // basic_symbol.
+  template <typename Base>
+  inline
+  SqlParser::basic_symbol<Base>::basic_symbol ()
+    : value ()
+  {}
+
+  template <typename Base>
+  inline
+  SqlParser::basic_symbol<Base>::basic_symbol (const basic_symbol& other)
+    : Base (other)
+    , value ()
+    , location (other.location)
+  {
+      switch (other.type_get ())
+    {
+      case 13: // APPROXNUM
+        value.copy< double > (other.value);
+        break;
+
+      case 11: // INTNUM
+      case 12: // BOOL
+      case 18: // COMPARISON
+      case 50: // groupby_list
+      case 51: // opt_asc_desc
+      case 54: // select_opts
+      case 55: // select_expr_list
+      case 57: // table_references
+      case 62: // val_list
+      case 63: // opt_val_list
+        value.copy< int > (other.value);
+        break;
+
+      case 9: // NAME
+      case 10: // STRING
+        value.copy< std::string > (other.value);
+        break;
+
+      default:
+        break;
+    }
+
+  }
+
+
+  template <typename Base>
+  inline
+  SqlParser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t, const semantic_type& v, const location_type& l)
+    : Base (t)
+    , value ()
+    , location (l)
+  {
+    (void) v;
+      switch (this->type_get ())
+    {
+      case 13: // APPROXNUM
+        value.copy< double > (v);
+        break;
+
+      case 11: // INTNUM
+      case 12: // BOOL
+      case 18: // COMPARISON
+      case 50: // groupby_list
+      case 51: // opt_asc_desc
+      case 54: // select_opts
+      case 55: // select_expr_list
+      case 57: // table_references
+      case 62: // val_list
+      case 63: // opt_val_list
+        value.copy< int > (v);
+        break;
+
+      case 9: // NAME
+      case 10: // STRING
+        value.copy< std::string > (v);
+        break;
+
+      default:
+        break;
+    }
+}
+
+
+  // Implementation of basic_symbol constructor for each type.
+
+  template <typename Base>
+  SqlParser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t, const location_type& l)
+    : Base (t)
+    , value ()
+    , location (l)
+  {}
+
+  template <typename Base>
+  SqlParser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t, const double v, const location_type& l)
+    : Base (t)
+    , value (v)
+    , location (l)
+  {}
+
+  template <typename Base>
+  SqlParser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t, const int v, const location_type& l)
+    : Base (t)
+    , value (v)
+    , location (l)
+  {}
+
+  template <typename Base>
+  SqlParser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t, const std::string v, const location_type& l)
+    : Base (t)
+    , value (v)
+    , location (l)
+  {}
+
+
+  template <typename Base>
+  inline
+  SqlParser::basic_symbol<Base>::~basic_symbol ()
+  {
+    clear ();
+  }
+
+  template <typename Base>
+  inline
+  void
+  SqlParser::basic_symbol<Base>::clear ()
+  {
+    // User destructor.
+    symbol_number_type yytype = this->type_get ();
+    basic_symbol<Base>& yysym = *this;
+    (void) yysym;
+    switch (yytype)
+    {
+   default:
+      break;
+    }
+
+    // Type destructor.
+    switch (yytype)
+    {
+      case 13: // APPROXNUM
+        value.template destroy< double > ();
+        break;
+
+      case 11: // INTNUM
+      case 12: // BOOL
+      case 18: // COMPARISON
+      case 50: // groupby_list
+      case 51: // opt_asc_desc
+      case 54: // select_opts
+      case 55: // select_expr_list
+      case 57: // table_references
+      case 62: // val_list
+      case 63: // opt_val_list
+        value.template destroy< int > ();
+        break;
+
+      case 9: // NAME
+      case 10: // STRING
+        value.template destroy< std::string > ();
+        break;
+
+      default:
+        break;
+    }
+
+    Base::clear ();
+  }
+
+  template <typename Base>
+  inline
+  bool
+  SqlParser::basic_symbol<Base>::empty () const
+  {
+    return Base::type_get () == empty_symbol;
+  }
+
+  template <typename Base>
+  inline
+  void
+  SqlParser::basic_symbol<Base>::move (basic_symbol& s)
+  {
+    super_type::move(s);
+      switch (this->type_get ())
+    {
+      case 13: // APPROXNUM
+        value.move< double > (s.value);
+        break;
+
+      case 11: // INTNUM
+      case 12: // BOOL
+      case 18: // COMPARISON
+      case 50: // groupby_list
+      case 51: // opt_asc_desc
+      case 54: // select_opts
+      case 55: // select_expr_list
+      case 57: // table_references
+      case 62: // val_list
+      case 63: // opt_val_list
+        value.move< int > (s.value);
+        break;
+
+      case 9: // NAME
+      case 10: // STRING
+        value.move< std::string > (s.value);
+        break;
+
+      default:
+        break;
+    }
+
+    location = s.location;
+  }
+
+  // by_type.
+  inline
+  SqlParser::by_type::by_type ()
+    : type (empty_symbol)
+  {}
+
+  inline
+  SqlParser::by_type::by_type (const by_type& other)
+    : type (other.type)
+  {}
+
+  inline
+  SqlParser::by_type::by_type (token_type t)
+    : type (yytranslate_ (t))
+  {}
+
+  inline
+  void
+  SqlParser::by_type::clear ()
+  {
+    type = empty_symbol;
+  }
+
+  inline
+  void
+  SqlParser::by_type::move (by_type& that)
+  {
+    type = that.type;
+    that.clear ();
+  }
+
+  inline
+  int
+  SqlParser::by_type::type_get () const
+  {
+    return type;
+  }
+
+  inline
+  SqlParser::token_type
+  SqlParser::by_type::token () const
+  {
+    // YYTOKNUM[NUM] -- (External) token number corresponding to the
+    // (internal) symbol number NUM (which must be that of a token).  */
+    static
+    const unsigned short int
+    yytoken_number_[] =
+    {
+       0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
+     265,   266,   267,   268,   269,   270,   271,   272,   273,    43,
+      45,    42,    47,    37,   274,   275,   276,   277,   278,   279,
+     280,   281,   282,   283,   284,   285,   286,   287,   288,    59,
+      44,    46,    40,    41
+    };
+    return static_cast<token_type> (yytoken_number_[type]);
+  }
+  // Implementation of make_symbol for each symbol type.
+  SqlParser::symbol_type
+  SqlParser::make_END (const location_type& l)
+  {
+    return symbol_type (token::TOK_END, l);
+  }
+
+  SqlParser::symbol_type
+  SqlParser::make_S_STAR (const location_type& l)
+  {
+    return symbol_type (token::TOK_S_STAR, l);
+  }
+
+  SqlParser::symbol_type
+  SqlParser::make_S_LPAREN (const location_type& l)
+  {
+    return symbol_type (token::TOK_S_LPAREN, l);
+  }
+
+  SqlParser::symbol_type
+  SqlParser::make_S_RPAREN (const location_type& l)
+  {
+    return symbol_type (token::TOK_S_RPAREN, l);
+  }
+
+  SqlParser::symbol_type
+  SqlParser::make_S_COMMA (const location_type& l)
+  {
+    return symbol_type (token::TOK_S_COMMA, l);
+  }
+
+  SqlParser::symbol_type
+  SqlParser::make_S_DOT (const location_type& l)
+  {
+    return symbol_type (token::TOK_S_DOT, l);
+  }
+
+  SqlParser::symbol_type
+  SqlParser::make_S_SEMICOLON (const location_type& l)
+  {
+    return symbol_type (token::TOK_S_SEMICOLON, l);
+  }
+
+  SqlParser::symbol_type
+  SqlParser::make_NAME (const std::string& v, const location_type& l)
+  {
+    return symbol_type (token::TOK_NAME, v, l);
+  }
+
+  SqlParser::symbol_type
+  SqlParser::make_STRING (const std::string& v, const location_type& l)
+  {
+    return symbol_type (token::TOK_STRING, v, l);
+  }
+
+  SqlParser::symbol_type
+  SqlParser::make_INTNUM (const int& v, const location_type& l)
+  {
+    return symbol_type (token::TOK_INTNUM, v, l);
+  }
+
+  SqlParser::symbol_type
+  SqlParser::make_BOOL (const int& v, const location_type& l)
+  {
+    return symbol_type (token::TOK_BOOL, v, l);
+  }
+
+  SqlParser::symbol_type
+  SqlParser::make_APPROXNUM (const double& v, const location_type& l)
+  {
+    return symbol_type (token::TOK_APPROXNUM, v, l);
+  }
+
+  SqlParser::symbol_type
+  SqlParser::make_OP_OR (const location_type& l)
+  {
+    return symbol_type (token::TOK_OP_OR, l);
+  }
+
+  SqlParser::symbol_type
+  SqlParser::make_OP_AND (const location_type& l)
+  {
+    return symbol_type (token::TOK_OP_AND, l);
+  }
+
+  SqlParser::symbol_type
+  SqlParser::make_IS (const location_type& l)
+  {
+    return symbol_type (token::TOK_IS, l);
+  }
+
+  SqlParser::symbol_type
+  SqlParser::make_NOT (const location_type& l)
+  {
+    return symbol_type (token::TOK_NOT, l);
+  }
+
+  SqlParser::symbol_type
+  SqlParser::make_COMPARISON (const int& v, const location_type& l)
+  {
+    return symbol_type (token::TOK_COMPARISON, v, l);
+  }
+
+  SqlParser::symbol_type
+  SqlParser::make_UMINUS (const location_type& l)
+  {
+    return symbol_type (token::TOK_UMINUS, l);
+  }
+
+  SqlParser::symbol_type
+  SqlParser::make_ALL (const location_type& l)
+  {
+    return symbol_type (token::TOK_ALL, l);
+  }
+
+  SqlParser::symbol_type
+  SqlParser::make_AS (const location_type& l)
+  {
+    return symbol_type (token::TOK_AS, l);
+  }
+
+  SqlParser::symbol_type
+  SqlParser::make_ASC (const location_type& l)
+  {
+    return symbol_type (token::TOK_ASC, l);
+  }
+
+  SqlParser::symbol_type
+  SqlParser::make_BY (const location_type& l)
+  {
+    return symbol_type (token::TOK_BY, l);
+  }
+
+  SqlParser::symbol_type
+  SqlParser::make_COMMENT (const location_type& l)
+  {
+    return symbol_type (token::TOK_COMMENT, l);
+  }
+
+  SqlParser::symbol_type
+  SqlParser::make_DESC (const location_type& l)
+  {
+    return symbol_type (token::TOK_DESC, l);
+  }
+
+  SqlParser::symbol_type
+  SqlParser::make_FROM (const location_type& l)
+  {
+    return symbol_type (token::TOK_FROM, l);
+  }
+
+  SqlParser::symbol_type
+  SqlParser::make_GROUP (const location_type& l)
+  {
+    return symbol_type (token::TOK_GROUP, l);
+  }
+
+  SqlParser::symbol_type
+  SqlParser::make_HAVING (const location_type& l)
+  {
+    return symbol_type (token::TOK_HAVING, l);
+  }
+
+  SqlParser::symbol_type
+  SqlParser::make_IN (const location_type& l)
+  {
+    return symbol_type (token::TOK_IN, l);
+  }
+
+  SqlParser::symbol_type
+  SqlParser::make_NULLX (const location_type& l)
+  {
+    return symbol_type (token::TOK_NULLX, l);
+  }
+
+  SqlParser::symbol_type
+  SqlParser::make_ORDER (const location_type& l)
+  {
+    return symbol_type (token::TOK_ORDER, l);
+  }
+
+  SqlParser::symbol_type
+  SqlParser::make_SELECT (const location_type& l)
+  {
+    return symbol_type (token::TOK_SELECT, l);
+  }
+
+  SqlParser::symbol_type
+  SqlParser::make_WHERE (const location_type& l)
+  {
+    return symbol_type (token::TOK_WHERE, l);
+  }
+
+
+
+} // yy
+#line 1343 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.hpp" // lalr1.cc:377
+
+
+
+
+#endif // !YY_YY_HOME_YURI_WORK_BISON_SDLSQL_OUT_BISON_SQL_TAB_HPP_INCLUDED

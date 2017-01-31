@@ -290,11 +290,11 @@ namespace yy {
     /// An auxiliary type to compute the largest semantic type.
     union union_type
     {
-      // APPROXNUM
+      // "APPROXNUM"
       char dummy1[sizeof(double)];
 
-      // INTNUM
-      // BOOL
+      // "INTNUM"
+      // "BOOL"
       // COMPARISON
       // groupby_list
       // opt_asc_desc
@@ -305,8 +305,8 @@ namespace yy {
       // opt_val_list
       char dummy2[sizeof(int)];
 
-      // NAME
-      // STRING
+      // "NAME"
+      // "STRING"
       char dummy3[sizeof(std::string)];
 };
 
@@ -340,28 +340,28 @@ namespace yy {
         TOK_NAME = 264,
         TOK_STRING = 265,
         TOK_INTNUM = 266,
-        TOK_BOOL = 267,
-        TOK_APPROXNUM = 268,
+        TOK_APPROXNUM = 267,
+        TOK_BOOL = 268,
         TOK_OP_OR = 269,
         TOK_OP_AND = 270,
         TOK_IS = 271,
         TOK_NOT = 272,
         TOK_COMPARISON = 273,
-        TOK_UMINUS = 274,
-        TOK_ALL = 275,
-        TOK_AS = 276,
-        TOK_ASC = 277,
-        TOK_BY = 278,
-        TOK_COMMENT = 279,
-        TOK_DESC = 280,
-        TOK_FROM = 281,
-        TOK_GROUP = 282,
-        TOK_HAVING = 283,
-        TOK_IN = 284,
-        TOK_NULLX = 285,
-        TOK_ORDER = 286,
-        TOK_SELECT = 287,
-        TOK_WHERE = 288
+        TOK_UMINUS = 278,
+        TOK_ALL = 279,
+        TOK_AS = 280,
+        TOK_ASC = 281,
+        TOK_BY = 282,
+        TOK_COMMENT = 283,
+        TOK_DESC = 284,
+        TOK_FROM = 285,
+        TOK_GROUP = 286,
+        TOK_HAVING = 287,
+        TOK_IN = 288,
+        TOK_NULLX = 289,
+        TOK_ORDER = 290,
+        TOK_SELECT = 291,
+        TOK_WHERE = 292
       };
     };
 
@@ -514,11 +514,11 @@ namespace yy {
 
     static inline
     symbol_type
-    make_BOOL (const int& v, const location_type& l);
+    make_APPROXNUM (const double& v, const location_type& l);
 
     static inline
     symbol_type
-    make_APPROXNUM (const double& v, const location_type& l);
+    make_BOOL (const int& v, const location_type& l);
 
     static inline
     symbol_type
@@ -675,7 +675,7 @@ namespace yy {
   static const unsigned char yydefact_[];
 
   // YYPGOTO[NTERM-NUM].
-  static const short int yypgoto_[];
+  static const signed char yypgoto_[];
 
   // YYDEFGOTO[NTERM-NUM].
   static const signed char yydefgoto_[];
@@ -706,7 +706,7 @@ namespace yy {
     static const char* const yytname_[];
 #if YYDEBUG
   // YYRLINE[YYN] -- Source line where rule number YYN was defined.
-  static const unsigned char yyrline_[];
+  static const unsigned short int yyrline_[];
     /// Report on the debug stream that the rule \a r is going to be reduced.
     virtual void yy_reduce_print_ (int r);
     /// Print the state stack on the debug stream.
@@ -805,12 +805,12 @@ namespace yy {
     enum
     {
       yyeof_ = 0,
-      yylast_ = 178,     ///< Last index in yytable_.
+      yylast_ = 194,     ///< Last index in yytable_.
       yynnts_ = 20,  ///< Number of nonterminal symbols.
       yyfinal_ = 8, ///< Termination state number.
       yyterror_ = 1,
       yyerrcode_ = 256,
-      yyntokens_ = 44  ///< Number of tokens.
+      yyntokens_ = 38  ///< Number of tokens.
     };
 
 
@@ -830,9 +830,9 @@ namespace yy {
      0,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,    23,     2,     2,
-      42,    43,    21,    19,    40,    20,    41,    22,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,    39,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -854,10 +854,11 @@ namespace yy {
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
-      15,    16,    17,    18,    24,    25,    26,    27,    28,    29,
-      30,    31,    32,    33,    34,    35,    36,    37,    38
+      15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
+      25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
+      35,    36,    37
     };
-    const unsigned int user_token_number_max_ = 288;
+    const unsigned int user_token_number_max_ = 292;
     const token_number_type undef_token_ = 2;
 
     if (static_cast<int>(t) <= yyeof_)
@@ -890,25 +891,25 @@ namespace yy {
   {
       switch (other.type_get ())
     {
-      case 13: // APPROXNUM
+      case 12: // "APPROXNUM"
         value.copy< double > (other.value);
         break;
 
-      case 11: // INTNUM
-      case 12: // BOOL
+      case 11: // "INTNUM"
+      case 13: // "BOOL"
       case 18: // COMPARISON
-      case 50: // groupby_list
-      case 51: // opt_asc_desc
-      case 54: // select_opts
-      case 55: // select_expr_list
-      case 57: // table_references
-      case 62: // val_list
-      case 63: // opt_val_list
+      case 44: // groupby_list
+      case 45: // opt_asc_desc
+      case 48: // select_opts
+      case 49: // select_expr_list
+      case 51: // table_references
+      case 56: // val_list
+      case 57: // opt_val_list
         value.copy< int > (other.value);
         break;
 
-      case 9: // NAME
-      case 10: // STRING
+      case 9: // "NAME"
+      case 10: // "STRING"
         value.copy< std::string > (other.value);
         break;
 
@@ -929,25 +930,25 @@ namespace yy {
     (void) v;
       switch (this->type_get ())
     {
-      case 13: // APPROXNUM
+      case 12: // "APPROXNUM"
         value.copy< double > (v);
         break;
 
-      case 11: // INTNUM
-      case 12: // BOOL
+      case 11: // "INTNUM"
+      case 13: // "BOOL"
       case 18: // COMPARISON
-      case 50: // groupby_list
-      case 51: // opt_asc_desc
-      case 54: // select_opts
-      case 55: // select_expr_list
-      case 57: // table_references
-      case 62: // val_list
-      case 63: // opt_val_list
+      case 44: // groupby_list
+      case 45: // opt_asc_desc
+      case 48: // select_opts
+      case 49: // select_expr_list
+      case 51: // table_references
+      case 56: // val_list
+      case 57: // opt_val_list
         value.copy< int > (v);
         break;
 
-      case 9: // NAME
-      case 10: // STRING
+      case 9: // "NAME"
+      case 10: // "STRING"
         value.copy< std::string > (v);
         break;
 
@@ -1013,25 +1014,25 @@ namespace yy {
     // Type destructor.
     switch (yytype)
     {
-      case 13: // APPROXNUM
+      case 12: // "APPROXNUM"
         value.template destroy< double > ();
         break;
 
-      case 11: // INTNUM
-      case 12: // BOOL
+      case 11: // "INTNUM"
+      case 13: // "BOOL"
       case 18: // COMPARISON
-      case 50: // groupby_list
-      case 51: // opt_asc_desc
-      case 54: // select_opts
-      case 55: // select_expr_list
-      case 57: // table_references
-      case 62: // val_list
-      case 63: // opt_val_list
+      case 44: // groupby_list
+      case 45: // opt_asc_desc
+      case 48: // select_opts
+      case 49: // select_expr_list
+      case 51: // table_references
+      case 56: // val_list
+      case 57: // opt_val_list
         value.template destroy< int > ();
         break;
 
-      case 9: // NAME
-      case 10: // STRING
+      case 9: // "NAME"
+      case 10: // "STRING"
         value.template destroy< std::string > ();
         break;
 
@@ -1058,25 +1059,25 @@ namespace yy {
     super_type::move(s);
       switch (this->type_get ())
     {
-      case 13: // APPROXNUM
+      case 12: // "APPROXNUM"
         value.move< double > (s.value);
         break;
 
-      case 11: // INTNUM
-      case 12: // BOOL
+      case 11: // "INTNUM"
+      case 13: // "BOOL"
       case 18: // COMPARISON
-      case 50: // groupby_list
-      case 51: // opt_asc_desc
-      case 54: // select_opts
-      case 55: // select_expr_list
-      case 57: // table_references
-      case 62: // val_list
-      case 63: // opt_val_list
+      case 44: // groupby_list
+      case 45: // opt_asc_desc
+      case 48: // select_opts
+      case 49: // select_expr_list
+      case 51: // table_references
+      case 56: // val_list
+      case 57: // opt_val_list
         value.move< int > (s.value);
         break;
 
-      case 9: // NAME
-      case 10: // STRING
+      case 9: // "NAME"
+      case 10: // "STRING"
         value.move< std::string > (s.value);
         break;
 
@@ -1136,10 +1137,9 @@ namespace yy {
     yytoken_number_[] =
     {
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
-     265,   266,   267,   268,   269,   270,   271,   272,   273,    43,
-      45,    42,    47,    37,   274,   275,   276,   277,   278,   279,
-     280,   281,   282,   283,   284,   285,   286,   287,   288,    59,
-      44,    46,    40,    41
+     265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
+     275,   276,   277,   278,   279,   280,   281,   282,   283,   284,
+     285,   286,   287,   288,   289,   290,   291,   292
     };
     return static_cast<token_type> (yytoken_number_[type]);
   }
@@ -1205,15 +1205,15 @@ namespace yy {
   }
 
   SqlParser::symbol_type
-  SqlParser::make_BOOL (const int& v, const location_type& l)
-  {
-    return symbol_type (token::TOK_BOOL, v, l);
-  }
-
-  SqlParser::symbol_type
   SqlParser::make_APPROXNUM (const double& v, const location_type& l)
   {
     return symbol_type (token::TOK_APPROXNUM, v, l);
+  }
+
+  SqlParser::symbol_type
+  SqlParser::make_BOOL (const int& v, const location_type& l)
+  {
+    return symbol_type (token::TOK_BOOL, v, l);
   }
 
   SqlParser::symbol_type

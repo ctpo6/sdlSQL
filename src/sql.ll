@@ -22,15 +22,15 @@ int oldstate;
 
 %}
 
+%option noyywrap nounput batch noinput case-insensitive
+
 %x COMMENT
-
-%option noyywrap nounput batch debug noinput
-
 blank [ \t]
+
 
 %{
 // Code run each time a pattern is matched.
-#define YY_USER_ACTION  loc.columns(yyleng);
+#define YY_USER_ACTION loc.columns(yyleng);
 %}
 
 
@@ -118,8 +118,8 @@ WHERE   { return yy::SqlParser::make_WHERE(loc); }
         /* functions */
 
 	/* 
-         * peek ahead and return function if name(
-         */
+         peek ahead and return function if name(
+    */
     /*
     COUNT    { int c = yyinput(pstate->scanner); unput(c);
            if(c == '(') return FCOUNT;

@@ -105,6 +105,6 @@ add_custom_target(display_other_files
 add_custom_target(display_bison_generated_files
     SOURCES ${BISON_GENERATED_FILES})
 
-add_executable(sql1c ${SQL1_C_SRC} ${BISON_SQL_C_PARSER_OUTPUTS} ${FLEX_SQL_C_SCANNER_OUTPUTS})
+#add_executable(sql1c ${SQL1_C_SRC} ${BISON_SQL_C_PARSER_OUTPUTS} ${FLEX_SQL_C_SCANNER_OUTPUTS})
 
 add_executable(sql1 ${SQL1_SRC} ${BISON_SQL_PARSER_OUTPUTS} ${FLEX_SQL_SCANNER_OUTPUTS})

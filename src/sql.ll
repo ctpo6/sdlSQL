@@ -43,7 +43,6 @@ blank [ \t]
 
 
   /* keywords */
-ALL     { return yy::SqlParser::make_ALL(loc); }
 AND     { return yy::SqlParser::make_OP_AND(loc); }
 AS      { return yy::SqlParser::make_AS(loc); }
 ASC     { return yy::SqlParser::make_ASC(loc); }
@@ -51,9 +50,6 @@ BY      { return yy::SqlParser::make_BY(loc); }
 COMMENT { return yy::SqlParser::make_COMMENT(loc); }
 DESC    { return yy::SqlParser::make_DESC(loc); }
 FROM    { return yy::SqlParser::make_FROM(loc); }
-GROUP   { return yy::SqlParser::make_GROUP(loc); }
-HAVING  { return yy::SqlParser::make_HAVING(loc); }
-IN      { return yy::SqlParser::make_IN(loc); }
 NOT     { return yy::SqlParser::make_NOT(loc); }
 NULL    { return yy::SqlParser::make_NULLX(loc); }
 OR      { return yy::SqlParser::make_OP_OR(loc); }

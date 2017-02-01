@@ -296,13 +296,10 @@ namespace yy {
       // "INTNUM"
       // "BOOL"
       // COMPARISON
-      // groupby_list
+      // orderby_list
       // opt_asc_desc
-      // select_opts
       // select_expr_list
       // table_references
-      // val_list
-      // opt_val_list
       char dummy2[sizeof(int)];
 
       // "NAME"
@@ -347,21 +344,17 @@ namespace yy {
         TOK_IS = 271,
         TOK_NOT = 272,
         TOK_COMPARISON = 273,
-        TOK_UMINUS = 278,
-        TOK_ALL = 279,
-        TOK_AS = 280,
-        TOK_ASC = 281,
-        TOK_BY = 282,
-        TOK_COMMENT = 283,
-        TOK_DESC = 284,
-        TOK_FROM = 285,
-        TOK_GROUP = 286,
-        TOK_HAVING = 287,
-        TOK_IN = 288,
-        TOK_NULLX = 289,
-        TOK_ORDER = 290,
-        TOK_SELECT = 291,
-        TOK_WHERE = 292
+        TOK_UMINUS = 274,
+        TOK_AS = 275,
+        TOK_ASC = 276,
+        TOK_BY = 277,
+        TOK_COMMENT = 278,
+        TOK_DESC = 279,
+        TOK_FROM = 280,
+        TOK_NULLX = 281,
+        TOK_ORDER = 282,
+        TOK_SELECT = 283,
+        TOK_WHERE = 284
       };
     };
 
@@ -546,10 +539,6 @@ namespace yy {
 
     static inline
     symbol_type
-    make_ALL (const location_type& l);
-
-    static inline
-    symbol_type
     make_AS (const location_type& l);
 
     static inline
@@ -571,18 +560,6 @@ namespace yy {
     static inline
     symbol_type
     make_FROM (const location_type& l);
-
-    static inline
-    symbol_type
-    make_GROUP (const location_type& l);
-
-    static inline
-    symbol_type
-    make_HAVING (const location_type& l);
-
-    static inline
-    symbol_type
-    make_IN (const location_type& l);
 
     static inline
     symbol_type
@@ -667,7 +644,7 @@ namespace yy {
     // Tables.
   // YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
   // STATE-NUM.
-  static const short int yypact_[];
+  static const signed char yypact_[];
 
   // YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
   // Performed when YYTABLE does not specify something else to do.  Zero
@@ -685,7 +662,7 @@ namespace yy {
   // number is the opposite.  If YYTABLE_NINF, syntax error.
   static const unsigned char yytable_[];
 
-  static const signed char yycheck_[];
+  static const unsigned char yycheck_[];
 
   // YYSTOS[STATE-NUM] -- The (internal number of the) accessing
   // symbol of state STATE-NUM.
@@ -706,7 +683,7 @@ namespace yy {
     static const char* const yytname_[];
 #if YYDEBUG
   // YYRLINE[YYN] -- Source line where rule number YYN was defined.
-  static const unsigned short int yyrline_[];
+  static const unsigned char yyrline_[];
     /// Report on the debug stream that the rule \a r is going to be reduced.
     virtual void yy_reduce_print_ (int r);
     /// Print the state stack on the debug stream.
@@ -805,12 +782,12 @@ namespace yy {
     enum
     {
       yyeof_ = 0,
-      yylast_ = 194,     ///< Last index in yytable_.
-      yynnts_ = 20,  ///< Number of nonterminal symbols.
-      yyfinal_ = 8, ///< Termination state number.
+      yylast_ = 77,     ///< Last index in yytable_.
+      yynnts_ = 15,  ///< Number of nonterminal symbols.
+      yyfinal_ = 17, ///< Termination state number.
       yyterror_ = 1,
       yyerrcode_ = 256,
-      yyntokens_ = 38  ///< Number of tokens.
+      yyntokens_ = 31  ///< Number of tokens.
     };
 
 
@@ -855,10 +832,9 @@ namespace yy {
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
-      25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
-      35,    36,    37
+      25,    26,    27,    28,    29,    30
     };
-    const unsigned int user_token_number_max_ = 292;
+    const unsigned int user_token_number_max_ = 285;
     const token_number_type undef_token_ = 2;
 
     if (static_cast<int>(t) <= yyeof_)
@@ -898,13 +874,10 @@ namespace yy {
       case 11: // "INTNUM"
       case 13: // "BOOL"
       case 18: // COMPARISON
-      case 44: // groupby_list
-      case 45: // opt_asc_desc
-      case 48: // select_opts
-      case 49: // select_expr_list
-      case 51: // table_references
-      case 56: // val_list
-      case 57: // opt_val_list
+      case 37: // orderby_list
+      case 38: // opt_asc_desc
+      case 39: // select_expr_list
+      case 41: // table_references
         value.copy< int > (other.value);
         break;
 
@@ -937,13 +910,10 @@ namespace yy {
       case 11: // "INTNUM"
       case 13: // "BOOL"
       case 18: // COMPARISON
-      case 44: // groupby_list
-      case 45: // opt_asc_desc
-      case 48: // select_opts
-      case 49: // select_expr_list
-      case 51: // table_references
-      case 56: // val_list
-      case 57: // opt_val_list
+      case 37: // orderby_list
+      case 38: // opt_asc_desc
+      case 39: // select_expr_list
+      case 41: // table_references
         value.copy< int > (v);
         break;
 
@@ -1021,13 +991,10 @@ namespace yy {
       case 11: // "INTNUM"
       case 13: // "BOOL"
       case 18: // COMPARISON
-      case 44: // groupby_list
-      case 45: // opt_asc_desc
-      case 48: // select_opts
-      case 49: // select_expr_list
-      case 51: // table_references
-      case 56: // val_list
-      case 57: // opt_val_list
+      case 37: // orderby_list
+      case 38: // opt_asc_desc
+      case 39: // select_expr_list
+      case 41: // table_references
         value.template destroy< int > ();
         break;
 
@@ -1066,13 +1033,10 @@ namespace yy {
       case 11: // "INTNUM"
       case 13: // "BOOL"
       case 18: // COMPARISON
-      case 44: // groupby_list
-      case 45: // opt_asc_desc
-      case 48: // select_opts
-      case 49: // select_expr_list
-      case 51: // table_references
-      case 56: // val_list
-      case 57: // opt_val_list
+      case 37: // orderby_list
+      case 38: // opt_asc_desc
+      case 39: // select_expr_list
+      case 41: // table_references
         value.move< int > (s.value);
         break;
 
@@ -1139,7 +1103,7 @@ namespace yy {
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
      265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
      275,   276,   277,   278,   279,   280,   281,   282,   283,   284,
-     285,   286,   287,   288,   289,   290,   291,   292
+     285
     };
     return static_cast<token_type> (yytoken_number_[type]);
   }
@@ -1253,12 +1217,6 @@ namespace yy {
   }
 
   SqlParser::symbol_type
-  SqlParser::make_ALL (const location_type& l)
-  {
-    return symbol_type (token::TOK_ALL, l);
-  }
-
-  SqlParser::symbol_type
   SqlParser::make_AS (const location_type& l)
   {
     return symbol_type (token::TOK_AS, l);
@@ -1295,24 +1253,6 @@ namespace yy {
   }
 
   SqlParser::symbol_type
-  SqlParser::make_GROUP (const location_type& l)
-  {
-    return symbol_type (token::TOK_GROUP, l);
-  }
-
-  SqlParser::symbol_type
-  SqlParser::make_HAVING (const location_type& l)
-  {
-    return symbol_type (token::TOK_HAVING, l);
-  }
-
-  SqlParser::symbol_type
-  SqlParser::make_IN (const location_type& l)
-  {
-    return symbol_type (token::TOK_IN, l);
-  }
-
-  SqlParser::symbol_type
   SqlParser::make_NULLX (const location_type& l)
   {
     return symbol_type (token::TOK_NULLX, l);
@@ -1339,7 +1279,7 @@ namespace yy {
 
 
 } // yy
-#line 1343 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.hpp" // lalr1.cc:377
+#line 1283 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.hpp" // lalr1.cc:377
 
 
 

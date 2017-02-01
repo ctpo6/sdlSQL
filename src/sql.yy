@@ -57,32 +57,23 @@ class Driver;
 %nonassoc IS
 %left NOT
 %left <int> COMPARISON /* = <> < > <= >= <=> */
-%left "+" "-"
-%left "*" "/" "%"
 %nonassoc UMINUS
 
-%token ALL
 %token AS
 %token ASC
 %token BY
 %token COMMENT
 %token DESC
 %token FROM
-%token GROUP
-%token HAVING
-%token IN
 %token NOT
 %token NULLX
 %token ORDER
 %token SELECT
 %token WHERE
 
-    /* functions with special syntax */
-    /*%token FCOUNT*/
-
-%type <int> select_opts select_expr_list
-%type <int> val_list opt_val_list
-%type <int> groupby_list opt_asc_desc
+%type <int> opt_asc_desc
+%type <int> orderby_list
+%type <int> select_expr_list
 %type <int> table_references
 
 %printer { yyoutput << $$; } <*>;
@@ -111,12 +102,10 @@ stmt:
     ;
 
 select_stmt:
-    SELECT select_opts select_expr_list
-        { driver.sqlp_select_nodata($2, $3); }
-|   SELECT select_opts select_expr_list
+    SELECT select_expr_list
     FROM table_references
-    opt_where opt_groupby opt_having opt_orderby
-        { driver.sqlp_select($2, $3, $5); } ;
+    opt_where opt_orderby
+        { driver.sqlp_select($2, $4); } ;
     ;
 
 opt_where:
@@ -124,17 +113,17 @@ opt_where:
 |   WHERE expr
         { driver.sqlp_where(); };
 
-opt_groupby:
+opt_orderby:
     %empty {}
-|   GROUP BY groupby_list
-        { driver.sqlp_group_by_list($3); }
+|   ORDER BY orderby_list
+        { driver.sqlp_order_by_list($3); }
     ;
 
-groupby_list:
+orderby_list:
     expr opt_asc_desc
-        { driver.sqlp_group_by($2); $$ = 1; }
-|   groupby_list "," expr opt_asc_desc
-        { driver.sqlp_group_by($4); $$ = $1 + 1; }
+        { driver.sqlp_order_by($2); $$ = 1; }
+|   orderby_list "," expr opt_asc_desc
+        { driver.sqlp_order_by($4); $$ = $1 + 1; }
     ;
 
 opt_asc_desc:
@@ -144,25 +133,6 @@ opt_asc_desc:
         { $$ = 0; }
 |   DESC
         { $$ = 1; }
-    ;
-
-opt_having:
-    %empty {}
-|   HAVING expr
-        { driver.sqlp_having(); }
-    ;
-
-opt_orderby:
-    %empty {}
-|   ORDER BY groupby_list
-        { driver.sqlp_order_by($3); }
-    ;
-
-select_opts:
-    %empty
-        { $$ = 0; }
-|   select_opts ALL
-        { if($$ & 01) error(@$, "duplicate ALL option"); $$ = $1 | 01; }
     ;
 
 select_expr_list:
@@ -217,21 +187,9 @@ expr:
         { driver.sqlp_number($1); }
 |   APPROXNUM
         { driver.sqlp_float($1); }
-|   BOOL
-        { driver.sqlp_bool($1); }
     ;
 
 expr:
-    expr "+" expr
-        { driver.sqlp_expr_op(SEO_ADD); }
-|   expr "-" expr
-        { driver.sqlp_expr_op(SEO_SUB); }
-|   expr "*" expr
-        { driver.sqlp_expr_op(SEO_MUL); }
-|   expr "/" expr
-        { driver.sqlp_expr_op(SEO_DIV); }
-|   expr "%" expr
-        { driver.sqlp_expr_op(SEO_MOD); }
 |   "-" expr %prec UMINUS
         { driver.sqlp_expr_op(SEO_NEG); }
 |   expr OP_AND expr
@@ -249,28 +207,6 @@ expr:
         { driver.sqlp_expr_op(SEO_IS_NULL); }
 |   expr IS NOT NULLX
         { driver.sqlp_expr_op(SEO_IS_NULL); driver.sqlp_expr_op(SEO_NOT); }
-    ;
-
-val_list:
-    expr
-        { $$ = 1; }
-|   expr "," val_list { $$ = 1 + $3; }
-    ;
-
-opt_val_list:
-    %empty { $$ = 0; }
-|   val_list
-    ;
-
-expr:
-    expr IN "(" val_list ")"
-        { driver.sqlp_expr_is_in($4); }
-| expr NOT IN "(" val_list ")"
-        { driver.sqlp_expr_is_in($5); driver.sqlp_expr_op(SEO_NOT); }
-    ;
-
-expr:
-    NAME "(" opt_val_list ")" {  driver.sqlp_call($3, $1); }
     ;
 
   /* functions with special syntax */

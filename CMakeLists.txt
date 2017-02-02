@@ -51,6 +51,28 @@ set(CMAKE_C_FLAGS "${MY_C_WARNING_FLAGS} ${CMAKE_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "-std=c++14 ${MY_CXX_WARNING_FLAGS} ${CMAKE_CXX_FLAGS}")
 
 ################################################################################
+# Libraries
+################################################################################
+#find_package(Threads)
+
+add_subdirectory(external/dataserver)
+
+include_directories(
+    ${PROJECT_SOURCE_DIR}/external/dataserver
+    )
+link_directories(
+    ${PROJECT_SOURCE_DIR}/external/dataserver/lib
+    )
+
+add_definitions(-DSDL_OS_UNIX)
+
+if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
+    add_definitions(-DSDL_DEBUG=1)
+else()
+    add_definitions(-DSDL_DEBUG=0)
+endif()
+
+################################################################################
 # Targets
 ################################################################################
 
@@ -89,10 +111,10 @@ set(SQL1_SRC
     )
 
 set(BISON_GENERATED_FILES
-    out.bison/sql.lex.c
-    out.bison/sql.lex.h
-    out.bison/sql.tab.c
-    out.bison/sql.tab.h
+#    out.bison/sql.lex.c
+#    out.bison/sql.lex.h
+#    out.bison/sql.tab.c
+#    out.bison/sql.tab.h
 
     out.bison/sql.lex.cpp
     out.bison/sql.lex.hpp
@@ -101,10 +123,11 @@ set(BISON_GENERATED_FILES
     )
 
 add_custom_target(display_other_files
-    SOURCES ${SCANNER_SRC} ${PARSER_SRC} ${SCANNER_C_SRC} ${PARSER_C_SRC})
+    SOURCES ${SCANNER_SRC} ${PARSER_SRC})
 add_custom_target(display_bison_generated_files
     SOURCES ${BISON_GENERATED_FILES})
 
 #add_executable(sql1c ${SQL1_C_SRC} ${BISON_SQL_C_PARSER_OUTPUTS} ${FLEX_SQL_C_SCANNER_OUTPUTS})
 
 add_executable(sql1 ${SQL1_SRC} ${BISON_SQL_PARSER_OUTPUTS} ${FLEX_SQL_SCANNER_OUTPUTS})
+target_link_libraries(sql1 dataserver)

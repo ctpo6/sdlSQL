@@ -50,11 +50,14 @@ BY      { return yy::SqlParser::make_BY(loc); }
 COMMENT { return yy::SqlParser::make_COMMENT(loc); }
 DESC    { return yy::SqlParser::make_DESC(loc); }
 FROM    { return yy::SqlParser::make_FROM(loc); }
+JOIN    { return yy::SqlParser::make_JOIN(loc); }
 NOT     { return yy::SqlParser::make_NOT(loc); }
 NULL    { return yy::SqlParser::make_NULLX(loc); }
+ON      { return yy::SqlParser::make_ON(loc); }
 OR      { return yy::SqlParser::make_OP_OR(loc); }
 ORDER   { return yy::SqlParser::make_ORDER(loc); }
 SELECT  { return yy::SqlParser::make_SELECT(loc); }
+TOP     { return yy::SqlParser::make_TOP(loc); }
 WHERE   { return yy::SqlParser::make_WHERE(loc); }
 
    /* numbers */

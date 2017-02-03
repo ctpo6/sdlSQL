@@ -299,7 +299,6 @@ namespace yy {
       // orderby_list
       // opt_asc_desc
       // select_expr_list
-      // table_references
       char dummy2[sizeof(int)];
 
       // "NAME"
@@ -351,10 +350,13 @@ namespace yy {
         TOK_COMMENT = 278,
         TOK_DESC = 279,
         TOK_FROM = 280,
-        TOK_NULLX = 281,
-        TOK_ORDER = 282,
-        TOK_SELECT = 283,
-        TOK_WHERE = 284
+        TOK_JOIN = 281,
+        TOK_NULLX = 282,
+        TOK_ON = 283,
+        TOK_ORDER = 284,
+        TOK_SELECT = 285,
+        TOK_TOP = 286,
+        TOK_WHERE = 287
       };
     };
 
@@ -563,7 +565,15 @@ namespace yy {
 
     static inline
     symbol_type
+    make_JOIN (const location_type& l);
+
+    static inline
+    symbol_type
     make_NULLX (const location_type& l);
+
+    static inline
+    symbol_type
+    make_ON (const location_type& l);
 
     static inline
     symbol_type
@@ -572,6 +582,10 @@ namespace yy {
     static inline
     symbol_type
     make_SELECT (const location_type& l);
+
+    static inline
+    symbol_type
+    make_TOP (const location_type& l);
 
     static inline
     symbol_type
@@ -662,7 +676,7 @@ namespace yy {
   // number is the opposite.  If YYTABLE_NINF, syntax error.
   static const unsigned char yytable_[];
 
-  static const unsigned char yycheck_[];
+  static const signed char yycheck_[];
 
   // YYSTOS[STATE-NUM] -- The (internal number of the) accessing
   // symbol of state STATE-NUM.
@@ -782,12 +796,12 @@ namespace yy {
     enum
     {
       yyeof_ = 0,
-      yylast_ = 77,     ///< Last index in yytable_.
-      yynnts_ = 15,  ///< Number of nonterminal symbols.
-      yyfinal_ = 17, ///< Termination state number.
+      yylast_ = 82,     ///< Last index in yytable_.
+      yynnts_ = 18,  ///< Number of nonterminal symbols.
+      yyfinal_ = 9, ///< Termination state number.
       yyterror_ = 1,
       yyerrcode_ = 256,
-      yyntokens_ = 31  ///< Number of tokens.
+      yyntokens_ = 34  ///< Number of tokens.
     };
 
 
@@ -832,9 +846,9 @@ namespace yy {
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
-      25,    26,    27,    28,    29,    30
+      25,    26,    27,    28,    29,    30,    31,    32,    33
     };
-    const unsigned int user_token_number_max_ = 285;
+    const unsigned int user_token_number_max_ = 288;
     const token_number_type undef_token_ = 2;
 
     if (static_cast<int>(t) <= yyeof_)
@@ -874,10 +888,9 @@ namespace yy {
       case 11: // "INTNUM"
       case 13: // "BOOL"
       case 18: // COMPARISON
-      case 37: // orderby_list
-      case 38: // opt_asc_desc
-      case 39: // select_expr_list
-      case 41: // table_references
+      case 45: // orderby_list
+      case 46: // opt_asc_desc
+      case 47: // select_expr_list
         value.copy< int > (other.value);
         break;
 
@@ -910,10 +923,9 @@ namespace yy {
       case 11: // "INTNUM"
       case 13: // "BOOL"
       case 18: // COMPARISON
-      case 37: // orderby_list
-      case 38: // opt_asc_desc
-      case 39: // select_expr_list
-      case 41: // table_references
+      case 45: // orderby_list
+      case 46: // opt_asc_desc
+      case 47: // select_expr_list
         value.copy< int > (v);
         break;
 
@@ -991,10 +1003,9 @@ namespace yy {
       case 11: // "INTNUM"
       case 13: // "BOOL"
       case 18: // COMPARISON
-      case 37: // orderby_list
-      case 38: // opt_asc_desc
-      case 39: // select_expr_list
-      case 41: // table_references
+      case 45: // orderby_list
+      case 46: // opt_asc_desc
+      case 47: // select_expr_list
         value.template destroy< int > ();
         break;
 
@@ -1033,10 +1044,9 @@ namespace yy {
       case 11: // "INTNUM"
       case 13: // "BOOL"
       case 18: // COMPARISON
-      case 37: // orderby_list
-      case 38: // opt_asc_desc
-      case 39: // select_expr_list
-      case 41: // table_references
+      case 45: // orderby_list
+      case 46: // opt_asc_desc
+      case 47: // select_expr_list
         value.move< int > (s.value);
         break;
 
@@ -1103,7 +1113,7 @@ namespace yy {
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
      265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
      275,   276,   277,   278,   279,   280,   281,   282,   283,   284,
-     285
+     285,   286,   287,   288
     };
     return static_cast<token_type> (yytoken_number_[type]);
   }
@@ -1253,9 +1263,21 @@ namespace yy {
   }
 
   SqlParser::symbol_type
+  SqlParser::make_JOIN (const location_type& l)
+  {
+    return symbol_type (token::TOK_JOIN, l);
+  }
+
+  SqlParser::symbol_type
   SqlParser::make_NULLX (const location_type& l)
   {
     return symbol_type (token::TOK_NULLX, l);
+  }
+
+  SqlParser::symbol_type
+  SqlParser::make_ON (const location_type& l)
+  {
+    return symbol_type (token::TOK_ON, l);
   }
 
   SqlParser::symbol_type
@@ -1271,6 +1293,12 @@ namespace yy {
   }
 
   SqlParser::symbol_type
+  SqlParser::make_TOP (const location_type& l)
+  {
+    return symbol_type (token::TOK_TOP, l);
+  }
+
+  SqlParser::symbol_type
   SqlParser::make_WHERE (const location_type& l)
   {
     return symbol_type (token::TOK_WHERE, l);
@@ -1279,7 +1307,7 @@ namespace yy {
 
 
 } // yy
-#line 1283 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.hpp" // lalr1.cc:377
+#line 1311 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.hpp" // lalr1.cc:377
 
 
 

@@ -258,10 +258,9 @@ namespace yy {
       case 11: // "INTNUM"
       case 13: // "BOOL"
       case 18: // COMPARISON
-      case 37: // orderby_list
-      case 38: // opt_asc_desc
-      case 39: // select_expr_list
-      case 41: // table_references
+      case 45: // orderby_list
+      case 46: // opt_asc_desc
+      case 47: // select_expr_list
         value.move< int > (that.value);
         break;
 
@@ -292,10 +291,9 @@ namespace yy {
       case 11: // "INTNUM"
       case 13: // "BOOL"
       case 18: // COMPARISON
-      case 37: // orderby_list
-      case 38: // opt_asc_desc
-      case 39: // select_expr_list
-      case 41: // table_references
+      case 45: // orderby_list
+      case 46: // opt_asc_desc
+      case 47: // select_expr_list
         value.copy< int > (that.value);
         break;
 
@@ -342,72 +340,65 @@ namespace yy {
     {
             case 9: // "NAME"
 
-#line 79 "src/sql.yy" // lalr1.cc:636
+#line 81 "src/sql.yy" // lalr1.cc:636
         { yyoutput << yysym.value.template as< std::string > (); }
-#line 348 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
+#line 346 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
         break;
 
       case 10: // "STRING"
 
-#line 79 "src/sql.yy" // lalr1.cc:636
+#line 81 "src/sql.yy" // lalr1.cc:636
         { yyoutput << yysym.value.template as< std::string > (); }
-#line 355 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
+#line 353 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
         break;
 
       case 11: // "INTNUM"
 
-#line 79 "src/sql.yy" // lalr1.cc:636
+#line 81 "src/sql.yy" // lalr1.cc:636
         { yyoutput << yysym.value.template as< int > (); }
-#line 362 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
+#line 360 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
         break;
 
       case 12: // "APPROXNUM"
 
-#line 79 "src/sql.yy" // lalr1.cc:636
+#line 81 "src/sql.yy" // lalr1.cc:636
         { yyoutput << yysym.value.template as< double > (); }
-#line 369 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
+#line 367 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
         break;
 
       case 13: // "BOOL"
 
-#line 79 "src/sql.yy" // lalr1.cc:636
+#line 81 "src/sql.yy" // lalr1.cc:636
         { yyoutput << yysym.value.template as< int > (); }
-#line 376 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
+#line 374 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
         break;
 
       case 18: // COMPARISON
 
-#line 79 "src/sql.yy" // lalr1.cc:636
+#line 81 "src/sql.yy" // lalr1.cc:636
         { yyoutput << yysym.value.template as< int > (); }
-#line 383 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
+#line 381 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
         break;
 
-      case 37: // orderby_list
+      case 45: // orderby_list
 
-#line 79 "src/sql.yy" // lalr1.cc:636
+#line 81 "src/sql.yy" // lalr1.cc:636
         { yyoutput << yysym.value.template as< int > (); }
-#line 390 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
+#line 388 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
         break;
 
-      case 38: // opt_asc_desc
+      case 46: // opt_asc_desc
 
-#line 79 "src/sql.yy" // lalr1.cc:636
+#line 81 "src/sql.yy" // lalr1.cc:636
         { yyoutput << yysym.value.template as< int > (); }
-#line 397 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
+#line 395 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
         break;
 
-      case 39: // select_expr_list
+      case 47: // select_expr_list
 
-#line 79 "src/sql.yy" // lalr1.cc:636
+#line 81 "src/sql.yy" // lalr1.cc:636
         { yyoutput << yysym.value.template as< int > (); }
-#line 404 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
-        break;
-
-      case 41: // table_references
-
-#line 79 "src/sql.yy" // lalr1.cc:636
-        { yyoutput << yysym.value.template as< int > (); }
-#line 411 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
+#line 402 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
         break;
 
 
@@ -526,7 +517,7 @@ namespace yy {
   yyla.location.begin.filename = yyla.location.end.filename = &driver.file;
 }
 
-#line 530 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:741
+#line 521 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:741
 
     /* Initialize the stack.  The initial state will be set in
        yynewstate, since the latter expects the semantical and the
@@ -623,10 +614,9 @@ namespace yy {
       case 11: // "INTNUM"
       case 13: // "BOOL"
       case 18: // COMPARISON
-      case 37: // orderby_list
-      case 38: // opt_asc_desc
-      case 39: // select_expr_list
-      case 41: // table_references
+      case 45: // orderby_list
+      case 46: // opt_asc_desc
+      case 47: // select_expr_list
         yylhs.value.build< int > ();
         break;
 
@@ -653,205 +643,223 @@ namespace yy {
           switch (yyn)
             {
   case 6:
-#line 101 "src/sql.yy" // lalr1.cc:859
+#line 103 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_stmt(); }
-#line 659 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 649 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 7:
-#line 108 "src/sql.yy" // lalr1.cc:859
-    { driver.sqlp_select(yystack_[4].value.as< int > (), yystack_[2].value.as< int > ()); }
-#line 665 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 110 "src/sql.yy" // lalr1.cc:859
+    { driver.sqlp_select(yystack_[4].value.as< int > ()); }
+#line 655 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 8:
-#line 112 "src/sql.yy" // lalr1.cc:859
-    {}
-#line 671 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
-    break;
-
-  case 9:
-#line 114 "src/sql.yy" // lalr1.cc:859
-    { driver.sqlp_where(); }
-#line 677 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
-    break;
-
-  case 10:
-#line 117 "src/sql.yy" // lalr1.cc:859
-    {}
-#line 683 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 115 "src/sql.yy" // lalr1.cc:859
+    { driver.sqlp_from_table_reference(); }
+#line 661 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 11:
-#line 119 "src/sql.yy" // lalr1.cc:859
-    { driver.sqlp_order_by_list(yystack_[0].value.as< int > ()); }
-#line 689 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 124 "src/sql.yy" // lalr1.cc:859
+    { driver.sqlp_table("", yystack_[1].value.as< std::string > ()); }
+#line 667 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 12:
-#line 124 "src/sql.yy" // lalr1.cc:859
-    { driver.sqlp_order_by(yystack_[0].value.as< int > ()); yylhs.value.as< int > () = 1; }
-#line 695 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 126 "src/sql.yy" // lalr1.cc:859
+    { driver.sqlp_table(yystack_[3].value.as< std::string > (), yystack_[1].value.as< std::string > ()); }
+#line 673 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 13:
-#line 126 "src/sql.yy" // lalr1.cc:859
-    { driver.sqlp_order_by(yystack_[0].value.as< int > ()); yylhs.value.as< int > () = yystack_[3].value.as< int > () + 1; }
-#line 701 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 131 "src/sql.yy" // lalr1.cc:859
+    { driver.sqlp_join(); }
+#line 679 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 14:
-#line 131 "src/sql.yy" // lalr1.cc:859
-    { yylhs.value.as< int > () = 0; }
-#line 707 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 134 "src/sql.yy" // lalr1.cc:859
+    {}
+#line 685 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 15:
-#line 133 "src/sql.yy" // lalr1.cc:859
-    { yylhs.value.as< int > () = 0; }
-#line 713 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 136 "src/sql.yy" // lalr1.cc:859
+    { driver.top(yystack_[1].value.as< int > ()); }
+#line 691 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 16:
-#line 135 "src/sql.yy" // lalr1.cc:859
-    { yylhs.value.as< int > () = 1; }
-#line 719 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 139 "src/sql.yy" // lalr1.cc:859
+    {}
+#line 697 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 17:
-#line 140 "src/sql.yy" // lalr1.cc:859
-    { yylhs.value.as< int > () = 1; }
-#line 725 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 141 "src/sql.yy" // lalr1.cc:859
+    { driver.sqlp_where(); }
+#line 703 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 18:
-#line 142 "src/sql.yy" // lalr1.cc:859
-    {yylhs.value.as< int > () = yystack_[2].value.as< int > () + 1; }
-#line 731 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 144 "src/sql.yy" // lalr1.cc:859
+    {}
+#line 709 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 19:
-#line 144 "src/sql.yy" // lalr1.cc:859
-    { driver.sqlp_select_all(); yylhs.value.as< int > () = 1; }
-#line 737 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 146 "src/sql.yy" // lalr1.cc:859
+    { driver.sqlp_order_by_list(yystack_[0].value.as< int > ()); }
+#line 715 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+    break;
+
+  case 20:
+#line 151 "src/sql.yy" // lalr1.cc:859
+    { driver.sqlp_order_by(yystack_[0].value.as< int > ()); yylhs.value.as< int > () = 1; }
+#line 721 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 21:
 #line 153 "src/sql.yy" // lalr1.cc:859
-    { yylhs.value.as< int > () = 1; }
-#line 743 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+    { driver.sqlp_order_by(yystack_[0].value.as< int > ()); yylhs.value.as< int > () = yystack_[3].value.as< int > () + 1; }
+#line 727 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 22:
-#line 155 "src/sql.yy" // lalr1.cc:859
-    { yylhs.value.as< int > () = yystack_[2].value.as< int > () + 1; }
-#line 749 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 158 "src/sql.yy" // lalr1.cc:859
+    { yylhs.value.as< int > () = 0; }
+#line 733 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+    break;
+
+  case 23:
+#line 160 "src/sql.yy" // lalr1.cc:859
+    { yylhs.value.as< int > () = 0; }
+#line 739 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 24:
-#line 164 "src/sql.yy" // lalr1.cc:859
-    { driver.sqlp_table("", yystack_[1].value.as< std::string > ()); }
-#line 755 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 162 "src/sql.yy" // lalr1.cc:859
+    { yylhs.value.as< int > () = 1; }
+#line 745 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 25:
-#line 166 "src/sql.yy" // lalr1.cc:859
-    { driver.sqlp_table(yystack_[3].value.as< std::string > (), yystack_[1].value.as< std::string > ()); }
-#line 761 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 167 "src/sql.yy" // lalr1.cc:859
+    { yylhs.value.as< int > () = 1; }
+#line 751 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 26:
-#line 170 "src/sql.yy" // lalr1.cc:859
-    {}
-#line 767 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 169 "src/sql.yy" // lalr1.cc:859
+    {yylhs.value.as< int > () = yystack_[2].value.as< int > () + 1; }
+#line 757 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 27:
-#line 172 "src/sql.yy" // lalr1.cc:859
-    { driver.sqlp_alias(yystack_[0].value.as< std::string > ()); }
-#line 773 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
-    break;
-
-  case 28:
-#line 174 "src/sql.yy" // lalr1.cc:859
-    { driver.sqlp_alias(yystack_[0].value.as< std::string > ()); }
-#line 779 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 171 "src/sql.yy" // lalr1.cc:859
+    { driver.sqlp_select_all(); yylhs.value.as< int > () = 1; }
+#line 763 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 29:
-#line 181 "src/sql.yy" // lalr1.cc:859
-    { driver.sqlp_name(yystack_[0].value.as< std::string > ()); }
-#line 785 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 180 "src/sql.yy" // lalr1.cc:859
+    {}
+#line 769 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 30:
-#line 183 "src/sql.yy" // lalr1.cc:859
-    { driver.sqlp_fieldname(yystack_[2].value.as< std::string > (), yystack_[0].value.as< std::string > ()); }
-#line 791 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 182 "src/sql.yy" // lalr1.cc:859
+    { driver.sqlp_alias(yystack_[0].value.as< std::string > ()); }
+#line 775 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 31:
-#line 185 "src/sql.yy" // lalr1.cc:859
-    { driver.sqlp_string(yystack_[0].value.as< std::string > ()); }
-#line 797 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 184 "src/sql.yy" // lalr1.cc:859
+    { driver.sqlp_alias(yystack_[0].value.as< std::string > ()); }
+#line 781 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 32:
-#line 187 "src/sql.yy" // lalr1.cc:859
-    { driver.sqlp_number(yystack_[0].value.as< int > ()); }
-#line 803 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 192 "src/sql.yy" // lalr1.cc:859
+    { driver.sqlp_name(yystack_[0].value.as< std::string > ()); }
+#line 787 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 33:
-#line 189 "src/sql.yy" // lalr1.cc:859
-    { driver.sqlp_float(yystack_[0].value.as< double > ()); }
-#line 809 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 194 "src/sql.yy" // lalr1.cc:859
+    { driver.sqlp_field(yystack_[2].value.as< std::string > (), yystack_[0].value.as< std::string > ()); }
+#line 793 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 35:
-#line 194 "src/sql.yy" // lalr1.cc:859
-    { driver.sqlp_expr_op(SEO_NEG); }
-#line 815 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 199 "src/sql.yy" // lalr1.cc:859
+    { driver.sqlp_string(yystack_[0].value.as< std::string > ()); }
+#line 799 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 36:
-#line 196 "src/sql.yy" // lalr1.cc:859
-    { driver.sqlp_expr_op(SEO_AND); }
-#line 821 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 201 "src/sql.yy" // lalr1.cc:859
+    { driver.sqlp_number(yystack_[0].value.as< int > ()); }
+#line 805 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 37:
-#line 198 "src/sql.yy" // lalr1.cc:859
-    { driver.sqlp_expr_op(SEO_OR); }
-#line 827 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 203 "src/sql.yy" // lalr1.cc:859
+    { driver.sqlp_float(yystack_[0].value.as< double > ()); }
+#line 811 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 38:
-#line 200 "src/sql.yy" // lalr1.cc:859
-    { driver.sqlp_expr_cmp(yystack_[1].value.as< int > ()); }
-#line 833 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 208 "src/sql.yy" // lalr1.cc:859
+    {}
+#line 817 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 39:
-#line 202 "src/sql.yy" // lalr1.cc:859
-    { driver.sqlp_expr_op(SEO_NOT); }
-#line 839 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 210 "src/sql.yy" // lalr1.cc:859
+    { driver.sqlp_expr_op(SEO_NEG); }
+#line 823 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 40:
-#line 207 "src/sql.yy" // lalr1.cc:859
-    { driver.sqlp_expr_op(SEO_IS_NULL); }
-#line 845 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 212 "src/sql.yy" // lalr1.cc:859
+    { driver.sqlp_expr_op(SEO_AND); }
+#line 829 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 41:
-#line 209 "src/sql.yy" // lalr1.cc:859
+#line 214 "src/sql.yy" // lalr1.cc:859
+    { driver.sqlp_expr_op(SEO_OR); }
+#line 835 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+    break;
+
+  case 42:
+#line 216 "src/sql.yy" // lalr1.cc:859
+    { driver.sqlp_expr_cmp(yystack_[1].value.as< int > ()); }
+#line 841 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+    break;
+
+  case 43:
+#line 218 "src/sql.yy" // lalr1.cc:859
+    { driver.sqlp_expr_op(SEO_NOT); }
+#line 847 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+    break;
+
+  case 44:
+#line 223 "src/sql.yy" // lalr1.cc:859
+    { driver.sqlp_expr_op(SEO_IS_NULL); }
+#line 853 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+    break;
+
+  case 45:
+#line 225 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_expr_op(SEO_IS_NULL); driver.sqlp_expr_op(SEO_NOT); }
-#line 851 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 859 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
 
-#line 855 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 863 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
             default:
               break;
             }
@@ -1106,104 +1114,109 @@ namespace yy {
   }
 
 
-  const signed char SqlParser::yypact_ninf_ = -31;
+  const signed char SqlParser::yypact_ninf_ = -25;
 
   const signed char SqlParser::yytable_ninf_ = -1;
 
   const signed char
   SqlParser::yypact_[] =
   {
-       3,     1,    10,     2,    21,   -31,   -31,   -31,    32,   -31,
-     -31,   -31,    24,    24,     0,   -31,    37,   -31,    40,    41,
-     -31,    36,    38,   -31,    24,    52,   -31,    24,    24,    -9,
-      24,    58,   -31,   -31,   -31,   -31,   -31,    17,    -1,   -31,
-     -31,    48,    26,    43,   -31,   -31,   -31,    61,   -31,    52,
-      24,    45,   -31,    23,   -31,    -4,    49,   -31,   -31,    24,
-      67,    44,    24,   -31,   -31,   -31,    44,   -31
+       3,    13,   -18,     1,    30,   -25,   -25,    48,    11,   -25,
+      47,    49,   -25,    45,   -25,    51,     0,   -25,    20,   -25,
+     -25,    54,    52,    53,    55,   -25,    56,   -25,   -25,   -25,
+     -25,    -2,    31,    34,   -25,   -25,   -25,    58,   -25,    -1,
+      39,    55,    20,    -1,   -25,   -25,   -25,    -1,    -1,   -25,
+      27,    50,   -25,    41,   -25,    12,    57,   -25,    -1,    -1,
+      -5,    -1,    53,    -1,   -25,    33,    28,    43,   -25,   -25,
+      65,    29,    27,   -25,    53,   -25,   -25,   -25,    29,   -25
   };
 
   const unsigned char
   SqlParser::yydefact_[] =
   {
-       0,     0,    34,     0,     0,     6,     4,    19,    29,    31,
-      32,    33,    34,    34,     0,    17,    26,     1,     0,     0,
-       2,     0,    39,    35,    34,     0,    28,    34,    34,     0,
-      34,     0,    20,     5,     3,    30,    18,    26,     8,    21,
-      23,    37,    36,     0,    40,    38,    27,     0,    24,     0,
-      34,    10,    41,    26,    22,     9,     0,     7,    25,    34,
-      11,    14,    34,    15,    16,    12,    14,    13
+       0,     0,    14,     0,     0,     6,     4,     0,     0,     1,
+       0,     0,     2,     0,    27,    32,     0,    25,    29,     5,
+       3,     0,     0,     0,     0,    31,     0,    28,    15,    33,
+      26,    29,    16,     8,     9,    10,    30,     0,    11,     0,
+      18,     0,    29,     0,    35,    36,    37,     0,     0,    34,
+      17,     0,     7,     0,    12,     0,    43,    39,     0,     0,
+       0,     0,     0,     0,    38,    41,    40,     0,    44,    42,
+      19,    22,    13,    45,     0,    23,    24,    20,    22,    21
   };
 
   const signed char
   SqlParser::yypgoto_[] =
   {
-     -31,   -31,    71,   -31,   -31,   -31,   -31,     9,   -31,    53,
-     -31,    27,   -31,   -30,   -12
+     -25,   -25,    70,   -25,   -25,   -25,    35,   -25,   -25,   -25,
+     -25,   -25,    -4,   -25,    59,     5,    -8,   -24
   };
 
   const signed char
   SqlParser::yydefgoto_[] =
   {
-      -1,     3,     4,     5,    51,    57,    60,    65,    14,    15,
-      38,    39,    40,    32,    16
+      -1,     3,     4,     5,    32,    33,    34,    35,     8,    40,
+      52,    70,    77,    16,    17,    27,    49,    50
   };
 
   const unsigned char
   SqlParser::yytable_[] =
   {
-      22,    23,    17,    18,     1,    49,    24,    48,    43,     6,
-      27,    28,    29,     7,    30,    41,    42,    44,    45,     8,
-       9,    10,    11,    58,    47,    25,    26,    12,    50,    20,
-       2,     2,    26,     8,     9,    10,    11,    31,    55,    21,
-      13,    12,    29,    31,    30,    35,    26,    61,    33,    34,
-      66,    27,    28,    29,    13,    30,    30,    31,    27,    28,
-      29,    37,    30,    28,    29,    63,    30,    46,    64,    52,
-      53,    59,    56,    62,    19,    67,    54,    36
+      18,     9,    10,    43,     1,    37,    23,    25,    15,    44,
+      45,    46,    67,     7,    14,    18,    47,    64,    26,    55,
+      15,     6,    68,    56,    57,    24,    58,    59,    60,    25,
+      61,     2,    48,     2,    65,    66,    38,    69,    12,    72,
+      26,    58,    59,    60,    60,    61,    61,    54,    59,    60,
+      75,    61,    13,    76,    71,    19,    21,    20,    22,    28,
+      41,    29,    15,    39,    31,    36,    78,    42,    51,    63,
+      73,    74,    62,    11,    79,    61,    53,     0,     0,     0,
+       0,     0,    30
   };
 
-  const unsigned char
+  const signed char
   SqlParser::yycheck_[] =
   {
-      12,    13,     0,     1,     1,     6,     6,    37,    17,     8,
-      14,    15,    16,     3,    18,    27,    28,    26,    30,     9,
-      10,    11,    12,    53,     7,    25,     9,    17,    29,     8,
-      28,    28,     9,     9,    10,    11,    12,    20,    50,     7,
-      30,    17,    16,    20,    18,     9,     9,    59,     8,     8,
-      62,    14,    15,    16,    30,    18,    18,    20,    14,    15,
-      16,     9,    18,    15,    16,    21,    18,     9,    24,    26,
-       9,    22,    27,     6,     3,    66,    49,    24
+       8,     0,     1,     4,     1,     7,     6,     9,     9,    10,
+      11,    12,    17,    31,     3,    23,    17,     5,    20,    43,
+       9,     8,    27,    47,    48,    25,    14,    15,    16,     9,
+      18,    30,    33,    30,    58,    59,    31,    61,     8,    63,
+      20,    14,    15,    16,    16,    18,    18,    42,    15,    16,
+      21,    18,     4,    24,    62,     8,    11,     8,     7,     5,
+      26,     9,     9,    32,     9,     9,    74,     9,    29,    28,
+      27,     6,    22,     3,    78,    18,    41,    -1,    -1,    -1,
+      -1,    -1,    23
   };
 
   const unsigned char
   SqlParser::yystos_[] =
   {
-       0,     1,    28,    32,    33,    34,     8,     3,     9,    10,
-      11,    12,    17,    30,    39,    40,    45,     0,     1,    33,
-       8,     7,    45,    45,     6,    25,     9,    14,    15,    16,
-      18,    20,    44,     8,     8,     9,    40,     9,    41,    42,
-      43,    45,    45,    17,    26,    45,     9,     7,    44,     6,
-      29,    35,    26,     9,    42,    45,    27,    36,    44,    22,
-      37,    45,     6,    21,    24,    38,    45,    38
+       0,     1,    30,    35,    36,    37,     8,    31,    42,     0,
+       1,    36,     8,     4,     3,     9,    47,    48,    50,     8,
+       8,    11,     7,     6,    25,     9,    20,    49,     5,     9,
+      48,     9,    38,    39,    40,    41,     9,     7,    49,    32,
+      43,    26,     9,     4,    10,    11,    12,    17,    33,    50,
+      51,    29,    44,    40,    49,    51,    51,    51,    14,    15,
+      16,    18,    22,    28,     5,    51,    51,    17,    27,    51,
+      45,    50,    51,    27,     6,    21,    24,    46,    50,    46
   };
 
   const unsigned char
   SqlParser::yyr1_[] =
   {
-       0,    31,    32,    32,    32,    32,    33,    34,    35,    35,
-      36,    36,    37,    37,    38,    38,    38,    39,    39,    39,
-      40,    41,    41,    42,    43,    43,    44,    44,    44,    45,
-      45,    45,    45,    45,    45,    45,    45,    45,    45,    45,
-      45,    45
+       0,    34,    35,    35,    35,    35,    36,    37,    38,    39,
+      39,    40,    40,    41,    42,    42,    43,    43,    44,    44,
+      45,    45,    46,    46,    46,    47,    47,    47,    48,    49,
+      49,    49,    50,    50,    51,    51,    51,    51,    51,    51,
+      51,    51,    51,    51,    51,    51
   };
 
   const unsigned char
   SqlParser::yyr2_[] =
   {
-       0,     2,     2,     3,     2,     3,     1,     6,     0,     2,
-       0,     3,     2,     4,     0,     1,     1,     1,     3,     1,
-       2,     1,     3,     1,     2,     4,     0,     2,     1,     1,
-       3,     1,     1,     1,     0,     2,     3,     3,     3,     2,
-       3,     4
+       0,     2,     2,     3,     2,     3,     1,     7,     1,     1,
+       1,     2,     4,     5,     0,     4,     0,     2,     0,     3,
+       2,     4,     0,     1,     1,     1,     3,     1,     2,     0,
+       2,     1,     1,     3,     1,     1,     1,     1,     3,     2,
+       3,     3,     3,     2,     3,     4
   };
 
 
@@ -1217,21 +1230,22 @@ namespace yy {
   "\",\"", "\".\"", "\";\"", "\"NAME\"", "\"STRING\"", "\"INTNUM\"",
   "\"APPROXNUM\"", "\"BOOL\"", "OP_OR", "OP_AND", "IS", "NOT",
   "COMPARISON", "UMINUS", "AS", "ASC", "BY", "COMMENT", "DESC", "FROM",
-  "NULLX", "ORDER", "SELECT", "WHERE", "\"-\"", "$accept", "stmt_list",
-  "stmt", "select_stmt", "opt_where", "opt_orderby", "orderby_list",
-  "opt_asc_desc", "select_expr_list", "select_expr", "table_references",
-  "table_reference", "table_factor", "opt_as_alias", "expr", YY_NULLPTR
+  "JOIN", "NULLX", "ON", "ORDER", "SELECT", "TOP", "WHERE", "\"-\"",
+  "$accept", "stmt_list", "stmt", "select_stmt", "from_table_reference",
+  "table_reference", "table_name", "join_table", "opt_top", "opt_where",
+  "opt_orderby", "orderby_list", "opt_asc_desc", "select_expr_list",
+  "select_expr", "opt_as_alias", "field_name", "expr", YY_NULLPTR
   };
 
 #if YYDEBUG
   const unsigned char
   SqlParser::yyrline_[] =
   {
-       0,    88,    88,    89,    93,    94,   100,   105,   112,   113,
-     117,   118,   123,   125,   130,   132,   134,   139,   141,   143,
-     148,   152,   154,   159,   163,   165,   170,   171,   173,   180,
-     182,   184,   186,   188,   192,   193,   195,   197,   199,   201,
-     206,   208
+       0,    90,    90,    91,    95,    96,   102,   107,   114,   118,
+     119,   123,   125,   130,   134,   135,   139,   140,   144,   145,
+     150,   152,   157,   159,   161,   166,   168,   170,   175,   180,
+     181,   183,   191,   193,   197,   198,   200,   202,   207,   209,
+     211,   213,   215,   217,   222,   224
   };
 
   // Print the state stack on the debug stream.
@@ -1266,8 +1280,8 @@ namespace yy {
 
 
 } // yy
-#line 1270 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:1167
-#line 218 "src/sql.yy" // lalr1.cc:1168
+#line 1284 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:1167
+#line 234 "src/sql.yy" // lalr1.cc:1168
 
 
 void yy::SqlParser::error(const location_type& l,

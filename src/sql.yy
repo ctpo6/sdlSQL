@@ -65,16 +65,18 @@ class Driver;
 %token COMMENT
 %token DESC
 %token FROM
+%token JOIN
 %token NOT
 %token NULLX
+%token ON
 %token ORDER
 %token SELECT
+%token TOP
 %token WHERE
 
 %type <int> opt_asc_desc
 %type <int> orderby_list
 %type <int> select_expr_list
-%type <int> table_references
 
 %printer { yyoutput << $$; } <*>;
 
@@ -102,11 +104,36 @@ stmt:
     ;
 
 select_stmt:
-    SELECT select_expr_list
-    FROM table_references
+    SELECT opt_top select_expr_list
+    FROM from_table_reference
     opt_where opt_orderby
-        { driver.sqlp_select($2, $4); } ;
+        { driver.sqlp_select($3); } ;
     ;
+
+from_table_reference:
+    table_reference
+        { driver.sqlp_from_table_reference(); }
+
+table_reference:
+    table_name
+|   join_table
+    ;
+
+table_name:
+    NAME opt_as_alias
+        { driver.sqlp_table("", $1); }
+|   NAME "." NAME opt_as_alias
+        { driver.sqlp_table($1, $3); }
+    ;
+
+join_table:
+    table_reference JOIN table_name ON expr   /* inner join */
+        { driver.sqlp_join(); }
+
+opt_top:
+    %empty {}
+|   TOP "(" INTNUM ")"
+        { driver.top($3); }
 
 opt_where:
     %empty {}
@@ -120,9 +147,9 @@ opt_orderby:
     ;
 
 orderby_list:
-    expr opt_asc_desc
+    field_name opt_asc_desc
         { driver.sqlp_order_by($2); $$ = 1; }
-|   orderby_list "," expr opt_asc_desc
+|   orderby_list "," field_name opt_asc_desc
         { driver.sqlp_order_by($4); $$ = $1 + 1; }
     ;
 
@@ -145,26 +172,9 @@ select_expr_list:
     ;
 
 select_expr:
-    expr opt_as_alias
+    field_name opt_as_alias
     ;
 
-table_references:
-    table_reference
-        { $$ = 1; }
-|   table_references "," table_reference
-        { $$ = $1 + 1; }
-    ;
-
-table_reference:
-    table_factor
-    ;
-
-table_factor:
-    NAME opt_as_alias
-        { driver.sqlp_table("", $1); }
-|   NAME "." NAME opt_as_alias
-        { driver.sqlp_table($1, $3); }
-    ;
 
 opt_as_alias:
     %empty {}
@@ -176,11 +186,15 @@ opt_as_alias:
 
    /**** expressions ****/
 
-expr:
+
+field_name:
     NAME
         { driver.sqlp_name($1); }
 |   NAME "." NAME
-        { driver.sqlp_fieldname($1, $3); }
+        { driver.sqlp_field($1, $3); }
+
+expr:
+    field_name
 |   STRING
         { driver.sqlp_string($1); }
 |   INTNUM
@@ -190,6 +204,8 @@ expr:
     ;
 
 expr:
+    "(" expr ")"
+        {}
 |   "-" expr %prec UMINUS
         { driver.sqlp_expr_op(SEO_NEG); }
 |   expr OP_AND expr

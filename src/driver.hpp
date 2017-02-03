@@ -97,17 +97,20 @@ public:
     void sqlp_alias(const std::string& alias);
     void sqlp_expr_cmp(int comp);
     void sqlp_expr_op(enum sqlp_expr_ops op);
-    void sqlp_fieldname(const std::string& db_name, const std::string& name);
+    void sqlp_field(const std::string& db_name, const std::string& name);
     void sqlp_float(double val);
+    void sqlp_from_table_reference();
+    void sqlp_join();
     void sqlp_name(const std::string& name);
     void sqlp_number(int val);
-    void sqlp_order_by(int opts);
+    void sqlp_order_by(int desc);
     void sqlp_order_by_list(int n_list);
-    void sqlp_select(int n_expr, int n_tbl_ref);
+    void sqlp_select(int n_expr);
     void sqlp_select_all();
     void sqlp_stmt();
     void sqlp_string(const std::string& str);
     void sqlp_table(const std::string& db_name, const std::string& name);
+    void top(int num);
     void sqlp_where();
 
     // Error handling.

@@ -796,8 +796,8 @@ namespace yy {
     enum
     {
       yyeof_ = 0,
-      yylast_ = 82,     ///< Last index in yytable_.
-      yynnts_ = 18,  ///< Number of nonterminal symbols.
+      yylast_ = 75,     ///< Last index in yytable_.
+      yynnts_ = 19,  ///< Number of nonterminal symbols.
       yyfinal_ = 9, ///< Termination state number.
       yyterror_ = 1,
       yyerrcode_ = 256,
@@ -888,9 +888,9 @@ namespace yy {
       case 11: // "INTNUM"
       case 13: // "BOOL"
       case 18: // COMPARISON
-      case 45: // orderby_list
-      case 46: // opt_asc_desc
-      case 47: // select_expr_list
+      case 46: // orderby_list
+      case 47: // opt_asc_desc
+      case 48: // select_expr_list
         value.copy< int > (other.value);
         break;
 
@@ -923,9 +923,9 @@ namespace yy {
       case 11: // "INTNUM"
       case 13: // "BOOL"
       case 18: // COMPARISON
-      case 45: // orderby_list
-      case 46: // opt_asc_desc
-      case 47: // select_expr_list
+      case 46: // orderby_list
+      case 47: // opt_asc_desc
+      case 48: // select_expr_list
         value.copy< int > (v);
         break;
 
@@ -1003,9 +1003,9 @@ namespace yy {
       case 11: // "INTNUM"
       case 13: // "BOOL"
       case 18: // COMPARISON
-      case 45: // orderby_list
-      case 46: // opt_asc_desc
-      case 47: // select_expr_list
+      case 46: // orderby_list
+      case 47: // opt_asc_desc
+      case 48: // select_expr_list
         value.template destroy< int > ();
         break;
 
@@ -1044,9 +1044,9 @@ namespace yy {
       case 11: // "INTNUM"
       case 13: // "BOOL"
       case 18: // COMPARISON
-      case 45: // orderby_list
-      case 46: // opt_asc_desc
-      case 47: // select_expr_list
+      case 46: // orderby_list
+      case 47: // opt_asc_desc
+      case 48: // select_expr_list
         value.move< int > (s.value);
         break;
 

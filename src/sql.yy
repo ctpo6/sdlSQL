@@ -115,25 +115,29 @@ from_table_reference:
         { driver.sqlp_from_table_reference(); }
 
 table_reference:
-    table_name
+    table_name_expr
 |   join_table
     ;
 
+table_name_expr:
+    table_name opt_as_alias
+    ;
+
 table_name:
-    NAME opt_as_alias
+    NAME
         { driver.sqlp_table("", $1); }
-|   NAME "." NAME opt_as_alias
+|   NAME "." NAME
         { driver.sqlp_table($1, $3); }
     ;
 
 join_table:
-    table_reference JOIN table_name ON expr   /* inner join */
+    table_reference JOIN table_name_expr ON expr   /* inner join */
         { driver.sqlp_join(); }
 
 opt_top:
     %empty {}
 |   TOP "(" INTNUM ")"
-        { driver.top($3); }
+        { driver.sqlp_top($3); }
 
 opt_where:
     %empty {}

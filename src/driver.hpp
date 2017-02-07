@@ -1,6 +1,9 @@
 #ifndef DRIVER_HPP
 #define DRIVER_HPP
 
+#include "select_context.hpp"
+#include "sql_executor.hpp"
+
 #include "sql.tab.hpp"
 
 #include <map>
@@ -71,6 +74,8 @@ enum sqlp_date_intervals {
 // Conducting the whole scanning and parsing of Calc++.
 class Driver
 {
+    SqlExecutor& exec_;
+
 public:
     std::map<std::string, int> variables;
 
@@ -85,6 +90,10 @@ public:
 
 public:
 
+    explicit Driver(SqlExecutor& e) : exec_(e)
+    {
+    }
+
     // Handling the scanner.
     void scan_begin();
     void scan_end();
@@ -93,11 +102,10 @@ public:
     // Return 0 on success.
     int parse(const std::string& f);
 
-
     void sqlp_alias(const std::string& alias);
     void sqlp_expr_cmp(int comp);
     void sqlp_expr_op(enum sqlp_expr_ops op);
-    void sqlp_field(const std::string& db_name, const std::string& name);
+    void sqlp_field(const std::string& tbl_name, const std::string& col_name);
     void sqlp_float(double val);
     void sqlp_from_table_reference();
     void sqlp_join();
@@ -109,8 +117,8 @@ public:
     void sqlp_select_all();
     void sqlp_stmt();
     void sqlp_string(const std::string& str);
-    void sqlp_table(const std::string& db_name, const std::string& name);
-    void top(int num);
+    void sqlp_table(const std::string& db_name, const std::string& tbl_name);
+    void sqlp_top(int num);
     void sqlp_where();
 
     // Error handling.

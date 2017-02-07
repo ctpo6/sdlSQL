@@ -1,5 +1,7 @@
 #include "driver.hpp"
+#include "sql_executor.hpp"
 
+#include <cstdlib>
 #include <iostream>
 #include <string>
 
@@ -21,11 +23,10 @@ ORDER BY t1.f1;
 */
 
 
-int main (int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-    int res = 0;
-
-    Driver driver;
+    SqlExecutor exec;
+    Driver driver(exec);
 
     int arg_pos = 1;
     for (; arg_pos < argc; ++arg_pos) {
@@ -40,33 +41,19 @@ int main (int argc, char *argv[])
             driver.trace_scanning = true;
             break;
         default:
-            res = 1;
-        }
-
-        if (res)
-            break;
-    }
-
-    if (res) {
-        cerr << "Wrong command line option: " << argv[arg_pos] << endl;
-        return 1;
-    }
-
-    if (arg_pos == argc) {
-        // read from stdin
-        if(!driver.parse(""))
-            cout << driver.result << endl;
-        else
-            res = 1;
-    }
-    else {
-        for (; arg_pos < argc; ++arg_pos) {
-            if(!driver.parse(argv[arg_pos]))
-                cout << driver.result << endl;
-            else
-                res = 1;
+            cerr << "Wrong command line option: " << argv[arg_pos] << endl;
+            exit(1);
         }
     }
 
-    return res;
+    // read from stdin
+    if (driver.parse(arg_pos < argc ? string(argv[arg_pos]) : string()) != 0) {
+        exit(1);
+    }
+
+    if (exec.execute() != 0) {
+        exit(1);
+    }
+
+    return 0;
 }

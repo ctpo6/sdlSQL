@@ -49,7 +49,7 @@
 
 #line 51 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:412
 // Unqualified %code blocks.
-#line 32 "src/sql.yy" // lalr1.cc:413
+#line 34 "src/sql.yy" // lalr1.cc:413
 
 #include "driver.hpp"
 
@@ -251,13 +251,16 @@ namespace yy {
   {
       switch (that.type_get ())
     {
+      case 18: // COMPARISON
+        value.move< ::ExprOperator > (that.value);
+        break;
+
       case 12: // "APPROXNUM"
         value.move< double > (that.value);
         break;
 
       case 11: // "INTNUM"
       case 13: // "BOOL"
-      case 18: // COMPARISON
       case 46: // orderby_list
       case 47: // opt_asc_desc
       case 48: // select_expr_list
@@ -284,13 +287,16 @@ namespace yy {
     state = that.state;
       switch (that.type_get ())
     {
+      case 18: // COMPARISON
+        value.copy< ::ExprOperator > (that.value);
+        break;
+
       case 12: // "APPROXNUM"
         value.copy< double > (that.value);
         break;
 
       case 11: // "INTNUM"
       case 13: // "BOOL"
-      case 18: // COMPARISON
       case 46: // orderby_list
       case 47: // opt_asc_desc
       case 48: // select_expr_list
@@ -340,65 +346,65 @@ namespace yy {
     {
             case 9: // "NAME"
 
-#line 81 "src/sql.yy" // lalr1.cc:636
+#line 83 "src/sql.yy" // lalr1.cc:636
         { yyoutput << yysym.value.template as< std::string > (); }
-#line 346 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
+#line 352 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
         break;
 
       case 10: // "STRING"
 
-#line 81 "src/sql.yy" // lalr1.cc:636
+#line 83 "src/sql.yy" // lalr1.cc:636
         { yyoutput << yysym.value.template as< std::string > (); }
-#line 353 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
+#line 359 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
         break;
 
       case 11: // "INTNUM"
 
-#line 81 "src/sql.yy" // lalr1.cc:636
+#line 83 "src/sql.yy" // lalr1.cc:636
         { yyoutput << yysym.value.template as< int > (); }
-#line 360 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
+#line 366 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
         break;
 
       case 12: // "APPROXNUM"
 
-#line 81 "src/sql.yy" // lalr1.cc:636
+#line 83 "src/sql.yy" // lalr1.cc:636
         { yyoutput << yysym.value.template as< double > (); }
-#line 367 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
+#line 373 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
         break;
 
       case 13: // "BOOL"
 
-#line 81 "src/sql.yy" // lalr1.cc:636
+#line 83 "src/sql.yy" // lalr1.cc:636
         { yyoutput << yysym.value.template as< int > (); }
-#line 374 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
+#line 380 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
         break;
 
       case 18: // COMPARISON
 
-#line 81 "src/sql.yy" // lalr1.cc:636
-        { yyoutput << yysym.value.template as< int > (); }
-#line 381 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
+#line 83 "src/sql.yy" // lalr1.cc:636
+        { yyoutput << yysym.value.template as< ::ExprOperator > (); }
+#line 387 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
         break;
 
       case 46: // orderby_list
 
-#line 81 "src/sql.yy" // lalr1.cc:636
+#line 83 "src/sql.yy" // lalr1.cc:636
         { yyoutput << yysym.value.template as< int > (); }
-#line 388 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
+#line 394 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
         break;
 
       case 47: // opt_asc_desc
 
-#line 81 "src/sql.yy" // lalr1.cc:636
+#line 83 "src/sql.yy" // lalr1.cc:636
         { yyoutput << yysym.value.template as< int > (); }
-#line 395 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
+#line 401 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
         break;
 
       case 48: // select_expr_list
 
-#line 81 "src/sql.yy" // lalr1.cc:636
+#line 83 "src/sql.yy" // lalr1.cc:636
         { yyoutput << yysym.value.template as< int > (); }
-#line 402 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
+#line 408 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
         break;
 
 
@@ -511,13 +517,13 @@ namespace yy {
 
 
     // User initialization code.
-    #line 23 "src/sql.yy" // lalr1.cc:741
+    #line 25 "src/sql.yy" // lalr1.cc:741
 {
   // Initialize the initial location.
   yyla.location.begin.filename = yyla.location.end.filename = &driver.file;
 }
 
-#line 521 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:741
+#line 527 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:741
 
     /* Initialize the stack.  The initial state will be set in
        yynewstate, since the latter expects the semantical and the
@@ -607,13 +613,16 @@ namespace yy {
          when using variants.  */
         switch (yyr1_[yyn])
     {
+      case 18: // COMPARISON
+        yylhs.value.build< ::ExprOperator > ();
+        break;
+
       case 12: // "APPROXNUM"
         yylhs.value.build< double > ();
         break;
 
       case 11: // "INTNUM"
       case 13: // "BOOL"
-      case 18: // COMPARISON
       case 46: // orderby_list
       case 47: // opt_asc_desc
       case 48: // select_expr_list
@@ -643,223 +652,223 @@ namespace yy {
           switch (yyn)
             {
   case 6:
-#line 103 "src/sql.yy" // lalr1.cc:859
+#line 105 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_stmt(); }
-#line 649 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 658 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 7:
-#line 110 "src/sql.yy" // lalr1.cc:859
+#line 112 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_select(yystack_[4].value.as< int > ()); }
-#line 655 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 664 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 8:
-#line 115 "src/sql.yy" // lalr1.cc:859
+#line 117 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_from_table_reference(); }
-#line 661 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 670 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 12:
-#line 128 "src/sql.yy" // lalr1.cc:859
+#line 130 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_table("", yystack_[0].value.as< std::string > ()); }
-#line 667 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 676 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 13:
-#line 130 "src/sql.yy" // lalr1.cc:859
+#line 132 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_table(yystack_[2].value.as< std::string > (), yystack_[0].value.as< std::string > ()); }
-#line 673 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 682 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 14:
-#line 135 "src/sql.yy" // lalr1.cc:859
+#line 137 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_join(); }
-#line 679 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 688 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 15:
-#line 138 "src/sql.yy" // lalr1.cc:859
+#line 140 "src/sql.yy" // lalr1.cc:859
     {}
-#line 685 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 694 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 16:
-#line 140 "src/sql.yy" // lalr1.cc:859
+#line 142 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_top(yystack_[1].value.as< int > ()); }
-#line 691 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 700 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 17:
-#line 143 "src/sql.yy" // lalr1.cc:859
+#line 145 "src/sql.yy" // lalr1.cc:859
     {}
-#line 697 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 706 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 18:
-#line 145 "src/sql.yy" // lalr1.cc:859
+#line 147 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_where(); }
-#line 703 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 712 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 19:
-#line 148 "src/sql.yy" // lalr1.cc:859
+#line 150 "src/sql.yy" // lalr1.cc:859
     {}
-#line 709 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 718 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 20:
-#line 150 "src/sql.yy" // lalr1.cc:859
+#line 152 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_order_by_list(yystack_[0].value.as< int > ()); }
-#line 715 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 724 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 21:
-#line 155 "src/sql.yy" // lalr1.cc:859
+#line 157 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_order_by(yystack_[0].value.as< int > ()); yylhs.value.as< int > () = 1; }
-#line 721 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 730 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 22:
-#line 157 "src/sql.yy" // lalr1.cc:859
+#line 159 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_order_by(yystack_[0].value.as< int > ()); yylhs.value.as< int > () = yystack_[3].value.as< int > () + 1; }
-#line 727 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 736 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 23:
-#line 162 "src/sql.yy" // lalr1.cc:859
+#line 164 "src/sql.yy" // lalr1.cc:859
     { yylhs.value.as< int > () = 0; }
-#line 733 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 742 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 24:
-#line 164 "src/sql.yy" // lalr1.cc:859
+#line 166 "src/sql.yy" // lalr1.cc:859
     { yylhs.value.as< int > () = 0; }
-#line 739 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 748 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 25:
-#line 166 "src/sql.yy" // lalr1.cc:859
+#line 168 "src/sql.yy" // lalr1.cc:859
     { yylhs.value.as< int > () = 1; }
-#line 745 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 754 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 26:
-#line 171 "src/sql.yy" // lalr1.cc:859
+#line 173 "src/sql.yy" // lalr1.cc:859
     { yylhs.value.as< int > () = 1; }
-#line 751 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 760 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 27:
-#line 173 "src/sql.yy" // lalr1.cc:859
+#line 175 "src/sql.yy" // lalr1.cc:859
     {yylhs.value.as< int > () = yystack_[2].value.as< int > () + 1; }
-#line 757 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 766 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 28:
-#line 175 "src/sql.yy" // lalr1.cc:859
+#line 177 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_select_all(); yylhs.value.as< int > () = 1; }
-#line 763 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 772 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 30:
-#line 184 "src/sql.yy" // lalr1.cc:859
+#line 186 "src/sql.yy" // lalr1.cc:859
     {}
-#line 769 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 778 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 31:
-#line 186 "src/sql.yy" // lalr1.cc:859
+#line 188 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_alias(yystack_[0].value.as< std::string > ()); }
-#line 775 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 784 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 32:
-#line 188 "src/sql.yy" // lalr1.cc:859
+#line 190 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_alias(yystack_[0].value.as< std::string > ()); }
-#line 781 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 790 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 33:
-#line 196 "src/sql.yy" // lalr1.cc:859
+#line 198 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_name(yystack_[0].value.as< std::string > ()); }
-#line 787 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 796 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 34:
-#line 198 "src/sql.yy" // lalr1.cc:859
+#line 200 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_field(yystack_[2].value.as< std::string > (), yystack_[0].value.as< std::string > ()); }
-#line 793 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 802 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 36:
-#line 203 "src/sql.yy" // lalr1.cc:859
+#line 205 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_string(yystack_[0].value.as< std::string > ()); }
-#line 799 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 808 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 37:
-#line 205 "src/sql.yy" // lalr1.cc:859
+#line 207 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_number(yystack_[0].value.as< int > ()); }
-#line 805 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 814 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 38:
-#line 207 "src/sql.yy" // lalr1.cc:859
+#line 209 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_float(yystack_[0].value.as< double > ()); }
-#line 811 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 820 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 39:
-#line 212 "src/sql.yy" // lalr1.cc:859
+#line 214 "src/sql.yy" // lalr1.cc:859
     {}
-#line 817 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 826 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 40:
-#line 214 "src/sql.yy" // lalr1.cc:859
-    { driver.sqlp_expr_op(SEO_NEG); }
-#line 823 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 216 "src/sql.yy" // lalr1.cc:859
+    { driver.sqlp_expr_op(ExprOperator::NEG); }
+#line 832 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 41:
-#line 216 "src/sql.yy" // lalr1.cc:859
-    { driver.sqlp_expr_op(SEO_AND); }
-#line 829 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 218 "src/sql.yy" // lalr1.cc:859
+    { driver.sqlp_expr_op(ExprOperator::AND); }
+#line 838 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 42:
-#line 218 "src/sql.yy" // lalr1.cc:859
-    { driver.sqlp_expr_op(SEO_OR); }
-#line 835 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 220 "src/sql.yy" // lalr1.cc:859
+    { driver.sqlp_expr_op(ExprOperator::OR); }
+#line 844 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 43:
-#line 220 "src/sql.yy" // lalr1.cc:859
-    { driver.sqlp_expr_cmp(yystack_[1].value.as< int > ()); }
-#line 841 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 222 "src/sql.yy" // lalr1.cc:859
+    { driver.sqlp_expr_cmp(yystack_[1].value.as< ::ExprOperator > ()); }
+#line 850 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 44:
-#line 222 "src/sql.yy" // lalr1.cc:859
-    { driver.sqlp_expr_op(SEO_NOT); }
-#line 847 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 224 "src/sql.yy" // lalr1.cc:859
+    { driver.sqlp_expr_op(ExprOperator::NOT); }
+#line 856 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 45:
-#line 227 "src/sql.yy" // lalr1.cc:859
-    { driver.sqlp_expr_op(SEO_IS_NULL); }
-#line 853 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 229 "src/sql.yy" // lalr1.cc:859
+    { driver.sqlp_expr_op(ExprOperator::IS_NULL); }
+#line 862 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 46:
-#line 229 "src/sql.yy" // lalr1.cc:859
-    { driver.sqlp_expr_op(SEO_IS_NULL); driver.sqlp_expr_op(SEO_NOT); }
-#line 859 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 231 "src/sql.yy" // lalr1.cc:859
+    { driver.sqlp_expr_op(ExprOperator::IS_NULL); driver.sqlp_expr_op(ExprOperator::NOT); }
+#line 868 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
 
-#line 863 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
+#line 872 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
             default:
               break;
             }
@@ -1239,11 +1248,11 @@ namespace yy {
   const unsigned char
   SqlParser::yyrline_[] =
   {
-       0,    90,    90,    91,    95,    96,   102,   107,   114,   118,
-     119,   123,   127,   129,   134,   138,   139,   143,   144,   148,
-     149,   154,   156,   161,   163,   165,   170,   172,   174,   179,
-     184,   185,   187,   195,   197,   201,   202,   204,   206,   211,
-     213,   215,   217,   219,   221,   226,   228
+       0,    92,    92,    93,    97,    98,   104,   109,   116,   120,
+     121,   125,   129,   131,   136,   140,   141,   145,   146,   150,
+     151,   156,   158,   163,   165,   167,   172,   174,   176,   181,
+     186,   187,   189,   197,   199,   203,   204,   206,   208,   213,
+     215,   217,   219,   221,   223,   228,   230
   };
 
   // Print the state stack on the debug stream.
@@ -1278,8 +1287,8 @@ namespace yy {
 
 
 } // yy
-#line 1282 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:1167
-#line 238 "src/sql.yy" // lalr1.cc:1168
+#line 1291 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:1167
+#line 240 "src/sql.yy" // lalr1.cc:1168
 
 
 void yy::SqlParser::error(const location_type& l,

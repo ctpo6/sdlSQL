@@ -16,13 +16,13 @@ void Driver::sqlp_alias(const std::string& alias)
     exec_.emit(SqlExecutor::EmitOp::AS, string(), alias);
 }
 
-void Driver::sqlp_expr_cmp(int comp)
+void Driver::sqlp_expr_cmp(ExprOperator comp)
 {
-    printf("COMPARISON %d\n", comp);
-    exec_.emit(SqlExecutor::EmitOp::COMPARISON, comp);
+    printf("COMPARISON %d\n", (int)comp);
+    exec_.emit(SqlExecutor::EmitOp::COMPARISON, (int)comp);
 }
 
-void Driver::sqlp_expr_op(enum sqlp_expr_ops op)
+void Driver::sqlp_expr_op(ExprOperator op)
 {
     printf("OPERATOR %d\n", (int)op);
     exec_.emit(SqlExecutor::EmitOp::OPERATOR, (int)op);

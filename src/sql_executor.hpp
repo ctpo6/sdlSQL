@@ -1,12 +1,19 @@
-#ifndef EXECUTOR_HPP
-#define EXECUTOR_HPP
+#ifndef SQL_EXECUTOR_HPP
+#define SQL_EXECUTOR_HPP
+
+#include "sql_executor_types.hpp"
+
+#include <boost/variant.hpp>
 
 #include <deque>
+#include <memory>
 #include <string>
+
 
 class SqlExecutor
 {
 public:
+
     enum class EmitOp
     {
         AS,
@@ -58,11 +65,39 @@ private:
                                        const std::string& name1,
                                        const std::string& name2);
 
+    struct ExpressionNode
+    {
+        // operation or type
+        union
+        {
+            ExprOperator op;
+            ExprOperandType type;
+        } ot;
+
+        boost::variant<int, std::string> value;
+
+        std::unique_ptr<ExpressionNode> left;
+        std::unique_ptr<ExpressionNode> right;
+    };
+
+    using ExpressionNodePtr = std::unique_ptr<ExpressionNode>;
+
+    ExpressionNodePtr where_expr_tree_;
+
+    /*
+     * Only start iterator is really needed, end is for safety check only.
+     */
+    ExpressionNodePtr build_expr_tree(
+            const EmitRecordContainer::iterator start,
+            const EmitRecordContainer::iterator end,
+            EmitRecordContainer::iterator& out);
 
     int walk();
     int walk_order_by(const EmitRecordContainer::iterator start,
                       EmitRecordContainer::iterator& next_part);
-    int walk_where();
+    int walk_where(const EmitRecordContainer::iterator start,
+                   EmitRecordContainer::iterator& next_part);
+
 
     EmitRecordContainer emit_;
 };

@@ -1,4 +1,5 @@
 %{
+#include "sql_executor_types.hpp"
 #include "driver.hpp"
 
 #include "sql.tab.hpp"
@@ -102,17 +103,15 @@ WHERE   { return yy::SqlParser::make_WHERE(loc); }
 "."     { return yy::SqlParser::make_S_DOT(loc); }
 ";"     { return yy::SqlParser::make_S_SEMICOLON(loc); }
 
-"&&"	{ return yy::SqlParser::make_OP_AND(loc); }
+"&&"    { return yy::SqlParser::make_OP_AND(loc); }
 "||"    { return yy::SqlParser::make_OP_OR(loc); }
 
-"="     { return yy::SqlParser::make_COMPARISON(4, loc); }
-"<=>"	{ return yy::SqlParser::make_COMPARISON(12, loc); }
-">="	{ return yy::SqlParser::make_COMPARISON(6, loc); }
-">"     { return yy::SqlParser::make_COMPARISON(2, loc); }
-"<="	{ return yy::SqlParser::make_COMPARISON(5, loc); }
-"<"     { return yy::SqlParser::make_COMPARISON(1, loc); }
-"!="	|
-"<>"	{ return yy::SqlParser::make_COMPARISON(3, loc); }
+"="     { return yy::SqlParser::make_COMPARISON(::ExprOperator::CMP_EQ, loc); }
+">"     { return yy::SqlParser::make_COMPARISON(::ExprOperator::CMP_GT, loc); }
+"<"     { return yy::SqlParser::make_COMPARISON(::ExprOperator::CMP_LT, loc); }
+">="    { return yy::SqlParser::make_COMPARISON(::ExprOperator::CMP_GT_EQ, loc); }
+"<="    { return yy::SqlParser::make_COMPARISON(::ExprOperator::CMP_LT_EQ, loc); }
+"!="    { return yy::SqlParser::make_COMPARISON(::ExprOperator::CMP_NEQ, loc); }
 
         /* functions */
 

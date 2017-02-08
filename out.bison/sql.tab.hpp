@@ -42,11 +42,13 @@
 // //                    "%code requires" blocks.
 #line 12 "src/sql.yy" // lalr1.cc:377
 
+#include "sql_executor_types.hpp"
+
 #include <string>
 
 class Driver;
 
-#line 50 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.hpp" // lalr1.cc:377
+#line 52 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.hpp" // lalr1.cc:377
 
 # include <cassert>
 # include <cstdlib> // std::abort
@@ -123,7 +125,7 @@ class Driver;
 
 
 namespace yy {
-#line 127 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.hpp" // lalr1.cc:377
+#line 129 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.hpp" // lalr1.cc:377
 
 
 
@@ -290,20 +292,22 @@ namespace yy {
     /// An auxiliary type to compute the largest semantic type.
     union union_type
     {
+      // COMPARISON
+      char dummy1[sizeof(::ExprOperator)];
+
       // "APPROXNUM"
-      char dummy1[sizeof(double)];
+      char dummy2[sizeof(double)];
 
       // "INTNUM"
       // "BOOL"
-      // COMPARISON
       // orderby_list
       // opt_asc_desc
       // select_expr_list
-      char dummy2[sizeof(int)];
+      char dummy3[sizeof(int)];
 
       // "NAME"
       // "STRING"
-      char dummy3[sizeof(std::string)];
+      char dummy4[sizeof(std::string)];
 };
 
     /// Symbol semantic values.
@@ -393,6 +397,8 @@ namespace yy {
       /// Constructor for valueless symbols, and symbols from each type.
 
   basic_symbol (typename Base::kind_type t, const location_type& l);
+
+  basic_symbol (typename Base::kind_type t, const ::ExprOperator v, const location_type& l);
 
   basic_symbol (typename Base::kind_type t, const double v, const location_type& l);
 
@@ -533,7 +539,7 @@ namespace yy {
 
     static inline
     symbol_type
-    make_COMPARISON (const int& v, const location_type& l);
+    make_COMPARISON (const ::ExprOperator& v, const location_type& l);
 
     static inline
     symbol_type
@@ -881,13 +887,16 @@ namespace yy {
   {
       switch (other.type_get ())
     {
+      case 18: // COMPARISON
+        value.copy< ::ExprOperator > (other.value);
+        break;
+
       case 12: // "APPROXNUM"
         value.copy< double > (other.value);
         break;
 
       case 11: // "INTNUM"
       case 13: // "BOOL"
-      case 18: // COMPARISON
       case 46: // orderby_list
       case 47: // opt_asc_desc
       case 48: // select_expr_list
@@ -916,13 +925,16 @@ namespace yy {
     (void) v;
       switch (this->type_get ())
     {
+      case 18: // COMPARISON
+        value.copy< ::ExprOperator > (v);
+        break;
+
       case 12: // "APPROXNUM"
         value.copy< double > (v);
         break;
 
       case 11: // "INTNUM"
       case 13: // "BOOL"
-      case 18: // COMPARISON
       case 46: // orderby_list
       case 47: // opt_asc_desc
       case 48: // select_expr_list
@@ -946,6 +958,13 @@ namespace yy {
   SqlParser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t, const location_type& l)
     : Base (t)
     , value ()
+    , location (l)
+  {}
+
+  template <typename Base>
+  SqlParser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t, const ::ExprOperator v, const location_type& l)
+    : Base (t)
+    , value (v)
     , location (l)
   {}
 
@@ -996,13 +1015,16 @@ namespace yy {
     // Type destructor.
     switch (yytype)
     {
+      case 18: // COMPARISON
+        value.template destroy< ::ExprOperator > ();
+        break;
+
       case 12: // "APPROXNUM"
         value.template destroy< double > ();
         break;
 
       case 11: // "INTNUM"
       case 13: // "BOOL"
-      case 18: // COMPARISON
       case 46: // orderby_list
       case 47: // opt_asc_desc
       case 48: // select_expr_list
@@ -1037,13 +1059,16 @@ namespace yy {
     super_type::move(s);
       switch (this->type_get ())
     {
+      case 18: // COMPARISON
+        value.move< ::ExprOperator > (s.value);
+        break;
+
       case 12: // "APPROXNUM"
         value.move< double > (s.value);
         break;
 
       case 11: // "INTNUM"
       case 13: // "BOOL"
-      case 18: // COMPARISON
       case 46: // orderby_list
       case 47: // opt_asc_desc
       case 48: // select_expr_list
@@ -1215,7 +1240,7 @@ namespace yy {
   }
 
   SqlParser::symbol_type
-  SqlParser::make_COMPARISON (const int& v, const location_type& l)
+  SqlParser::make_COMPARISON (const ::ExprOperator& v, const location_type& l)
   {
     return symbol_type (token::TOK_COMPARISON, v, l);
   }
@@ -1307,7 +1332,7 @@ namespace yy {
 
 
 } // yy
-#line 1311 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.hpp" // lalr1.cc:377
+#line 1336 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.hpp" // lalr1.cc:377
 
 
 

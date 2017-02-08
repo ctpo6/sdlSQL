@@ -2,8 +2,15 @@
 
 #include <cassert>
 #include <iostream>
+#include <type_traits>
 
 using namespace std;
+
+
+std::ostream& operator<<(std::ostream& os, const ExprOperator e)
+{
+    return os << static_cast<std::underlying_type<ExprOperator>::type>(e);
+}
 
 
 int SqlExecutor::walk()
@@ -60,7 +67,89 @@ int SqlExecutor::walk()
     }
 
     // WHERE
-    if ()
+    if (ite->op_ == EmitOp::WHERE) {
+        if (walk_where(ite, ite) != 0) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+
+SqlExecutor::ExpressionNodePtr SqlExecutor::build_expr_tree(
+        const EmitRecordContainer::iterator start,
+        const EmitRecordContainer::iterator end,
+        EmitRecordContainer::iterator& out)
+{
+    ExpressionNodePtr node(new ExpressionNode);
+
+    auto it = start;
+    if (it->op_ == EmitOp::OPERATOR || it->op_ == EmitOp::COMPARISON) {
+        node->ot.op = static_cast<ExprOperator>(it->int_);
+
+        --it;
+        assert(it >= end);
+
+        node->right = build_expr_tree(it, end, it);
+
+        // unary
+        if (!(node->ot.op == ExprOperator::NOT
+                || node->ot.op == ExprOperator::NEG
+                || node->ot.op == ExprOperator::IS_NULL)) {
+            node->left = build_expr_tree(it, end, it);
+        }
+    }
+    else {
+        switch (it->op_)
+        {
+        case EmitOp::NAME:
+            node->ot.type = ExprOperandType::REF;
+            node->value = it->name2_;
+            break;
+        case EmitOp::FIELD:
+            node->ot.type = ExprOperandType::REF;
+            node->value = it->name1_ + "." + it->name2_;
+            break;
+        case EmitOp::NUMBER:
+            node->ot.type = ExprOperandType::INT;
+            node->value = it->int_;
+            break;
+        case EmitOp::STRING:
+            node->ot.type = ExprOperandType::STRING;
+            node->value = it->string_;
+            break;
+        default:
+            assert(false && "unexpected EmitOp");
+        }
+
+        --it;
+        assert(it >= end);
+    }
+
+    out = it;
+
+    return node;
+}
+
+
+int SqlExecutor::walk_where(
+        const EmitRecordContainer::iterator start,
+        EmitRecordContainer::iterator& next_part)
+{
+    assert(start->op_ == EmitOp::WHERE);
+    cout << "WHERE" << endl;
+
+    auto it = start - 1;
+    while (it->op_ != EmitOp::FROM) {
+        --it;
+    }
+    assert(start - it > 1);
+
+    next_part = it;
+
+    where_expr_tree_ = build_expr_tree(start - 1, it, it);
+    assert(it == next_part); // check that PN was visited completely
 
     return 0;
 }

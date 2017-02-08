@@ -10,6 +10,8 @@
 
 %code requires
 {
+#include "sql_executor_types.hpp"
+
 #include <string>
 
 class Driver;
@@ -56,7 +58,7 @@ class Driver;
 %left OP_AND
 %nonassoc IS
 %left NOT
-%left <int> COMPARISON /* = <> < > <= >= <=> */
+%left <::ExprOperator> COMPARISON
 %nonassoc UMINUS
 
 %token AS
@@ -211,22 +213,22 @@ expr:
     "(" expr ")"
         {}
 |   "-" expr %prec UMINUS
-        { driver.sqlp_expr_op(SEO_NEG); }
+        { driver.sqlp_expr_op(ExprOperator::NEG); }
 |   expr OP_AND expr
-        { driver.sqlp_expr_op(SEO_AND); }
+        { driver.sqlp_expr_op(ExprOperator::AND); }
 |   expr OP_OR expr
-        { driver.sqlp_expr_op(SEO_OR); }
+        { driver.sqlp_expr_op(ExprOperator::OR); }
 |   expr COMPARISON expr
         { driver.sqlp_expr_cmp($2); }
 |   NOT expr
-        { driver.sqlp_expr_op(SEO_NOT); }
+        { driver.sqlp_expr_op(ExprOperator::NOT); }
     ;
 
 expr:
     expr IS NULLX
-        { driver.sqlp_expr_op(SEO_IS_NULL); }
+        { driver.sqlp_expr_op(ExprOperator::IS_NULL); }
 |   expr IS NOT NULLX
-        { driver.sqlp_expr_op(SEO_IS_NULL); driver.sqlp_expr_op(SEO_NOT); }
+        { driver.sqlp_expr_op(ExprOperator::IS_NULL); driver.sqlp_expr_op(ExprOperator::NOT); }
     ;
 
   /* functions with special syntax */

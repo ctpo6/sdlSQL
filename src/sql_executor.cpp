@@ -2,14 +2,13 @@
 
 #include <cassert>
 #include <iostream>
-#include <type_traits>
 
 using namespace std;
 
 
-std::ostream& operator<<(std::ostream& os, const ExprOperator e)
+int SqlExecutor::execute()
 {
-    return os << static_cast<std::underlying_type<ExprOperator>::type>(e);
+    return walk();
 }
 
 
@@ -71,65 +70,11 @@ int SqlExecutor::walk()
         if (walk_where(ite, ite) != 0) {
             return 1;
         }
+        assert(where_expr_tree_);
+        dump_expr_tree(*where_expr_tree_);
     }
 
     return 0;
-}
-
-
-SqlExecutor::ExpressionNodePtr SqlExecutor::build_expr_tree(
-        const EmitRecordContainer::iterator start,
-        const EmitRecordContainer::iterator end,
-        EmitRecordContainer::iterator& out)
-{
-    ExpressionNodePtr node(new ExpressionNode);
-
-    auto it = start;
-    if (it->op_ == EmitOp::OPERATOR || it->op_ == EmitOp::COMPARISON) {
-        node->ot.op = static_cast<ExprOperator>(it->int_);
-
-        --it;
-        assert(it >= end);
-
-        node->right = build_expr_tree(it, end, it);
-
-        // unary
-        if (!(node->ot.op == ExprOperator::NOT
-                || node->ot.op == ExprOperator::NEG
-                || node->ot.op == ExprOperator::IS_NULL)) {
-            node->left = build_expr_tree(it, end, it);
-        }
-    }
-    else {
-        switch (it->op_)
-        {
-        case EmitOp::NAME:
-            node->ot.type = ExprOperandType::REF;
-            node->value = it->name2_;
-            break;
-        case EmitOp::FIELD:
-            node->ot.type = ExprOperandType::REF;
-            node->value = it->name1_ + "." + it->name2_;
-            break;
-        case EmitOp::NUMBER:
-            node->ot.type = ExprOperandType::INT;
-            node->value = it->int_;
-            break;
-        case EmitOp::STRING:
-            node->ot.type = ExprOperandType::STRING;
-            node->value = it->string_;
-            break;
-        default:
-            assert(false && "unexpected EmitOp");
-        }
-
-        --it;
-        assert(it >= end);
-    }
-
-    out = it;
-
-    return node;
 }
 
 
@@ -195,71 +140,72 @@ int SqlExecutor::walk_order_by(
 }
 
 
-int SqlExecutor::execute()
+SqlExecutor::ExpressionNodePtr SqlExecutor::build_expr_tree(
+        const EmitRecordContainer::iterator start,
+        const EmitRecordContainer::iterator end,
+        EmitRecordContainer::iterator& out)
 {
-    return walk();
+    ExpressionNodePtr node(new ExpressionNode);
+
+    auto it = start;
+    if (it->op_ == EmitOp::OPERATOR || it->op_ == EmitOp::COMPARISON) {
+        node->ot.op = static_cast<ExprOperator>(it->int_);
+
+        --it;
+        assert(it >= end);
+
+        node->right = build_expr_tree(it, end, it);
+
+        // unary
+        if (!(node->ot.op == ExprOperator::NOT
+                || node->ot.op == ExprOperator::NEG
+                || node->ot.op == ExprOperator::IS_NULL)) {
+            node->left = build_expr_tree(it, end, it);
+        }
+    }
+    else {
+        switch (it->op_)
+        {
+        case EmitOp::NAME:
+            node->ot.type = ExprOperandType::REF;
+            node->value = it->name2_;
+            break;
+        case EmitOp::FIELD:
+            node->ot.type = ExprOperandType::REF;
+            node->value = it->name1_ + "." + it->name2_;
+            break;
+        case EmitOp::NUMBER:
+            node->ot.type = ExprOperandType::INT;
+            node->value = it->int_;
+            break;
+        case EmitOp::STRING:
+            node->ot.type = ExprOperandType::STRING;
+            node->value = it->string_;
+            break;
+        default:
+            assert(false && "unexpected EmitOp");
+        }
+
+        --it;
+        assert(it >= end);
+    }
+
+    out = it;
+
+    return node;
 }
 
 
-SqlExecutor::EmitRecord SqlExecutor::make_emit_record(EmitOp op)
+void SqlExecutor::dump_expr_tree(const ExpressionNode& node)
 {
-    EmitRecord e;
-    e.op_ = op;
-    return e;
-}
-
-
-SqlExecutor::EmitRecord SqlExecutor::make_emit_record(
-        EmitOp op,
-        int param)
-{
-    EmitRecord e;
-    e.op_ = op;
-    e.int_ = param;
-    return e;
-}
-
-SqlExecutor::EmitRecord SqlExecutor::make_emit_record(
-        EmitOp op,
-        const std::string& param)
-{
-    EmitRecord e;
-    e.op_ = op;
-    e.string_ = param;
-    return e;
-}
-
-SqlExecutor::EmitRecord SqlExecutor::make_emit_record(
-        EmitOp op,
-        const std::string& name1,
-        const std::string& name2)
-{
-    EmitRecord e;
-    e.op_ = op;
-    e.name1_ = name1;
-    e.name2_ = name2;
-    return e;
-}
-
-
-void SqlExecutor::emit(EmitOp op)
-{
-    emit_.push_back(make_emit_record(op));
-}
-
-void SqlExecutor::emit(EmitOp op, int param)
-{
-    emit_.push_back(make_emit_record(op, param));
-}
-
-void SqlExecutor::emit(EmitOp op, const std::string& param)
-{
-    emit_.push_back(make_emit_record(op, param));
-}
-
-void SqlExecutor::emit(EmitOp op,
-                    const std::string& name1,
-                    const std::string& name2)
-{
-    emit_.push_back(make_emit_record(op, name1, name2));
+    if (!node.right) {
+        // leaf node
+        cout << node.ot.type << ' ' << node.value << endl;
+    }
+    else {
+        cout << "OPERATOR " << node.ot.op << endl;
+        dump_expr_tree(*node.right);
+        if (node.left)
+            dump_expr_tree(*node.left);
+    }
 }

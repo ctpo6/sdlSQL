@@ -5,7 +5,7 @@
 
 enum class ExprOperator
 {
-    NEG,
+    NEG = 0,
     AND,
     OR,
     NOT,
@@ -15,16 +15,22 @@ enum class ExprOperator
     CMP_LT,
     CMP_GT_EQ,
     CMP_LT_EQ,
-    CMP_NEQ
+    CMP_NEQ,
+
+    // add new values above
+    MAX_
 };
 std::ostream& operator<<(std::ostream& os, const ExprOperator e);
 
-
 enum class ExprOperandType
 {
-    REF,
+    REF = 0,
     INT,
-    STRING
+    STRING,
+
+    // add new values above
+    MAX_
 };
+std::ostream& operator<<(std::ostream& os, const ExprOperandType e);
 
 #endif

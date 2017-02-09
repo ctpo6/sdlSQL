@@ -109,6 +109,7 @@ set(SQL1_SRC
     src/driver1.cpp
     src/sql1.cpp
     src/sql_executor.cpp
+    src/sql_executor0.cpp
     )
 
 set(BISON_GENERATED_FILES

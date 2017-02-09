@@ -91,6 +91,7 @@ private:
             const EmitRecordContainer::iterator start,
             const EmitRecordContainer::iterator end,
             EmitRecordContainer::iterator& out);
+    void dump_expr_tree(const ExpressionNode& node);
 
     int walk();
     int walk_order_by(const EmitRecordContainer::iterator start,

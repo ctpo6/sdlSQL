@@ -1,5 +1,8 @@
+#include "database_context.hpp"
 #include "driver.hpp"
 #include "sql_executor.hpp"
+
+#include "dataserver/system/database.h"
 
 #include <cstdlib>
 #include <iostream>
@@ -22,9 +25,24 @@ ORDER BY t1.f1;
 5) IS NULL, IS NOT NULL in WHERE
 */
 
+const char* db_file_path = "sdlSQL.mdf";
+
 
 int main(int argc, char *argv[])
 {
+    sdl::db::database db(db_file_path);
+    if (!db.is_open()) {
+        cerr << "Failed to open database: " << db_file_path << endl;
+        exit(1);
+    }
+
+    cout << "\nDatabase successfully opened: " << db_file_path << "\n\n";
+
+    DatabaseContext db_context(db);
+    db_context.init();
+    db_context.dump_schema();
+    cout << endl;
+
     SqlExecutor exec;
     Driver driver(exec);
 

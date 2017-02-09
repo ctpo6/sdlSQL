@@ -105,6 +105,7 @@ set(SQL1_C_SRC
     )
 
 set(SQL1_SRC
+    src/database_context.cpp
     src/driver.cpp
     src/driver1.cpp
     src/sql1.cpp

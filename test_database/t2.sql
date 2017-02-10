@@ -1,0 +1,2 @@
+select contactname
+from Customers;

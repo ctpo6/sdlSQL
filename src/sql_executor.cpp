@@ -13,7 +13,7 @@ int SqlExecutor::execute()
     if (init_select_context(emit_, ctx_) != 0) {
         return 1;
     }
-    cout << "select context dump:\n";
+    cout << "\nselect context dump:\n";
     ctx_.dump();
 
     return 0;
@@ -21,6 +21,94 @@ int SqlExecutor::execute()
 
 
 int SqlExecutor::init_select_context(
+        const EmitRecordContainer& em,
+        SelectContext& ctx)
+{
+    if (init_select_context1(emit_, ctx_) != 0) {
+        return 1;
+    }
+    if (init_select_context2(db_ctx_, ctx_) != 0) {
+        return 1;
+    }
+    return 0;
+}
+
+
+int SqlExecutor::init_select_context2(
+        const DatabaseContext& db_ctx,
+        SelectContext& ctx)
+{
+    // check existence of tables in FROM and JOIN clauses
+    assert(!ctx.from_tables.empty());
+    for (SymbolReference& r: ctx.from_tables) {
+        if (!db_ctx.has_table(r.t_name)) {
+            cerr << "Error: FROM: table doesn't exist: " << r.t_name << endl;
+            return 1;
+        }
+    }
+
+    string single_table_name = ctx.from_tables.size() == 1 ?
+                ctx.from_tables[0].t_name : string();
+
+    // check SELECT
+    for (SymbolReference& r: ctx.select_columns) {
+        if (r.t_name.empty()) {
+            if (single_table_name.empty()) {
+                cerr << "Error: SELECT: missing table name for column: "
+                     << r.c_name << endl;
+                return 1;
+            }
+            r.t_name = single_table_name;
+        }
+        else {
+            if (ctx.from_tables.find(r.t_name) == ctx.from_tables.end()) {
+                auto it = ctx.from_table_as.find(r.t_name);
+                if (it == ctx.from_table_as.end()) {
+                    cerr << "Error: SELECT: field references unknown table: "
+                         << r.t_name << '.' << r.c_name << endl;
+                    return 1;
+                }
+                // replace alias with real table name
+                r.t_name = ctx.from_tables[it->second].t_name;
+            }
+        }
+
+        if (db_ctx.has_table_column(r.t_name, r.c_name)) {
+            cerr << "Error: SELECT: field references unknown column: "
+                 << r.t_name << '.' << r.c_name << endl;
+            return 1;
+        }
+    }
+
+    // check WHERE
+
+    // check ORDER BY
+    for (SymbolReference& r: ctx.order_by_list) {
+        if (r.t_name.empty()) {
+            auto it = ctx.select_column_as.find(r.c_name);
+            if (it != ctx.select_column_as.end()) {
+                // replace field alias with real table.column
+                r.t_name = ctx.select_columns[it->second].t_name;
+                r.c_name = ctx.select_columns[it->second].c_name;
+            }
+            else {
+                if (single_table_name.empty()) {
+                    cerr << "ERROR: ORDER BY: field reference is ambiguous (table is not specified): "
+                         << r.c_name << endl;
+                    return 1;
+                }
+                r.t_name = single_table_name;
+            }
+        }
+
+        // check r' t_name c_name
+    }
+
+    return 0;
+}
+
+
+int SqlExecutor::init_select_context1(
         const EmitRecordContainer& em,
         SelectContext& ctx)
 {
@@ -48,10 +136,11 @@ int SqlExecutor::init_select_context(
     }
     else {
         for (int i = 0; i < ctx.n_select; ++i) {
-            assert(itb->op_ == EmitOp::FIELD);
+            assert(itb->op_ == EmitOp::FIELD || itb->op_ == EmitOp::NAME);
 
             SymbolReference ref;
-            ref.t_name = itb->name1_;
+            if (itb->op_ == EmitOp::FIELD)
+                ref.t_name = itb->name1_;
             ref.c_name = itb->name2_;
             ctx.select_columns.push_back(std::move(ref));
 
@@ -132,8 +221,7 @@ int SqlExecutor::init_select_context_from(
 
     {
         SymbolReference ref;
-        ref.t_name = itb->name1_;
-        ref.c_name = itb->name2_;
+        ref.t_name = itb->name2_;
         ctx.from_tables.push_back(std::move(ref));
         ++itb;
     }

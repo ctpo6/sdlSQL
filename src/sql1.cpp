@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
     db_context.dump_schema();
     cout << endl;
 
-    SqlExecutor exec;
+    SqlExecutor exec(db_context);
     Driver driver(exec);
 
     int arg_pos = 1;

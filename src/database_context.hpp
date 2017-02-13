@@ -11,8 +11,16 @@ class DatabaseContext
 {
     sdl::db::database& db_;
 
-    using ColumnSet = std::set<std::string>;
-    using TableMap = std::map<std::string, ColumnSet>;
+    // map: name -> order idx
+    using ColumnMap = std::map<std::string, size_t>;
+
+    struct TableInfo
+    {
+        size_t idx;
+        ColumnMap columns;
+    };
+
+    using TableMap = std::map<std::string, TableInfo>;
 
     TableMap schema_;
 
@@ -22,6 +30,11 @@ public:
     void init();
 
     void dump_schema();
+
+    bool has_table(const std::string& table_name) const;
+    bool has_table_column(
+            const std::string& table_name,
+            const std::string& column_name) const;
 };
 
 

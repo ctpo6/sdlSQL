@@ -1,6 +1,7 @@
 #ifndef SQL_EXECUTOR_HPP
 #define SQL_EXECUTOR_HPP
 
+#include "database_context.hpp"
 #include "sql_executor_types.hpp"
 
 #include <boost/variant.hpp>
@@ -14,8 +15,8 @@
 
 class SqlExecutor
 {
+    const DatabaseContext& db_ctx_;
 public:
-
     enum class EmitOp
     {
         AS,
@@ -36,6 +37,11 @@ public:
         SELECT_ALL,
         WHERE,
     };
+
+public:
+    explicit SqlExecutor(const DatabaseContext& db_ctx)
+        : db_ctx_(db_ctx)
+    {}
 
     void emit(EmitOp op);
     void emit(EmitOp op, int param);
@@ -109,14 +115,15 @@ private:
         int n_top;
         int n_select;
 
-        std::vector<SymbolReference> from_tables;
-        std::map<std::string, size_t> from_table_as;
-
         // if empty -> SELECT *
         std::vector<SymbolReference> select_columns;
         std::map<std::string, size_t> select_column_as;
 
+        std::vector<SymbolReference> from_tables;
+        std::map<std::string, size_t> from_table_as;
+
         ExpressionNodePtr where_expr_tree;
+
         std::vector<SymbolReference> order_by_list;
 
         void dump() const;
@@ -136,6 +143,13 @@ private:
     int init_select_context(
             const EmitRecordContainer& em,
             SelectContext& ctx);
+    int init_select_context1(
+            const EmitRecordContainer& em,
+            SelectContext& ctx);
+    int init_select_context2(
+            const DatabaseContext& db_ctx,
+            SelectContext& ctx);
+
     int init_select_context_from(
             const EmitRecordContainer::const_iterator start,
             const EmitRecordContainer::const_iterator end,

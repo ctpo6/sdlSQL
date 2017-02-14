@@ -53,6 +53,7 @@ public:
 private:
     enum : uint32_t {
         F_ORDER_BY_DESC = 0x00000001,
+        F_HAS_ALIAS = 0x80000000,
     };
 
     struct EmitRecord

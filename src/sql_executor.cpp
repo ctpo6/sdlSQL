@@ -50,7 +50,7 @@ int SqlExecutor::init_select_context2(
     string single_table_name = ctx.from_tables.size() == 1 ?
                 ctx.from_tables[0].t_name : string();
 
-    // check SELECT
+    // check identifiers in SELECT
     for (SymbolReference& r: ctx.select_columns) {
         if (r.t_name.empty()) {
             if (single_table_name.empty()) {
@@ -61,19 +61,39 @@ int SqlExecutor::init_select_context2(
             r.t_name = single_table_name;
         }
         else {
-            if (ctx.from_tables.find(r.t_name) == ctx.from_tables.end()) {
-                auto it = ctx.from_table_as.find(r.t_name);
-                if (it == ctx.from_table_as.end()) {
-                    cerr << "Error: SELECT: field references unknown table: "
-                         << r.t_name << '.' << r.c_name << endl;
+            auto it1 = ctx.from_table_as.find(r.t_name);
+            if (it1 == ctx.from_table_as.end()) {
+                auto it2 = find_if(
+                            ctx.from_tables.begin(),
+                            ctx.from_tables.end(),
+                            [&r](const SymbolReference& t)
+                {
+                    /*
+                     * name of the table which have an alias can't be used for
+                     * column reference:
+                     *
+                     * -- error
+                     * select Orders.shipname
+                     * from Orders O;
+                    */
+                    return (t.flags & F_HAS_ALIAS) == 0 &&
+                            t.t_name == r.t_name;
+                });
+                if (it2 == ctx.from_tables.end()) {
+                    cerr << "Error: SELECT: The multi-part identifier '"
+                         << r.t_name << '.' << r.c_name
+                         << "' could not be found" << endl;
                     return 1;
                 }
+
+            }
+            else {
                 // replace alias with real table name
-                r.t_name = ctx.from_tables[it->second].t_name;
+                r.t_name = ctx.from_tables[it1->second].t_name;
             }
         }
 
-        if (db_ctx.has_table_column(r.t_name, r.c_name)) {
+        if (!db_ctx.has_table_column(r.t_name, r.c_name)) {
             cerr << "Error: SELECT: field references unknown column: "
                  << r.t_name << '.' << r.c_name << endl;
             return 1;
@@ -87,11 +107,22 @@ int SqlExecutor::init_select_context2(
         if (r.t_name.empty()) {
             auto it = ctx.select_column_as.find(r.c_name);
             if (it != ctx.select_column_as.end()) {
+                /*
+                 * select shipname as sname
+                 * from Orders O
+                 * order by sname;
+                 */
                 // replace field alias with real table.column
                 r.t_name = ctx.select_columns[it->second].t_name;
                 r.c_name = ctx.select_columns[it->second].c_name;
             }
             else {
+                /*
+                 * select shipname
+                 * from Orders O
+                 * order by shipcountry;
+                 */
+                // if there is a single table in FROM, we can take it's name
                 if (single_table_name.empty()) {
                     cerr << "ERROR: ORDER BY: field reference is ambiguous (table is not specified): "
                          << r.c_name << endl;
@@ -100,8 +131,45 @@ int SqlExecutor::init_select_context2(
                 r.t_name = single_table_name;
             }
         }
+        else {
+            auto it1 = ctx.from_table_as.find(r.t_name);
+            if (it1 != ctx.from_table_as.end()) {
+                /*
+                 * select shipname
+                 * from Orders O
+                 * order by O.shipcountry;
+                 */
+                r.t_name = ctx.from_tables[it1->second].t_name;
+            }
+            else {
+                auto it2 = find_if(
+                            ctx.from_tables.begin(),
+                            ctx.from_tables.end(),
+                            [&r](const SymbolReference& t)
+                {
+                    return (t.flags & F_HAS_ALIAS) == 0 &&
+                            t.t_name == r.t_name;
+                });
+                if (it2 == ctx.from_tables.end()) {
+                    /*
+                     * select shipname
+                     * from Orders O
+                     * order by Orders.shipcountry;
+                     */
+                    cerr << "ERROR: ORDER BY: The multi-part identifier '"
+                         << r.t_name << '.' << r.c_name
+                         << "' could not be found" << endl;
+                    return 1;
+                }
+            }
+        }
 
         // check r' t_name c_name
+        if (!db_ctx.has_table_column(r.t_name, r.c_name)) {
+            cerr << "Error: ORDER BY: field references unknown column: "
+                 << r.t_name << '.' << r.c_name << endl;
+            return 1;
+        }
     }
 
     return 0;
@@ -234,6 +302,7 @@ int SqlExecutor::init_select_context_from(
                  << endl;
             return 1;
         }
+        ctx.from_tables.back().flags |= F_HAS_ALIAS;
         ++itb;
     }
 

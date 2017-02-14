@@ -94,7 +94,8 @@ void SqlExecutor::SelectContext::dump() const
         cout << r.first << ' ' << r.second << endl;
 
     cout << "\nwhere expression:\n";
-    dump_expr_tree(*where_expr_tree);
+    if (where_expr_tree)
+        dump_expr_tree(*where_expr_tree);
 
     cout << "\norder by:\n";
     for (const auto& r: order_by_list)

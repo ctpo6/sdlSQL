@@ -44,6 +44,17 @@ bool DatabaseContext::has_table(
 }
 
 
+bool DatabaseContext::has_table_column(
+        const std::string& table_name,
+        const std::string& column_name) const
+{
+    auto it = schema_.find(table_name);
+    if (it == schema_.end())
+        return false;
+    return it->second.columns.find(column_name) != it->second.columns.end();
+}
+
+
 void DatabaseContext::dump_schema()
 {
     cout << db_.dbi_dbname() << endl;

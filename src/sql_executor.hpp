@@ -4,6 +4,8 @@
 #include "database_context.hpp"
 #include "sql_executor_types.hpp"
 
+#include "dataserver/system/database.h"
+
 #include <boost/variant.hpp>
 
 #include <deque>
@@ -132,6 +134,16 @@ private:
 
     SelectContext ctx_;
 
+    struct ExecutionResult
+    {
+        using record_access = sdl::db::datatable::record_access;
+        std::deque<record_access::iterator> records;
+    };
+
+    ExecutionResult res_;
+
+    int execute1();
+    void dump_result();
 
     /*
      * Only start iterator is really needed, end is for safety check only.
@@ -164,7 +176,6 @@ private:
             EmitRecordContainer::const_iterator& next_part,
             SelectContext& ctx);
 
-    int execute_one();
 };
 
 std::ostream& operator<<(

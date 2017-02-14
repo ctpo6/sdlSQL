@@ -16,7 +16,22 @@ int SqlExecutor::execute()
     cout << "\nselect context dump:\n";
     ctx_.dump();
 
+    if (execute1() != 0) {
+        return 1;
+    }
+
     return 0;
+}
+
+
+int SqlExecutor::execute1()
+{
+    return 0;
+}
+
+
+void SqlExecutor::dump_result()
+{
 }
 
 

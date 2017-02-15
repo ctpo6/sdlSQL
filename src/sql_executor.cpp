@@ -36,6 +36,10 @@ int SqlExecutor::execute1()
     {
         res_.records.push_back(it);
     }
+
+    if (ctx_.n_top)
+        res_.records.resize(ctx_.n_top);
+
     return 0;
 }
 

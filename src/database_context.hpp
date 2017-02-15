@@ -6,6 +6,7 @@
 #include <map>
 #include <set>
 #include <string>
+#include <vector>
 
 class DatabaseContext
 {
@@ -40,7 +41,16 @@ public:
      * Throws:
      * std::invalid_argument    Database doesn't have table with table_name.
      */
-    const sdl::db::datatable& get_table(const std::string& table_name) const;
+    const sdl::db::datatable& get_table(
+            const std::string& table_name) const;
+
+    /*
+     * Throws:
+     * std::invalid_argument    Database doesn't have table with table_name.
+     */
+    std::vector<std::string> get_table_column_names(
+            const std::string& table_name) const;
+
 };
 
 

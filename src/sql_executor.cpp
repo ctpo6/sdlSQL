@@ -205,6 +205,18 @@ int SqlExecutor::init_select_context2(
         }
     }
 
+    // SELECTALL
+    if (ctx.select_columns.empty()) {
+        const string& t_name = ctx.from_tables[0].t_name;
+        vector<string> c_names = db_ctx.get_table_column_names(t_name);
+        for (auto& s: c_names) {
+            SymbolReference r;
+            r.t_name = t_name;
+            r.c_name = std::move(s);
+            ctx.select_columns.push_back(std::move(r));
+        }
+    }
+
     return 0;
 }
 

@@ -62,6 +62,19 @@ const sdl::db::datatable& DatabaseContext::get_table(
 }
 
 
+std::vector<std::string> DatabaseContext::get_table_column_names(
+        const std::string& table_name) const
+{
+    const sdl::db::datatable& table = get_table(table_name);
+    vector<string> result;
+    result.reserve(table.ut().size());
+    for (auto const& col: table.ut()) {
+        result.push_back(col.name);
+    }
+    return result;
+}
+
+
 bool DatabaseContext::has_table_column(
         const std::string& table_name,
         const std::string& column_name) const noexcept

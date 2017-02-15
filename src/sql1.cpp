@@ -4,6 +4,7 @@
 
 #include "dataserver/system/database.h"
 
+#include <clocale>
 #include <cstdlib>
 #include <iostream>
 #include <string>
@@ -30,6 +31,8 @@ const char* db_file_path = "sdlSQL.mdf";
 
 int main(int argc, char *argv[])
 {
+    std::setlocale(LC_ALL, "en_US.utf8");
+
     sdl::db::database db(db_file_path);
     if (!db.is_open()) {
         cerr << "Failed to open database: " << db_file_path << endl;

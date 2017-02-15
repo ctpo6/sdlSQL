@@ -138,6 +138,8 @@ private:
     {
         using record_access = sdl::db::datatable::record_access;
         std::deque<record_access::iterator> records;
+
+
     };
 
     ExecutionResult res_;

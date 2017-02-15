@@ -49,7 +49,33 @@ void SqlExecutor::dump_result()
     }
     cout << endl;
 
-    cout << res_.records.size() << " row(s)" << endl;
+    // map: column position in datatable record -> select position
+    map<size_t, size_t> idx_map;
+    for (size_t i = 0; i < ctx_.select_columns.size(); ++i) {
+        size_t col_pos = db_ctx_.get_column_position(
+                    ctx_.select_columns[i].t_name,
+                    ctx_.select_columns[i].c_name);
+        idx_map[col_pos] = i;
+    }
+
+    for (auto record_it: res_.records) {
+        const auto record = *record_it;
+
+        vector<string> res_str(ctx_.select_columns.size());
+        for (auto it = idx_map.begin();
+             it != idx_map.end();
+             ++it)
+        {
+            res_str[it->second] = record.type_col_utf8(it->first);
+        }
+
+        for (const string& s: res_str) {
+            cout << s << ' ';
+        }
+        cout << endl;
+    }
+
+    cout << '\n' << res_.records.size() << " row(s)" << endl;
 }
 
 

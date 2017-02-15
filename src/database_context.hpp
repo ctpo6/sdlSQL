@@ -51,6 +51,13 @@ public:
     std::vector<std::string> get_table_column_names(
             const std::string& table_name) const;
 
+    /*
+     * Throws:
+     * std::invalid_argument    Database doesn't have specified column.
+     */
+    size_t get_column_position(
+            const std::string& table_name,
+            const std::string& column_name) const;
 };
 
 

@@ -75,6 +75,21 @@ std::vector<std::string> DatabaseContext::get_table_column_names(
 }
 
 
+size_t DatabaseContext::get_column_position(
+        const std::string& table_name,
+        const std::string& column_name) const
+{
+    size_t pos;
+    try {
+        pos = schema_.at(table_name).columns.at(column_name);
+    }
+    catch (const std::out_of_range&) {
+        throw std::invalid_argument("table or column not found");
+    }
+    return pos;
+}
+
+
 bool DatabaseContext::has_table_column(
         const std::string& table_name,
         const std::string& column_name) const noexcept

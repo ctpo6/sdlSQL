@@ -20,18 +20,36 @@ int SqlExecutor::execute()
         return 1;
     }
 
+    dump_result();
+
     return 0;
 }
 
 
 int SqlExecutor::execute1()
 {
+    const sdl::db::datatable& table = db_ctx_.get_table(
+                ctx_.from_tables[0].t_name);
+    for (auto it = table._record.begin();
+         it != table._record.end();
+         ++it)
+    {
+        res_.records.push_back(it);
+    }
     return 0;
 }
 
 
 void SqlExecutor::dump_result()
 {
+    cout << "\nResult:\n";
+
+    for (const SymbolReference& r: ctx_.select_columns) {
+        cout << r.t_name << '.' << r.c_name << ' ';
+    }
+    cout << endl;
+
+    cout << res_.records.size() << " row(s)" << endl;
 }
 
 

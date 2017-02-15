@@ -1,9 +1,12 @@
 #include "database_context.hpp"
 
+#include <cassert>
 #include <iostream>
+#include <stdexcept>
 #include <utility>
 
 using namespace std;
+
 
 DatabaseContext::DatabaseContext(sdl::db::database& db)
     : db_(db)
@@ -38,15 +41,30 @@ void DatabaseContext::init()
 
 
 bool DatabaseContext::has_table(
-        const std::string& table_name) const
+        const std::string& table_name) const noexcept
 {
     return schema_.find(table_name) != schema_.end();
 }
 
 
+const sdl::db::datatable& DatabaseContext::get_table(
+        const std::string& table_name) const
+{
+    if (!has_table(table_name))
+        throw std::invalid_argument("table not found");
+    for (auto const& ptable: db_._datatables) {
+        if (ptable->name() == table_name) {
+            return *ptable;
+        }
+    }
+    assert(false && "table not found");
+    throw std::invalid_argument("table not found");
+}
+
+
 bool DatabaseContext::has_table_column(
         const std::string& table_name,
-        const std::string& column_name) const
+        const std::string& column_name) const noexcept
 {
     auto it = schema_.find(table_name);
     if (it == schema_.end())

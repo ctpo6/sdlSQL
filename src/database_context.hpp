@@ -31,10 +31,16 @@ public:
 
     void dump_schema();
 
-    bool has_table(const std::string& table_name) const;
+    bool has_table(const std::string& table_name) const noexcept;
     bool has_table_column(
             const std::string& table_name,
-            const std::string& column_name) const;
+            const std::string& column_name) const noexcept;
+
+    /*
+     * Throws:
+     * std::invalid_argument    Database doesn't have table with table_name.
+     */
+    const sdl::db::datatable& get_table(const std::string& table_name) const;
 };
 
 

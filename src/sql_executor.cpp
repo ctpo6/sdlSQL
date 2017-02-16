@@ -50,6 +50,7 @@ void SqlExecutor::execute_order_by()
 
     struct comparer
     {
+        // pairs: <col_idx, asc/desc flag>
         vector<pair<size_t, bool>> order_list;
 
         comparer(DatabaseContext const& db_ctx,

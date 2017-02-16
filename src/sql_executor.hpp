@@ -3,10 +3,9 @@
 
 #include "database_context.hpp"
 #include "sql_executor_types.hpp"
+#include "types.hpp"
 
 #include "dataserver/system/database.h"
-
-#include <boost/variant.hpp>
 
 #include <deque>
 #include <iostream>
@@ -103,7 +102,7 @@ private:
             ExprOperandType type;
         } ot;
 
-        boost::variant<int, std::string, SymbolReference> value;
+        sdl::sql::variant<int, std::string, SymbolReference> value;
 
         std::unique_ptr<ExpressionNode> left;
         std::unique_ptr<ExpressionNode> right;
@@ -138,8 +137,6 @@ private:
     {
         using record_access = sdl::db::datatable::record_access;
         std::deque<record_access::iterator> records;
-
-
     };
 
     ExecutionResult res_;

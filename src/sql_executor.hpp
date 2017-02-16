@@ -136,12 +136,14 @@ private:
     struct ExecutionResult
     {
         using record_access = sdl::db::datatable::record_access;
-        std::deque<record_access::iterator> records;
+        using record_iterator = record_access::iterator;
+        std::deque<record_iterator> records;
     };
 
     ExecutionResult res_;
 
-    int execute1();
+    void execute1();
+    void execute_order_by();
     void dump_result();
 
     /*

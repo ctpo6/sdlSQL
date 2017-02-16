@@ -1,5 +1,6 @@
 #include "sql_executor.hpp"
 
+#include <algorithm>
 #include <cassert>
 #include <iostream>
 #include <utility>
@@ -16,9 +17,7 @@ int SqlExecutor::execute()
     cout << "\nselect context dump:\n";
     ctx_.dump();
 
-    if (execute1() != 0) {
-        return 1;
-    }
+    execute1();
 
     dump_result();
 
@@ -26,7 +25,7 @@ int SqlExecutor::execute()
 }
 
 
-int SqlExecutor::execute1()
+void SqlExecutor::execute1()
 {
     const sdl::db::datatable& table = db_ctx_.get_table(
                 ctx_.from_tables[0].t_name);
@@ -37,10 +36,63 @@ int SqlExecutor::execute1()
         res_.records.push_back(it);
     }
 
+    execute_order_by();
+
     if (ctx_.n_top)
         res_.records.resize(ctx_.n_top);
+}
 
-    return 0;
+
+void SqlExecutor::execute_order_by()
+{
+    if (ctx_.order_by_list.empty())
+        return;
+
+    struct comparer
+    {
+        vector<pair<size_t, bool>> order_list;
+
+        comparer(DatabaseContext const& db_ctx,
+                 vector<SymbolReference> const& ol) :
+            order_list(ol.size())
+        {
+            for (size_t i = 0; i < order_list.size(); ++i) {
+                order_list[i].first = db_ctx.get_column_position(
+                            ol[i].t_name,
+                            ol[i].c_name);
+                order_list[i].second = (ol[i].flags & F_ORDER_BY_DESC) != 0;
+            }
+        }
+
+        bool operator()(ExecutionResult::record_iterator it1,
+                        ExecutionResult::record_iterator it2)
+        {
+            for (size_t i = 0; i < order_list.size(); ++i) {
+                size_t col_idx = order_list[i].first;
+                sdl::sql::Value v1 = sdl::sql::make_value(*it1, col_idx);
+                sdl::sql::Value v2 = sdl::sql::make_value(*it2, col_idx);
+
+                bool desc = order_list[i].second;
+                if (!desc) {
+                    if (v1 < v2)
+                        return true;
+                    else if (v1 > v2)
+                        return false;
+                }
+                else {
+                    if (v1 > v2)
+                        return true;
+                    else if (v1 > v2)
+                        return false;
+                }
+
+            }
+            return false;   // *it1 == *it2
+        }
+    }
+    custom_less(db_ctx_, ctx_.order_by_list);
+
+    std::sort(res_.records.begin(), res_.records.end(), custom_less);
 }
 
 

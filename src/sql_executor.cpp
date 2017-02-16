@@ -46,9 +46,6 @@ int SqlExecutor::execute1()
 
 void SqlExecutor::dump_result()
 {
-    using Value = sdl::sql::Value;
-    using scalartype = sdl::db::scalartype;
-
     cout << "\nResult:\n";
 
     for (const SymbolReference& r: ctx_.select_columns) {
@@ -56,59 +53,16 @@ void SqlExecutor::dump_result()
     }
     cout << endl;
 
-    // map: column position in datatable record -> select position
-    map<size_t, size_t> idx_map;
+    vector<size_t> col_idx(ctx_.select_columns.size());
     for (size_t i = 0; i < ctx_.select_columns.size(); ++i) {
-        size_t col_pos = db_ctx_.get_column_position(
+        col_idx[i] = db_ctx_.get_column_position(
                     ctx_.select_columns[i].t_name,
                     ctx_.select_columns[i].c_name);
-        idx_map[col_pos] = i;
     }
 
     for (auto record_it: res_.records) {
-        const auto record = *record_it;
-
-        vector<Value> res_value(ctx_.select_columns.size());
-
-        for (auto it = idx_map.begin();
-             it != idx_map.end();
-             ++it)
-        {
-            Value value;
-
-            auto const& col = record.usercol(it->first);
-            if (col.is_fixed()) {
-                switch (col.type) {
-                case scalartype::t_int:
-                    value = static_cast<int32_t>(
-                                *record.cast_fixed_col<scalartype::t_int>(it->first));
-                    break;
-                case scalartype::t_char:
-                case scalartype::t_nchar:
-                    value = record.type_col_utf8(it->first);
-                    break;
-                default:
-                    assert(false && "column type is not supported");
-                }
-            }
-            else {
-                switch (col.type) {
-                case scalartype::t_text:
-                case scalartype::t_varchar:
-                case scalartype::t_ntext:
-                case scalartype::t_nvarchar:
-                    value = record.type_col_utf8(it->first);
-                    break;
-                default:
-                    assert(false && "column type is not supported");
-                }
-            }
-
-            res_value[it->second] = std::move(value);
-        }
-
-        for (const auto& v: res_value) {
-            cout << v << ' ';
+        for (size_t idx: col_idx) {
+            cout << sdl::sql::make_value(*record_it, idx) << ' ';
         }
         cout << endl;
     }

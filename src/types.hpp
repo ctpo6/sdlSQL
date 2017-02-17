@@ -14,7 +14,7 @@ namespace sdl { namespace sql {
 template <typename... T>
 using variant = boost::variant<T...>;
 
-using Value = variant<int32_t, std::string>;
+using Value = variant<bool, int32_t, std::string>;
 
 Value make_value(
         sdl::db::datatable::record_type const& record,

@@ -96,13 +96,16 @@ private:
     struct ExpressionNode
     {
         // operation or type
+        // if node is a leaf, then op is used; otherwise type
+        // leaf node has left,right == nullptr; effectively only right must
+        // be checked
         union
         {
             ExprOperator op;
             ExprOperandType type;
         } ot;
 
-        sdl::sql::variant<int, std::string, SymbolReference> value;
+        sdl::sql::variant<sdl::sql::Value, SymbolReference> value;
 
         std::unique_ptr<ExpressionNode> left;
         std::unique_ptr<ExpressionNode> right;
@@ -125,6 +128,7 @@ private:
         std::map<std::string, size_t> from_table_as;
 
         ExpressionNodePtr where_expr_tree;
+        std::deque<size_t> where_symbol_table;
 
         std::vector<SymbolReference> order_by_list;
 
@@ -160,9 +164,6 @@ private:
     int init_select_context1(
             const EmitRecordContainer& em,
             SelectContext& ctx);
-    int init_select_context2(
-            const DatabaseContext& db_ctx,
-            SelectContext& ctx);
 
     int init_select_context_from(
             const EmitRecordContainer::const_iterator start,
@@ -177,6 +178,18 @@ private:
             EmitRecordContainer::const_iterator& next_part,
             SelectContext& ctx);
 
+    int check_select_context(
+            const DatabaseContext& db_ctx,
+            SelectContext& ctx);
+    int check_select_context_select(
+            const DatabaseContext& db_ctx,
+            SelectContext& ctx);
+    int check_select_context_where(
+            const DatabaseContext& db_ctx,
+            SelectContext& ctx);
+    int check_select_context_order_by(
+            const DatabaseContext& db_ctx,
+            SelectContext& ctx);
 };
 
 std::ostream& operator<<(

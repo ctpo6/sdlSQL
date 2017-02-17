@@ -131,14 +131,14 @@ int SqlExecutor::init_select_context(
     if (init_select_context1(emit_, ctx_) != 0) {
         return 1;
     }
-    if (init_select_context2(db_ctx_, ctx_) != 0) {
+    if (check_select_context(db_ctx_, ctx_) != 0) {
         return 1;
     }
     return 0;
 }
 
 
-int SqlExecutor::init_select_context2(
+int SqlExecutor::check_select_context(
         const DatabaseContext& db_ctx,
         SelectContext& ctx)
 {
@@ -151,18 +151,46 @@ int SqlExecutor::init_select_context2(
         }
     }
 
-    string single_table_name = ctx.from_tables.size() == 1 ?
-                ctx.from_tables[0].t_name : string();
+    if (check_select_context_select(db_ctx, ctx) != 0)
+        return 1;
 
+    // check WHERE
+    if (check_select_context_where(db_ctx, ctx) != 0)
+        return 1;
+
+    // check ORDER BY
+    if (check_select_context_order_by(db_ctx, ctx) != 0)
+        return 1;
+
+    // SELECTALL
+    if (ctx.select_columns.empty()) {
+        const string& t_name = ctx.from_tables[0].t_name;
+        vector<string> c_names = db_ctx.get_table_column_names(t_name);
+        for (auto& s: c_names) {
+            SymbolReference r;
+            r.t_name = t_name;
+            r.c_name = std::move(s);
+            ctx.select_columns.push_back(std::move(r));
+        }
+    }
+
+    return 0;
+}
+
+
+int SqlExecutor::check_select_context_select(
+        const DatabaseContext& db_ctx,
+        SelectContext& ctx)
+{
     // check identifiers in SELECT
     for (SymbolReference& r: ctx.select_columns) {
         if (r.t_name.empty()) {
-            if (single_table_name.empty()) {
+            if (ctx.from_tables.size() > 1) {
                 cerr << "Error: SELECT: missing table name for column: "
                      << r.c_name << endl;
                 return 1;
             }
-            r.t_name = single_table_name;
+            r.t_name = ctx.from_tables[0].t_name;
         }
         else {
             auto it1 = ctx.from_table_as.find(r.t_name);
@@ -189,7 +217,6 @@ int SqlExecutor::init_select_context2(
                          << "' could not be found" << endl;
                     return 1;
                 }
-
             }
             else {
                 // replace alias with real table name
@@ -204,9 +231,23 @@ int SqlExecutor::init_select_context2(
         }
     }
 
-    // check WHERE
+    return 0;
+}
 
-    // check ORDER BY
+
+int SqlExecutor::check_select_context_where(
+        const DatabaseContext& db_ctx,
+        SelectContext& ctx)
+{
+
+    return 0;
+}
+
+
+int SqlExecutor::check_select_context_order_by(
+        const DatabaseContext& db_ctx,
+        SelectContext& ctx)
+{
     for (SymbolReference& r: ctx.order_by_list) {
         if (r.t_name.empty()) {
             auto it = ctx.select_column_as.find(r.c_name);
@@ -223,16 +264,16 @@ int SqlExecutor::init_select_context2(
             else {
                 /*
                  * select shipname
-                 * from Orders O
+                 * from Orders
                  * order by shipcountry;
                  */
                 // if there is a single table in FROM, we can take it's name
-                if (single_table_name.empty()) {
+                if (ctx.from_tables.size() > 1) {
                     cerr << "ERROR: ORDER BY: field reference is ambiguous (table is not specified): "
                          << r.c_name << endl;
                     return 1;
                 }
-                r.t_name = single_table_name;
+                r.t_name = ctx.from_tables[0].t_name;
             }
         }
         else {
@@ -276,18 +317,6 @@ int SqlExecutor::init_select_context2(
         }
     }
 
-    // SELECTALL
-    if (ctx.select_columns.empty()) {
-        const string& t_name = ctx.from_tables[0].t_name;
-        vector<string> c_names = db_ctx.get_table_column_names(t_name);
-        for (auto& s: c_names) {
-            SymbolReference r;
-            r.t_name = t_name;
-            r.c_name = std::move(s);
-            ctx.select_columns.push_back(std::move(r));
-        }
-    }
-
     return 0;
 }
 
@@ -315,6 +344,7 @@ int SqlExecutor::init_select_context1(
         ++itb;
     }
 
+    // SELECT
     if (ctx.n_select == 1 && itb->op_ == EmitOp::SELECT_ALL) {
         ++itb;
     }
@@ -434,7 +464,6 @@ int SqlExecutor::init_select_context_where(
         SelectContext& ctx)
 {
     assert(start->op_ == EmitOp::WHERE);
-//    cout << "WHERE" << endl;
 
     auto it = start - 1;
     while (it->op_ != EmitOp::FROM) {

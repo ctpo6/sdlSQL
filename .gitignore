@@ -3,12 +3,14 @@ build.qtcreator/
 
 *.pyc
 *.pyo
+
 *.cpp.1
 *.h.1
 *.hpp.1
 
 # QtCreator
 CMakeLists.txt.user
+*.autosave
 
 # Visual Studio Code
 .vscode/

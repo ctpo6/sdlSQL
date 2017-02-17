@@ -86,6 +86,7 @@ private:
         std::string t_name; // table or table alias
         std::string c_name; // column or column alias
 
+        // where_expr_tree: idx of entry in where_id_col_idx
         size_t idx = static_cast<size_t>(-1);
 
         uint32_t flags = 0;
@@ -128,6 +129,9 @@ private:
         std::map<std::string, size_t> from_table_as;
 
         ExpressionNodePtr where_expr_tree;
+
+        // yes, it's not actually a symbol table for now
+        // column idx for each id found in WHERE expression
         std::deque<size_t> where_symbol_table;
 
         std::vector<SymbolReference> order_by_list;
@@ -190,6 +194,17 @@ private:
     int check_select_context_order_by(
             const DatabaseContext& db_ctx,
             SelectContext& ctx);
+
+    /*
+     * Return:
+     * 0 - ok
+     * 1 - error
+     */
+    int check_where_expr(
+            const DatabaseContext& db_ctx,
+            SelectContext& ctx,
+            ExpressionNode* node,
+            sdl::sql::ValueType& expr_type);
 };
 
 std::ostream& operator<<(

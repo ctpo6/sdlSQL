@@ -239,6 +239,209 @@ int SqlExecutor::check_select_context_where(
         const DatabaseContext& db_ctx,
         SelectContext& ctx)
 {
+    // WHERE isn't specified
+    if (!ctx.where_expr_tree)
+        return 0;
+
+    sdl::sql::ValueType et;
+    if (check_where_expr(db_ctx, ctx, ctx.where_expr_tree.get(), et) != 0)
+        return 1;
+
+    if (et != sdl::sql::ValueType::BOOL) {
+        cerr << "ERROR: WHERE: the expression result type is not boolean"
+             << endl;
+        return 1;
+    }
+
+    return 0;
+}
+
+
+int SqlExecutor::check_where_expr(
+        const DatabaseContext& db_ctx,
+        SelectContext& ctx,
+        ExpressionNode* node,
+        sdl::sql::ValueType& expr_type)
+{
+    using sdl::sql::Value;
+    using sdl::sql::ValueType;
+
+    assert(node);
+
+    if (!node->right) {
+        // leaf node
+
+        if (node->ot.type == ExprOperandType::REF) {
+            // column identifier
+
+            SymbolReference& r = boost::get<SymbolReference>(node->value);
+
+            // first check identifier
+
+            if (r.t_name.empty()) {
+                /*
+                 * select *
+                 * from Orders
+                 * where shipcountry = 'Brazil';
+                 */
+                if (ctx.from_tables.size() > 1) {
+                    cerr << "Error: WHERE: identifier could not be found: "
+                         << r.c_name << endl;
+                    return 1;
+                }
+                r.t_name = ctx.from_tables[0].t_name;
+            }
+            else {
+                auto it1 = ctx.from_table_as.find(r.t_name);
+                if (it1 != ctx.from_table_as.end()) {
+                    /*
+                     * select *
+                     * from Orders O
+                     * where O.shipcountry = 'Brazil';
+                     */
+                    r.t_name = ctx.from_tables[it1->second].t_name;
+                }
+                else {
+                    auto it2 = find_if(
+                                ctx.from_tables.begin(),
+                                ctx.from_tables.end(),
+                                [&r](const SymbolReference& t)
+                    {
+                        return (t.flags & F_HAS_ALIAS) == 0 &&
+                                t.t_name == r.t_name;
+                    });
+                    if (it2 == ctx.from_tables.end()) {
+                        /*
+                         * select shipname
+                         * from Orders O
+                         * where Orders.shipcountry = 'Brazil';
+                         */
+                        cerr << "Error: WHERE: identifier could not be found: "
+                             << r.t_name << '.' << r.c_name << endl;
+                        return 1;
+                    }
+                }
+            }
+
+            // check r' t_name c_name
+            if (!db_ctx.has_table_column(r.t_name, r.c_name)) {
+                cerr << "Error: WHERE: table column not found: "
+                     << r.t_name << '.' << r.c_name << endl;
+                return 1;
+            }
+
+            // add to symbol table; not it contains only column indexes
+
+            // TODO
+            // now, for simplicity, don't check duplicates
+            size_t col_idx = db_ctx.get_column_position(r.t_name, r.c_name);
+            r.idx = ctx.where_symbol_table.size();
+            ctx.where_symbol_table.push_back(col_idx);
+
+            ValueType type = db_ctx.get_column_value_type(
+                        r.t_name, r.c_name);
+            assert(type != ValueType::UNKNOWN && "data type is not supported");
+
+            expr_type = type;
+        }
+        else {
+            // constant value
+
+            switch (node->ot.type) {
+            case ExprOperandType::INT:
+                assert(boost::get<Value>(node->value).which() ==
+                                (int)ValueType::INT32_T);
+                expr_type = ValueType::INT32_T;
+                break;
+            case ExprOperandType::STRING:
+                assert(boost::get<Value>(node->value).which() ==
+                                (int)ValueType::STRING);
+                expr_type = ValueType::STRING;
+                break;
+            default:
+                assert(false && "unexpected");
+            }
+        }
+    }
+    else {
+        // operation
+
+        auto op = node->ot.op;
+
+        bool unary =
+                op == ExprOperator::NEG
+                || op == ExprOperator::NOT;
+        assert(!(unary && node->left));
+
+        ValueType et_right;
+        if (check_where_expr(db_ctx, ctx, node->right.get(), et_right) != 0)
+            return 1;
+
+        bool error = false;
+
+        if (unary) {
+            switch (op) {
+            case ExprOperator::NOT:
+                if (et_right != ValueType::BOOL)
+                    error = true;
+                else
+                    expr_type = ValueType::BOOL;
+                break;
+            case ExprOperator::NEG:
+                if (et_right != ValueType::INT32_T)
+                    error = true;
+                else
+                    expr_type = et_right;
+                break;
+            default:
+                assert(false && "unexpected");
+            }
+        }
+        else {
+            ValueType et_left;
+            if (check_where_expr(db_ctx, ctx, node->left.get(), et_left) != 0)
+                return 1;
+
+            switch (op) {
+            case ExprOperator::AND:
+            case ExprOperator::OR:
+                if (et_left != ValueType::BOOL
+                        || et_right != ValueType::BOOL)
+                    error = true;
+                else
+                    expr_type = ValueType::BOOL;
+                break;
+            case ExprOperator::CMP_EQ:
+            case ExprOperator::CMP_NEQ:
+            case ExprOperator::CMP_GT:
+            case ExprOperator::CMP_LT:
+            case ExprOperator::CMP_GT_EQ:
+            case ExprOperator::CMP_LT_EQ:
+                if (et_left == ValueType::STRING
+                        && et_right == ValueType::STRING)
+                {
+                    expr_type = ValueType::BOOL;
+                }
+                // TODO add more numeric types here
+                else if (et_left == ValueType::INT32_T
+                         && et_right == ValueType::INT32_T)
+                {
+                    expr_type = ValueType::BOOL;
+                }
+                else {
+                    error = true;
+                }
+                break;
+            default:
+                assert(false && "unexcpected");
+            }
+        }
+
+        if (error) {
+            cerr << "Error: WHERE: incompatible operand types" << endl;
+            return 1;
+        }
+    }
 
     return 0;
 }
@@ -269,7 +472,7 @@ int SqlExecutor::check_select_context_order_by(
                  */
                 // if there is a single table in FROM, we can take it's name
                 if (ctx.from_tables.size() > 1) {
-                    cerr << "ERROR: ORDER BY: field reference is ambiguous (table is not specified): "
+                    cerr << "Error: ORDER BY: field reference is ambiguous: "
                          << r.c_name << endl;
                     return 1;
                 }
@@ -301,7 +504,7 @@ int SqlExecutor::check_select_context_order_by(
                      * from Orders O
                      * order by Orders.shipcountry;
                      */
-                    cerr << "ERROR: ORDER BY: The multi-part identifier '"
+                    cerr << "Error: ORDER BY: The multi-part identifier '"
                          << r.t_name << '.' << r.c_name
                          << "' could not be found" << endl;
                     return 1;
@@ -541,7 +744,8 @@ SqlExecutor::ExpressionNodePtr SqlExecutor::build_expr_tree(
         // unary
         if (!(node->ot.op == ExprOperator::NOT
                 || node->ot.op == ExprOperator::NEG
-                || node->ot.op == ExprOperator::IS_NULL)) {
+                || node->ot.op == ExprOperator::IS_NULL))
+        {
             node->left = build_expr_tree(it, end, it);
         }
     }

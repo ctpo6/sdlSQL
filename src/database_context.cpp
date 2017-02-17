@@ -29,7 +29,11 @@ void DatabaseContext::init()
 
         size_t col_idx = 0;
         for (auto const& col : table.ut()) {
-            auto r = t.columns.insert(make_pair(col.name, col_idx++));
+            ColumnInfo c;
+            c.idx = col_idx++;
+            c.type = sdl::sql::db_scalartype_to_value_type(col.type);
+
+            auto r = t.columns.insert(make_pair(col.name, c));
             assert(r.second && "no duplications of column names allowed");
         }
 
@@ -81,12 +85,27 @@ size_t DatabaseContext::get_column_position(
 {
     size_t pos;
     try {
-        pos = schema_.at(table_name).columns.at(column_name);
+        pos = schema_.at(table_name).columns.at(column_name).idx;
     }
     catch (const std::out_of_range&) {
         throw std::invalid_argument("table or column not found");
     }
     return pos;
+}
+
+
+sdl::sql::ValueType DatabaseContext::get_column_value_type(
+        const std::string& table_name,
+        const std::string& column_name) const
+{
+    sdl::sql::ValueType type;
+    try {
+        type = schema_.at(table_name).columns.at(column_name).type;
+    }
+    catch (const std::out_of_range&) {
+        throw std::invalid_argument("table or column not found");
+    }
+    return type;
 }
 
 

@@ -13,7 +13,7 @@ Value make_value(
         sdl::db::datatable::record_type const& record,
         size_t col_idx)
 {
-    using scalartype = sdl::db::scalartype;
+    using sdl::db::scalartype;
 
     Value value;
 
@@ -46,6 +46,26 @@ Value make_value(
     }
 
     return value;
+}
+
+
+ValueType db_scalartype_to_value_type(sdl::db::scalartype::type t)
+{
+    using st = sdl::db::scalartype;
+    switch (t) {
+    case st::t_int:
+        return ValueType::INT32_T;
+    case st::t_char:
+    case st::t_nchar:
+    case st::t_text:
+    case st::t_varchar:
+    case st::t_ntext:
+    case st::t_nvarchar:
+        return ValueType::STRING;
+    default:
+        break;
+    }
+    return ValueType::UNKNOWN;
 }
 
 }}

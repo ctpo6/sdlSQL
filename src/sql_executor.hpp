@@ -125,8 +125,14 @@ private:
         std::vector<SymbolReference> select_columns;
         std::map<std::string, size_t> select_column_as;
 
+        // [0] : FROM
+        // [1] : JOIN 0
+        // ...
+        // [N] : JOIN N-1
         std::vector<SymbolReference> from_tables;
         std::map<std::string, size_t> from_table_as;
+
+        std::vector<ExpressionNodePtr> join_expr_tree;
 
         ExpressionNodePtr where_expr_tree;
 
@@ -174,6 +180,11 @@ private:
             const EmitRecordContainer::const_iterator start,
             const EmitRecordContainer::const_iterator end,
             SelectContext& ctx);
+    int init_select_context_from_add_table(
+            const EmitRecordContainer::const_iterator start,
+            EmitRecordContainer::const_iterator& next_part,
+            SelectContext& ctx);
+
     int init_select_context_where(
             const EmitRecordContainer::const_iterator start,
             EmitRecordContainer::const_iterator& next_part,

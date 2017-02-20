@@ -43,8 +43,8 @@ int main(int argc, char *argv[])
 
     DatabaseContext db_context(db);
     db_context.init();
-    db_context.dump_schema();
-    cout << endl;
+//    db_context.dump_schema();
+//    cout << endl;
 
     SqlExecutor exec(db_context);
     Driver driver(exec);

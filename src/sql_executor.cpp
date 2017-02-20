@@ -804,35 +804,48 @@ int SqlExecutor::init_select_context_from(
      * FROM             <--- end
      */
 
-    auto ite = end - 1;
-    if (ite->op_ == EmitOp::JOIN) {
-        cerr << "Error: JOIN is not implemented" << endl;
-        return 1;
-    }
+//    auto ite = end - 1;
+//    if (ite->op_ == EmitOp::JOIN) {
+//        cerr << "Error: JOIN is not implemented" << endl;
+//        return 1;
+//    }
 
     auto itb = start;
-    assert(itb->op_ == EmitOp::TABLE);
+    if (init_select_context_from_add_table(itb, itb, ctx) != 0)
+        return 1;
+    assert(itb == end);
 
-    {
-        SymbolReference ref;
-        ref.t_name = itb->name2_;
-        ctx.from_tables.push_back(std::move(ref));
-        ++itb;
-    }
+    return 0;
+}
 
-    if (itb->op_ == EmitOp::AS) {
-        auto res = ctx.from_table_as.insert(make_pair(itb->name2_, 0));
+
+int SqlExecutor::init_select_context_from_add_table(
+        const EmitRecordContainer::const_iterator start,
+        EmitRecordContainer::const_iterator& next_part,
+        SelectContext& ctx)
+{
+    auto it = start;
+
+    assert(it->op_ == EmitOp::TABLE);
+
+    SymbolReference ref;
+    ref.t_name = it->name2_;
+    ctx.from_tables.push_back(std::move(ref));
+    ++it;
+
+    if (it->op_ == EmitOp::AS) {
+        auto res = ctx.from_table_as.insert(make_pair(it->name2_, 0));
         if (!res.second) {
-            cerr << "Error: duplicated column alias: "
-                 << itb->name2_
+            cerr << "Error: duplicated table alias: "
+                 << it->name2_
                  << endl;
             return 1;
         }
         ctx.from_tables.back().flags |= F_HAS_ALIAS;
-        ++itb;
+        ++it;
     }
 
-    assert(itb - 1 == ite);
+    next_part = it;
 
     return 0;
 }

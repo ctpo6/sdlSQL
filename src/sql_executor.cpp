@@ -33,13 +33,152 @@ void SqlExecutor::execute1()
          it != table._record.end();
          ++it)
     {
-        res_.records.push_back(it);
+        if (execute_where(it))
+            res_.records.push_back(it);
     }
 
     execute_order_by();
 
     if (ctx_.n_top)
         res_.records.resize(ctx_.n_top);
+}
+
+
+bool SqlExecutor::execute_where(ExecutionResult::record_iterator it)
+{
+    using sdl::sql::Value;
+
+    if (!ctx_.where_expr_tree)
+        return true;
+
+    Value value;
+    assert(execute_expr(it, ctx_.where_expr_tree.get(), value) == 0);
+    assert(value.which() == static_cast<int>(sdl::sql::ValueType::BOOL));
+
+    return boost::get<bool>(value);
+}
+
+
+int SqlExecutor::execute_expr(
+        ExecutionResult::record_iterator record_it,
+        ExpressionNode* node,
+        sdl::sql::Value& value)
+{
+    using sdl::sql::Value;
+    using sdl::sql::ValueType;
+
+    assert(node);
+
+    if (!node->right) {
+        if (node->ot.type != ExprOperandType::REF) {
+            // constant value
+            value = boost::get<Value>(node->value);
+        }
+        else {
+            // column identifier
+            SymbolReference& r = boost::get<SymbolReference>(node->value);
+            value = sdl::sql::make_value(
+                        *record_it, ctx_.where_symbol_table[r.idx]);
+        }
+    }
+    else {
+        // operation
+        int r;
+
+        auto op = node->ot.op;
+
+        bool unary =
+                op == ExprOperator::NEG
+                || op == ExprOperator::NOT;
+
+        if (unary) {
+            assert(node->right && !node->left);
+
+            switch (op) {
+            case ExprOperator::NOT:
+            {
+                Value v;
+                if ((r = execute_expr(record_it, node->right.get(), v)) != 0)
+                    return r;
+                if (v.which() != static_cast<int>(ValueType::BOOL))
+                    return 2;
+                value = !boost::get<bool>(v);
+            }
+                break;
+            default:
+                assert(false && "not implemented");
+            }
+
+        }
+        else {
+            assert(node->left && node->right);
+
+            switch (op) {
+            case ExprOperator::CMP_EQ:
+            case ExprOperator::CMP_NEQ:
+            {
+                Value v_left;
+                if ((r = execute_expr(record_it, node->left.get(), v_left)) != 0)
+                    return r;
+                Value v_right;
+                if ((r = execute_expr(record_it, node->right.get(), v_right)) != 0)
+                    return r;
+                if (v_left.which() != v_right.which()) {
+                    cerr << "return 2: "
+                         << v_left << ' ' << v_left.which() << " : "
+                         << v_right << ' ' << v_right.which() << endl;
+                    return 2;   // incompatible operand types
+                }
+                value = op == ExprOperator::CMP_EQ ?
+                            v_left == v_right : v_left != v_right;
+            }
+                break;
+            case ExprOperator::AND:
+            {
+                Value v;
+                if ((r = execute_expr(record_it, node->left.get(), v)) != 0)
+                    return r;
+                if (v.which() != static_cast<int>(ValueType::BOOL))
+                    return 2;
+                if (boost::get<bool>(v) == false) {
+                    value = false;
+                }
+                else {
+                    if ((r = execute_expr(record_it, node->right.get(), v)) != 0)
+                        return r;
+                    if (v.which() != static_cast<int>(ValueType::BOOL))
+                        return 2;
+                    value = v;
+                }
+            }
+                break;
+            case ExprOperator::OR:
+            {
+                Value v;
+                if ((r = execute_expr(record_it, node->left.get(), v)) != 0)
+                    return r;
+                if (v.which() != static_cast<int>(ValueType::BOOL))
+                    return 2;
+                if (boost::get<bool>(v) == true) {
+                    value = true;
+                }
+                else {
+                    if ((r = execute_expr(record_it, node->right.get(), v)) != 0)
+                        return r;
+                    if (v.which() != static_cast<int>(ValueType::BOOL))
+                        return 2;
+                    value = v;
+                }
+            }
+                break;
+            default:
+                assert(false && "not implemented");
+            }
+        }
+
+    }
+
+    return 0;
 }
 
 

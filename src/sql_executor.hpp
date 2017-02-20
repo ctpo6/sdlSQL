@@ -151,6 +151,7 @@ private:
     ExecutionResult res_;
 
     void execute1();
+    bool execute_where(ExecutionResult::record_iterator it);
     void execute_order_by();
     void dump_result();
 
@@ -205,6 +206,11 @@ private:
             SelectContext& ctx,
             ExpressionNode* node,
             sdl::sql::ValueType& expr_type);
+
+    int execute_expr(
+            ExecutionResult::record_iterator record_it,
+            ExpressionNode* node,
+            sdl::sql::Value& value);
 };
 
 std::ostream& operator<<(

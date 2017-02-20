@@ -683,10 +683,10 @@ static yyconst flex_int16_t yy_rule_linenum[53] =
     {   0,
        47,   48,   49,   50,   51,   52,   53,   54,   55,   56,
        57,   58,   59,   60,   61,   62,   66,   75,   76,   77,
-       78,   79,   90,   91,   93,   94,   99,  100,  101,  102,
-      103,  104,  106,  107,  109,  110,  111,  112,  113,  114,
-      128,  129,  132,  136,  137,  139,  140,  141,  142,  146,
-      147,  148
+       78,   79,   90,   91,   94,   95,  100,  101,  102,  103,
+      104,  105,  107,  108,  110,  111,  112,  113,  114,  115,
+      129,  130,  133,  137,  138,  140,  141,  142,  143,  147,
+      148,  149
     } ;
 
 /* The intent behind this definition is that it'll catch
@@ -1215,17 +1215,10 @@ case 23:
 case 24:
 YY_RULE_SETUP
 #line 91 "src/sql.ll"
-{ return yy::SqlParser::make_STRING(yytext, loc); }
+{ return yy::SqlParser::make_STRING(
+                            std::string(yytext + 1, yyleng - 2), loc); }
 	YY_BREAK
 case 25:
-*yy_cp = (yy_hold_char); /* undo effects of setting up yytext */
-(yy_c_buf_p) = yy_cp -= 1;
-YY_DO_BEFORE_ACTION; /* set up yytext again */
-YY_RULE_SETUP
-#line 93 "src/sql.ll"
-{ driver.error(loc, std::string("unclosed string: ") + yytext); }
-	YY_BREAK
-case 26:
 *yy_cp = (yy_hold_char); /* undo effects of setting up yytext */
 (yy_c_buf_p) = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
@@ -1233,76 +1226,84 @@ YY_RULE_SETUP
 #line 94 "src/sql.ll"
 { driver.error(loc, std::string("unclosed string: ") + yytext); }
 	YY_BREAK
+case 26:
+*yy_cp = (yy_hold_char); /* undo effects of setting up yytext */
+(yy_c_buf_p) = yy_cp -= 1;
+YY_DO_BEFORE_ACTION; /* set up yytext again */
+YY_RULE_SETUP
+#line 95 "src/sql.ll"
+{ driver.error(loc, std::string("unclosed string: ") + yytext); }
+	YY_BREAK
 /* operators */
 /*[-+&~|^/%*(),.;!]   { return yytext[0]; }*/
 case 27:
 YY_RULE_SETUP
-#line 99 "src/sql.ll"
+#line 100 "src/sql.ll"
 { return yy::SqlParser::make_S_STAR(loc); }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 100 "src/sql.ll"
+#line 101 "src/sql.ll"
 { return yy::SqlParser::make_S_LPAREN(loc); }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 101 "src/sql.ll"
+#line 102 "src/sql.ll"
 { return yy::SqlParser::make_S_RPAREN(loc); }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 102 "src/sql.ll"
+#line 103 "src/sql.ll"
 { return yy::SqlParser::make_S_COMMA(loc); }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 103 "src/sql.ll"
+#line 104 "src/sql.ll"
 { return yy::SqlParser::make_S_DOT(loc); }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 104 "src/sql.ll"
+#line 105 "src/sql.ll"
 { return yy::SqlParser::make_S_SEMICOLON(loc); }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 106 "src/sql.ll"
+#line 107 "src/sql.ll"
 { return yy::SqlParser::make_OP_AND(loc); }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 107 "src/sql.ll"
+#line 108 "src/sql.ll"
 { return yy::SqlParser::make_OP_OR(loc); }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 109 "src/sql.ll"
+#line 110 "src/sql.ll"
 { return yy::SqlParser::make_COMPARISON(::ExprOperator::CMP_EQ, loc); }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 110 "src/sql.ll"
+#line 111 "src/sql.ll"
 { return yy::SqlParser::make_COMPARISON(::ExprOperator::CMP_GT, loc); }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 111 "src/sql.ll"
+#line 112 "src/sql.ll"
 { return yy::SqlParser::make_COMPARISON(::ExprOperator::CMP_LT, loc); }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 112 "src/sql.ll"
+#line 113 "src/sql.ll"
 { return yy::SqlParser::make_COMPARISON(::ExprOperator::CMP_GT_EQ, loc); }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 113 "src/sql.ll"
+#line 114 "src/sql.ll"
 { return yy::SqlParser::make_COMPARISON(::ExprOperator::CMP_LT_EQ, loc); }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 114 "src/sql.ll"
+#line 115 "src/sql.ll"
 { return yy::SqlParser::make_COMPARISON(::ExprOperator::CMP_NEQ, loc); }
 	YY_BREAK
 /* functions */
@@ -1317,12 +1318,12 @@ YY_RULE_SETUP
     */
 case 41:
 YY_RULE_SETUP
-#line 128 "src/sql.ll"
+#line 129 "src/sql.ll"
 { return yy::SqlParser::make_NAME(yytext, loc); }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 129 "src/sql.ll"
+#line 130 "src/sql.ll"
 { return yy::SqlParser::make_NAME(
                             std::string(yytext + 1, yyleng - 2), loc); }
 	YY_BREAK
@@ -1331,72 +1332,72 @@ case 43:
 (yy_c_buf_p) = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 132 "src/sql.ll"
+#line 133 "src/sql.ll"
 { driver.error(loc, std::string("unterminated quoted name: ") + yytext); }
 	YY_BREAK
 /* comments */   
 case 44:
 YY_RULE_SETUP
-#line 136 "src/sql.ll"
+#line 137 "src/sql.ll"
 ;
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 137 "src/sql.ll"
+#line 138 "src/sql.ll"
 ;
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 139 "src/sql.ll"
+#line 140 "src/sql.ll"
 { oldstate = YY_START; BEGIN COMMENT; }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 140 "src/sql.ll"
+#line 141 "src/sql.ll"
 { BEGIN oldstate; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 141 "src/sql.ll"
+#line 142 "src/sql.ll"
 ;
 	YY_BREAK
 case 49:
 /* rule 49 can match eol */
 YY_RULE_SETUP
-#line 142 "src/sql.ll"
+#line 143 "src/sql.ll"
 { loc.lines(yyleng); loc.step(); }
 	YY_BREAK
 case YY_STATE_EOF(COMMENT):
-#line 143 "src/sql.ll"
+#line 144 "src/sql.ll"
 { driver.error(loc, "unclosed comment"); }
 	YY_BREAK
 /* everything else */
 case 50:
 YY_RULE_SETUP
-#line 146 "src/sql.ll"
+#line 147 "src/sql.ll"
 { loc.step(); }
 	YY_BREAK
 case 51:
 /* rule 51 can match eol */
 YY_RULE_SETUP
-#line 147 "src/sql.ll"
+#line 148 "src/sql.ll"
 { loc.lines(yyleng); loc.step(); }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 148 "src/sql.ll"
+#line 149 "src/sql.ll"
 { driver.error(loc, "invalid character"); }
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
-#line 149 "src/sql.ll"
+#line 150 "src/sql.ll"
 { return yy::SqlParser::make_END(loc); }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 152 "src/sql.ll"
+#line 153 "src/sql.ll"
 ECHO;
 	YY_BREAK
-#line 1400 "/home/yuri/work/bison/sdlSQL/out.bison/sql.lex.cpp"
+#line 1401 "/home/yuri/work/bison/sdlSQL/out.bison/sql.lex.cpp"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2499,7 +2500,7 @@ void yyfree (void * ptr )
 
 /* %ok-for-header */
 
-#line 152 "src/sql.ll"
+#line 153 "src/sql.ll"
 
 
 

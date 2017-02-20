@@ -88,7 +88,8 @@ WHERE   { return yy::SqlParser::make_WHERE(loc); }
    /* strings */
 
 '(\\.|''|[^'\n])*'	|
-\"(\\.|\"\"|[^"\n])*\"  { return yy::SqlParser::make_STRING(yytext, loc); }
+\"(\\.|\"\"|[^"\n])*\"  { return yy::SqlParser::make_STRING(
+                            std::string(yytext + 1, yyleng - 2), loc); }
 
 '(\\.|[^'\n])*$         { driver.error(loc, std::string("unclosed string: ") + yytext); }
 \"(\\.|[^"\n])*$        { driver.error(loc, std::string("unclosed string: ") + yytext); }

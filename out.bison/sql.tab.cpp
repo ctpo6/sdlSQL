@@ -251,24 +251,24 @@ namespace yy {
   {
       switch (that.type_get ())
     {
-      case 18: // COMPARISON
+      case 19: // COMPARISON
         value.move< ::ExprOperator > (that.value);
         break;
 
-      case 12: // "APPROXNUM"
+      case 13: // "APPROXNUM"
         value.move< double > (that.value);
         break;
 
-      case 11: // "INTNUM"
-      case 13: // "BOOL"
+      case 12: // "INTNUM"
+      case 14: // "BOOL"
       case 46: // orderby_list
       case 47: // opt_asc_desc
       case 48: // select_expr_list
         value.move< int > (that.value);
         break;
 
-      case 9: // "NAME"
-      case 10: // "STRING"
+      case 10: // "NAME"
+      case 11: // "STRING"
         value.move< std::string > (that.value);
         break;
 
@@ -287,24 +287,24 @@ namespace yy {
     state = that.state;
       switch (that.type_get ())
     {
-      case 18: // COMPARISON
+      case 19: // COMPARISON
         value.copy< ::ExprOperator > (that.value);
         break;
 
-      case 12: // "APPROXNUM"
+      case 13: // "APPROXNUM"
         value.copy< double > (that.value);
         break;
 
-      case 11: // "INTNUM"
-      case 13: // "BOOL"
+      case 12: // "INTNUM"
+      case 14: // "BOOL"
       case 46: // orderby_list
       case 47: // opt_asc_desc
       case 48: // select_expr_list
         value.copy< int > (that.value);
         break;
 
-      case 9: // "NAME"
-      case 10: // "STRING"
+      case 10: // "NAME"
+      case 11: // "STRING"
         value.copy< std::string > (that.value);
         break;
 
@@ -344,65 +344,65 @@ namespace yy {
         << yysym.location << ": ";
     switch (yytype)
     {
-            case 9: // "NAME"
+            case 10: // "NAME"
 
-#line 83 "src/sql.yy" // lalr1.cc:636
+#line 84 "src/sql.yy" // lalr1.cc:636
         { yyoutput << yysym.value.template as< std::string > (); }
 #line 352 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
         break;
 
-      case 10: // "STRING"
+      case 11: // "STRING"
 
-#line 83 "src/sql.yy" // lalr1.cc:636
+#line 84 "src/sql.yy" // lalr1.cc:636
         { yyoutput << yysym.value.template as< std::string > (); }
 #line 359 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
         break;
 
-      case 11: // "INTNUM"
+      case 12: // "INTNUM"
 
-#line 83 "src/sql.yy" // lalr1.cc:636
+#line 84 "src/sql.yy" // lalr1.cc:636
         { yyoutput << yysym.value.template as< int > (); }
 #line 366 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
         break;
 
-      case 12: // "APPROXNUM"
+      case 13: // "APPROXNUM"
 
-#line 83 "src/sql.yy" // lalr1.cc:636
+#line 84 "src/sql.yy" // lalr1.cc:636
         { yyoutput << yysym.value.template as< double > (); }
 #line 373 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
         break;
 
-      case 13: // "BOOL"
+      case 14: // "BOOL"
 
-#line 83 "src/sql.yy" // lalr1.cc:636
+#line 84 "src/sql.yy" // lalr1.cc:636
         { yyoutput << yysym.value.template as< int > (); }
 #line 380 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
         break;
 
-      case 18: // COMPARISON
+      case 19: // COMPARISON
 
-#line 83 "src/sql.yy" // lalr1.cc:636
+#line 84 "src/sql.yy" // lalr1.cc:636
         { yyoutput << yysym.value.template as< ::ExprOperator > (); }
 #line 387 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
         break;
 
       case 46: // orderby_list
 
-#line 83 "src/sql.yy" // lalr1.cc:636
+#line 84 "src/sql.yy" // lalr1.cc:636
         { yyoutput << yysym.value.template as< int > (); }
 #line 394 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
         break;
 
       case 47: // opt_asc_desc
 
-#line 83 "src/sql.yy" // lalr1.cc:636
+#line 84 "src/sql.yy" // lalr1.cc:636
         { yyoutput << yysym.value.template as< int > (); }
 #line 401 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
         break;
 
       case 48: // select_expr_list
 
-#line 83 "src/sql.yy" // lalr1.cc:636
+#line 84 "src/sql.yy" // lalr1.cc:636
         { yyoutput << yysym.value.template as< int > (); }
 #line 408 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:636
         break;
@@ -613,24 +613,24 @@ namespace yy {
          when using variants.  */
         switch (yyr1_[yyn])
     {
-      case 18: // COMPARISON
+      case 19: // COMPARISON
         yylhs.value.build< ::ExprOperator > ();
         break;
 
-      case 12: // "APPROXNUM"
+      case 13: // "APPROXNUM"
         yylhs.value.build< double > ();
         break;
 
-      case 11: // "INTNUM"
-      case 13: // "BOOL"
+      case 12: // "INTNUM"
+      case 14: // "BOOL"
       case 46: // orderby_list
       case 47: // opt_asc_desc
       case 48: // select_expr_list
         yylhs.value.build< int > ();
         break;
 
-      case 9: // "NAME"
-      case 10: // "STRING"
+      case 10: // "NAME"
+      case 11: // "STRING"
         yylhs.value.build< std::string > ();
         break;
 
@@ -652,217 +652,217 @@ namespace yy {
           switch (yyn)
             {
   case 6:
-#line 105 "src/sql.yy" // lalr1.cc:859
+#line 106 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_stmt(); }
 #line 658 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 7:
-#line 112 "src/sql.yy" // lalr1.cc:859
+#line 113 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_select(yystack_[4].value.as< int > ()); }
 #line 664 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 8:
-#line 117 "src/sql.yy" // lalr1.cc:859
+#line 118 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_from_table_reference(); }
 #line 670 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 12:
-#line 130 "src/sql.yy" // lalr1.cc:859
+#line 131 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_table("", yystack_[0].value.as< std::string > ()); }
 #line 676 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 13:
-#line 132 "src/sql.yy" // lalr1.cc:859
+#line 133 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_table(yystack_[2].value.as< std::string > (), yystack_[0].value.as< std::string > ()); }
 #line 682 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 14:
-#line 137 "src/sql.yy" // lalr1.cc:859
+#line 138 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_join(); }
 #line 688 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 15:
-#line 140 "src/sql.yy" // lalr1.cc:859
+#line 141 "src/sql.yy" // lalr1.cc:859
     {}
 #line 694 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 16:
-#line 142 "src/sql.yy" // lalr1.cc:859
+#line 143 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_top(yystack_[1].value.as< int > ()); }
 #line 700 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 17:
-#line 145 "src/sql.yy" // lalr1.cc:859
+#line 146 "src/sql.yy" // lalr1.cc:859
     {}
 #line 706 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 18:
-#line 147 "src/sql.yy" // lalr1.cc:859
+#line 148 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_where(); }
 #line 712 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 19:
-#line 150 "src/sql.yy" // lalr1.cc:859
+#line 151 "src/sql.yy" // lalr1.cc:859
     {}
 #line 718 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 20:
-#line 152 "src/sql.yy" // lalr1.cc:859
+#line 153 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_order_by_list(yystack_[0].value.as< int > ()); }
 #line 724 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 21:
-#line 157 "src/sql.yy" // lalr1.cc:859
+#line 158 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_order_by(yystack_[0].value.as< int > ()); yylhs.value.as< int > () = 1; }
 #line 730 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 22:
-#line 159 "src/sql.yy" // lalr1.cc:859
+#line 160 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_order_by(yystack_[0].value.as< int > ()); yylhs.value.as< int > () = yystack_[3].value.as< int > () + 1; }
 #line 736 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 23:
-#line 164 "src/sql.yy" // lalr1.cc:859
+#line 165 "src/sql.yy" // lalr1.cc:859
     { yylhs.value.as< int > () = 0; }
 #line 742 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 24:
-#line 166 "src/sql.yy" // lalr1.cc:859
+#line 167 "src/sql.yy" // lalr1.cc:859
     { yylhs.value.as< int > () = 0; }
 #line 748 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 25:
-#line 168 "src/sql.yy" // lalr1.cc:859
+#line 169 "src/sql.yy" // lalr1.cc:859
     { yylhs.value.as< int > () = 1; }
 #line 754 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 26:
-#line 173 "src/sql.yy" // lalr1.cc:859
+#line 174 "src/sql.yy" // lalr1.cc:859
     { yylhs.value.as< int > () = 1; }
 #line 760 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 27:
-#line 175 "src/sql.yy" // lalr1.cc:859
+#line 176 "src/sql.yy" // lalr1.cc:859
     {yylhs.value.as< int > () = yystack_[2].value.as< int > () + 1; }
 #line 766 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 28:
-#line 177 "src/sql.yy" // lalr1.cc:859
+#line 178 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_select_all(); yylhs.value.as< int > () = 1; }
 #line 772 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 30:
-#line 186 "src/sql.yy" // lalr1.cc:859
+#line 187 "src/sql.yy" // lalr1.cc:859
     {}
 #line 778 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 31:
-#line 188 "src/sql.yy" // lalr1.cc:859
+#line 189 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_alias(yystack_[0].value.as< std::string > ()); }
 #line 784 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 32:
-#line 190 "src/sql.yy" // lalr1.cc:859
+#line 191 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_alias(yystack_[0].value.as< std::string > ()); }
 #line 790 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 33:
-#line 198 "src/sql.yy" // lalr1.cc:859
+#line 199 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_name(yystack_[0].value.as< std::string > ()); }
 #line 796 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 34:
-#line 200 "src/sql.yy" // lalr1.cc:859
+#line 201 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_field(yystack_[2].value.as< std::string > (), yystack_[0].value.as< std::string > ()); }
 #line 802 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 36:
-#line 205 "src/sql.yy" // lalr1.cc:859
+#line 206 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_string(yystack_[0].value.as< std::string > ()); }
 #line 808 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 37:
-#line 207 "src/sql.yy" // lalr1.cc:859
+#line 208 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_number(yystack_[0].value.as< int > ()); }
 #line 814 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 38:
-#line 209 "src/sql.yy" // lalr1.cc:859
+#line 210 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_float(yystack_[0].value.as< double > ()); }
 #line 820 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 39:
-#line 214 "src/sql.yy" // lalr1.cc:859
+#line 215 "src/sql.yy" // lalr1.cc:859
     {}
 #line 826 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 40:
-#line 216 "src/sql.yy" // lalr1.cc:859
+#line 217 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_expr_op(ExprOperator::NEG); }
 #line 832 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 41:
-#line 218 "src/sql.yy" // lalr1.cc:859
+#line 219 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_expr_op(ExprOperator::AND); }
 #line 838 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 42:
-#line 220 "src/sql.yy" // lalr1.cc:859
+#line 221 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_expr_op(ExprOperator::OR); }
 #line 844 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 43:
-#line 222 "src/sql.yy" // lalr1.cc:859
+#line 223 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_expr_cmp(yystack_[1].value.as< ::ExprOperator > ()); }
 #line 850 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 44:
-#line 224 "src/sql.yy" // lalr1.cc:859
+#line 225 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_expr_op(ExprOperator::NOT); }
 #line 856 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 45:
-#line 229 "src/sql.yy" // lalr1.cc:859
+#line 230 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_expr_op(ExprOperator::IS_NULL); }
 #line 862 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
 
   case 46:
-#line 231 "src/sql.yy" // lalr1.cc:859
+#line 232 "src/sql.yy" // lalr1.cc:859
     { driver.sqlp_expr_op(ExprOperator::IS_NULL); driver.sqlp_expr_op(ExprOperator::NOT); }
 #line 868 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:859
     break;
@@ -1123,21 +1123,21 @@ namespace yy {
   }
 
 
-  const signed char SqlParser::yypact_ninf_ = -26;
+  const signed char SqlParser::yypact_ninf_ = -41;
 
   const signed char SqlParser::yytable_ninf_ = -1;
 
   const signed char
   SqlParser::yypact_[] =
   {
-       3,    -3,   -25,     1,     6,   -26,   -26,    40,    10,   -26,
-      38,    42,   -26,    18,   -26,    45,    11,   -26,    -2,   -26,
-     -26,    48,    46,    47,    49,   -26,    50,   -26,   -26,   -26,
-     -26,    53,    29,    31,   -26,    -2,   -26,   -26,    54,    -1,
-      35,    49,   -26,   -26,    -1,   -26,   -26,   -26,    -1,    -1,
-     -26,    12,    43,   -26,    34,    33,    51,   -26,    -1,    -1,
-      -5,    -1,    47,    -1,   -26,    25,     5,    41,   -26,   -26,
-      61,    21,    12,   -26,    47,   -26,   -26,   -26,    21,   -26
+       2,     7,   -21,     1,    29,   -41,   -41,    21,     4,   -41,
+      34,    41,   -41,    22,   -41,    44,    -1,   -41,     3,   -41,
+     -41,    47,    45,    46,    48,   -41,    49,   -41,   -41,   -41,
+     -41,    52,    24,    35,   -41,     3,   -41,   -41,    51,    17,
+      33,    48,   -41,   -41,    17,    17,   -41,   -41,   -41,    17,
+     -41,    30,    42,   -41,    38,   -41,    25,    50,    17,    17,
+     -11,    17,    46,    17,   -41,    20,    -7,    36,   -41,   -41,
+      61,    26,    30,   -41,    46,   -41,   -41,   -41,    26,   -41
   };
 
   const unsigned char
@@ -1147,8 +1147,8 @@ namespace yy {
        0,     0,     2,     0,    28,    33,     0,    26,    30,     5,
        3,     0,     0,     0,     0,    32,     0,    29,    16,    34,
       27,    12,    17,     8,     9,    30,    10,    31,     0,     0,
-      19,     0,    11,    13,     0,    36,    37,    38,     0,     0,
-      35,    18,     0,     7,     0,     0,    44,    40,     0,     0,
+      19,     0,    11,    13,     0,     0,    36,    37,    38,     0,
+      35,    18,     0,     7,     0,    40,     0,    44,     0,     0,
        0,     0,     0,     0,    39,    42,    41,     0,    45,    43,
       20,    23,    14,    46,     0,    24,    25,    21,    23,    22
   };
@@ -1156,8 +1156,8 @@ namespace yy {
   const signed char
   SqlParser::yypgoto_[] =
   {
-     -26,   -26,    67,   -26,   -26,   -26,    30,   -26,   -26,   -26,
-     -26,   -26,   -26,    -6,   -26,    52,    39,    -8,   -24
+     -41,   -41,    67,   -41,   -41,   -41,    31,   -41,   -41,   -41,
+     -41,   -41,   -41,    -5,   -41,    53,    39,    -8,   -40
   };
 
   const signed char
@@ -1170,40 +1170,40 @@ namespace yy {
   const unsigned char
   SqlParser::yytable_[] =
   {
-      18,     9,    10,    44,     1,     6,     7,    25,    15,    45,
-      46,    47,    67,    14,    12,    18,    48,    23,    26,    15,
-      55,    60,    68,    61,    56,    57,    58,    59,    60,    21,
-      61,     2,    49,     2,    65,    66,    24,    69,    64,    72,
-      59,    60,    75,    61,    13,    76,    19,    58,    59,    60,
-      20,    61,    22,    28,    71,    29,    15,    41,    31,    37,
-      38,    39,    63,    43,    52,    62,    78,    74,    73,    61,
-      11,    54,    79,     0,    42,    30
+      18,     9,    10,     1,    55,    56,    23,    67,    14,    57,
+      60,     7,    61,    25,    15,    18,     6,    68,    65,    66,
+      44,    69,    45,    72,    26,    24,    13,    15,    46,    47,
+      48,    64,     2,     2,    21,    49,    59,    60,    12,    61,
+      58,    59,    60,    19,    61,    58,    59,    60,    75,    61,
+      20,    76,    22,    28,    71,    29,    15,    39,    31,    37,
+      38,    43,    41,    52,    73,    62,    78,    63,    74,    61,
+      11,     0,    54,    79,    42,     0,    30
   };
 
   const signed char
   SqlParser::yycheck_[] =
   {
-       8,     0,     1,     4,     1,     8,    31,     9,     9,    10,
-      11,    12,    17,     3,     8,    23,    17,     6,    20,     9,
-      44,    16,    27,    18,    48,    49,    14,    15,    16,    11,
-      18,    30,    33,    30,    58,    59,    25,    61,     5,    63,
-      15,    16,    21,    18,     4,    24,     8,    14,    15,    16,
-       8,    18,     7,     5,    62,     9,     9,    26,     9,     9,
-       7,    32,    28,     9,    29,    22,    74,     6,    27,    18,
-       3,    41,    78,    -1,    35,    23
+       8,     0,     1,     1,    44,    45,     7,    18,     4,    49,
+      17,    32,    19,    10,    10,    23,     9,    28,    58,    59,
+       3,    61,     5,    63,    21,    26,     5,    10,    11,    12,
+      13,     6,    31,    31,    12,    18,    16,    17,     9,    19,
+      15,    16,    17,     9,    19,    15,    16,    17,    22,    19,
+       9,    25,     8,     6,    62,    10,    10,    33,    10,    10,
+       8,    10,    27,    30,    28,    23,    74,    29,     7,    19,
+       3,    -1,    41,    78,    35,    -1,    23
   };
 
   const unsigned char
   SqlParser::yystos_[] =
   {
-       0,     1,    30,    35,    36,    37,     8,    31,    43,     0,
-       1,    36,     8,     4,     3,     9,    48,    49,    51,     8,
-       8,    11,     7,     6,    25,     9,    20,    50,     5,     9,
-      49,     9,    38,    39,    40,    41,    42,     9,     7,    32,
-      44,    26,    50,     9,     4,    10,    11,    12,    17,    33,
-      51,    52,    29,    45,    40,    52,    52,    52,    14,    15,
-      16,    18,    22,    28,     5,    52,    52,    17,    27,    52,
-      46,    51,    52,    27,     6,    21,    24,    47,    51,    47
+       0,     1,    31,    35,    36,    37,     9,    32,    43,     0,
+       1,    36,     9,     5,     4,    10,    48,    49,    51,     9,
+       9,    12,     8,     7,    26,    10,    21,    50,     6,    10,
+      49,    10,    38,    39,    40,    41,    42,    10,     8,    33,
+      44,    27,    50,    10,     3,     5,    11,    12,    13,    18,
+      51,    52,    30,    45,    40,    52,    52,    52,    15,    16,
+      17,    19,    23,    29,     6,    52,    52,    18,    28,    52,
+      46,    51,    52,    28,     7,    22,    25,    47,    51,    47
   };
 
   const unsigned char
@@ -1233,11 +1233,11 @@ namespace yy {
   const char*
   const SqlParser::yytname_[] =
   {
-  "\"end of file\"", "error", "$undefined", "\"*\"", "\"(\"", "\")\"",
-  "\",\"", "\".\"", "\";\"", "\"NAME\"", "\"STRING\"", "\"INTNUM\"",
-  "\"APPROXNUM\"", "\"BOOL\"", "OP_OR", "OP_AND", "IS", "NOT",
-  "COMPARISON", "UMINUS", "AS", "ASC", "BY", "COMMENT", "DESC", "FROM",
-  "JOIN", "NULLX", "ON", "ORDER", "SELECT", "TOP", "WHERE", "\"-\"",
+  "\"end of file\"", "error", "$undefined", "\"-\"", "\"*\"", "\"(\"",
+  "\")\"", "\",\"", "\".\"", "\";\"", "\"NAME\"", "\"STRING\"",
+  "\"INTNUM\"", "\"APPROXNUM\"", "\"BOOL\"", "OP_OR", "OP_AND", "IS",
+  "NOT", "COMPARISON", "UMINUS", "AS", "ASC", "BY", "COMMENT", "DESC",
+  "FROM", "JOIN", "NULLX", "ON", "ORDER", "SELECT", "TOP", "WHERE",
   "$accept", "stmt_list", "stmt", "select_stmt", "from_table_reference",
   "table_reference", "table_name_expr", "table_name", "join_table",
   "opt_top", "opt_where", "opt_orderby", "orderby_list", "opt_asc_desc",
@@ -1248,11 +1248,11 @@ namespace yy {
   const unsigned char
   SqlParser::yyrline_[] =
   {
-       0,    92,    92,    93,    97,    98,   104,   109,   116,   120,
-     121,   125,   129,   131,   136,   140,   141,   145,   146,   150,
-     151,   156,   158,   163,   165,   167,   172,   174,   176,   181,
-     186,   187,   189,   197,   199,   203,   204,   206,   208,   213,
-     215,   217,   219,   221,   223,   228,   230
+       0,    93,    93,    94,    98,    99,   105,   110,   117,   121,
+     122,   126,   130,   132,   137,   141,   142,   146,   147,   151,
+     152,   157,   159,   164,   166,   168,   173,   175,   177,   182,
+     187,   188,   190,   198,   200,   204,   205,   207,   209,   214,
+     216,   218,   220,   222,   224,   229,   231
   };
 
   // Print the state stack on the debug stream.
@@ -1288,7 +1288,7 @@ namespace yy {
 
 } // yy
 #line 1291 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.cpp" // lalr1.cc:1167
-#line 240 "src/sql.yy" // lalr1.cc:1168
+#line 241 "src/sql.yy" // lalr1.cc:1168
 
 
 void yy::SqlParser::error(const location_type& l,

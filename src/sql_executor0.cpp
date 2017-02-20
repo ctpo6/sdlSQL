@@ -15,11 +15,11 @@ const char* expr_operator_str[static_cast<size_t>(ExprOperator::MAX_)] =
     "'NOT'",
     "'IS NULL'",
     "'='",
+    "'!='"
     "'>'",
     "'<'",
     "'>='",
-    "'<='",
-    "'!='"
+    "'<='"
 };
 const char* expr_operand_type_str[static_cast<size_t>(ExprOperandType::MAX_)] =
 {

@@ -39,6 +39,7 @@ class Driver;
 %define api.token.prefix {TOK_}
 %token
     END 0       "end of file"
+    S_MINUS     "-"
     S_STAR      "*"
     S_LPAREN    "("
     S_RPAREN    ")"

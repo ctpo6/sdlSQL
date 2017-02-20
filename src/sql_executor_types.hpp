@@ -11,11 +11,11 @@ enum class ExprOperator
     NOT,
     IS_NULL,
     CMP_EQ,
+    CMP_NEQ,
     CMP_GT,
     CMP_LT,
     CMP_GT_EQ,
     CMP_LT_EQ,
-    CMP_NEQ,
 
     // add new values above
     MAX_

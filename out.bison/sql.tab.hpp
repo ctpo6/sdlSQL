@@ -331,36 +331,37 @@ namespace yy {
       enum yytokentype
       {
         TOK_END = 0,
-        TOK_S_STAR = 258,
-        TOK_S_LPAREN = 259,
-        TOK_S_RPAREN = 260,
-        TOK_S_COMMA = 261,
-        TOK_S_DOT = 262,
-        TOK_S_SEMICOLON = 263,
-        TOK_NAME = 264,
-        TOK_STRING = 265,
-        TOK_INTNUM = 266,
-        TOK_APPROXNUM = 267,
-        TOK_BOOL = 268,
-        TOK_OP_OR = 269,
-        TOK_OP_AND = 270,
-        TOK_IS = 271,
-        TOK_NOT = 272,
-        TOK_COMPARISON = 273,
-        TOK_UMINUS = 274,
-        TOK_AS = 275,
-        TOK_ASC = 276,
-        TOK_BY = 277,
-        TOK_COMMENT = 278,
-        TOK_DESC = 279,
-        TOK_FROM = 280,
-        TOK_JOIN = 281,
-        TOK_NULLX = 282,
-        TOK_ON = 283,
-        TOK_ORDER = 284,
-        TOK_SELECT = 285,
-        TOK_TOP = 286,
-        TOK_WHERE = 287
+        TOK_S_MINUS = 258,
+        TOK_S_STAR = 259,
+        TOK_S_LPAREN = 260,
+        TOK_S_RPAREN = 261,
+        TOK_S_COMMA = 262,
+        TOK_S_DOT = 263,
+        TOK_S_SEMICOLON = 264,
+        TOK_NAME = 265,
+        TOK_STRING = 266,
+        TOK_INTNUM = 267,
+        TOK_APPROXNUM = 268,
+        TOK_BOOL = 269,
+        TOK_OP_OR = 270,
+        TOK_OP_AND = 271,
+        TOK_IS = 272,
+        TOK_NOT = 273,
+        TOK_COMPARISON = 274,
+        TOK_UMINUS = 275,
+        TOK_AS = 276,
+        TOK_ASC = 277,
+        TOK_BY = 278,
+        TOK_COMMENT = 279,
+        TOK_DESC = 280,
+        TOK_FROM = 281,
+        TOK_JOIN = 282,
+        TOK_NULLX = 283,
+        TOK_ON = 284,
+        TOK_ORDER = 285,
+        TOK_SELECT = 286,
+        TOK_TOP = 287,
+        TOK_WHERE = 288
       };
     };
 
@@ -476,6 +477,10 @@ namespace yy {
     static inline
     symbol_type
     make_END (const location_type& l);
+
+    static inline
+    symbol_type
+    make_S_MINUS (const location_type& l);
 
     static inline
     symbol_type
@@ -802,7 +807,7 @@ namespace yy {
     enum
     {
       yyeof_ = 0,
-      yylast_ = 75,     ///< Last index in yytable_.
+      yylast_ = 76,     ///< Last index in yytable_.
       yynnts_ = 19,  ///< Number of nonterminal symbols.
       yyfinal_ = 9, ///< Termination state number.
       yyterror_ = 1,
@@ -887,24 +892,24 @@ namespace yy {
   {
       switch (other.type_get ())
     {
-      case 18: // COMPARISON
+      case 19: // COMPARISON
         value.copy< ::ExprOperator > (other.value);
         break;
 
-      case 12: // "APPROXNUM"
+      case 13: // "APPROXNUM"
         value.copy< double > (other.value);
         break;
 
-      case 11: // "INTNUM"
-      case 13: // "BOOL"
+      case 12: // "INTNUM"
+      case 14: // "BOOL"
       case 46: // orderby_list
       case 47: // opt_asc_desc
       case 48: // select_expr_list
         value.copy< int > (other.value);
         break;
 
-      case 9: // "NAME"
-      case 10: // "STRING"
+      case 10: // "NAME"
+      case 11: // "STRING"
         value.copy< std::string > (other.value);
         break;
 
@@ -925,24 +930,24 @@ namespace yy {
     (void) v;
       switch (this->type_get ())
     {
-      case 18: // COMPARISON
+      case 19: // COMPARISON
         value.copy< ::ExprOperator > (v);
         break;
 
-      case 12: // "APPROXNUM"
+      case 13: // "APPROXNUM"
         value.copy< double > (v);
         break;
 
-      case 11: // "INTNUM"
-      case 13: // "BOOL"
+      case 12: // "INTNUM"
+      case 14: // "BOOL"
       case 46: // orderby_list
       case 47: // opt_asc_desc
       case 48: // select_expr_list
         value.copy< int > (v);
         break;
 
-      case 9: // "NAME"
-      case 10: // "STRING"
+      case 10: // "NAME"
+      case 11: // "STRING"
         value.copy< std::string > (v);
         break;
 
@@ -1015,24 +1020,24 @@ namespace yy {
     // Type destructor.
     switch (yytype)
     {
-      case 18: // COMPARISON
+      case 19: // COMPARISON
         value.template destroy< ::ExprOperator > ();
         break;
 
-      case 12: // "APPROXNUM"
+      case 13: // "APPROXNUM"
         value.template destroy< double > ();
         break;
 
-      case 11: // "INTNUM"
-      case 13: // "BOOL"
+      case 12: // "INTNUM"
+      case 14: // "BOOL"
       case 46: // orderby_list
       case 47: // opt_asc_desc
       case 48: // select_expr_list
         value.template destroy< int > ();
         break;
 
-      case 9: // "NAME"
-      case 10: // "STRING"
+      case 10: // "NAME"
+      case 11: // "STRING"
         value.template destroy< std::string > ();
         break;
 
@@ -1059,24 +1064,24 @@ namespace yy {
     super_type::move(s);
       switch (this->type_get ())
     {
-      case 18: // COMPARISON
+      case 19: // COMPARISON
         value.move< ::ExprOperator > (s.value);
         break;
 
-      case 12: // "APPROXNUM"
+      case 13: // "APPROXNUM"
         value.move< double > (s.value);
         break;
 
-      case 11: // "INTNUM"
-      case 13: // "BOOL"
+      case 12: // "INTNUM"
+      case 14: // "BOOL"
       case 46: // orderby_list
       case 47: // opt_asc_desc
       case 48: // select_expr_list
         value.move< int > (s.value);
         break;
 
-      case 9: // "NAME"
-      case 10: // "STRING"
+      case 10: // "NAME"
+      case 11: // "STRING"
         value.move< std::string > (s.value);
         break;
 
@@ -1147,6 +1152,12 @@ namespace yy {
   SqlParser::make_END (const location_type& l)
   {
     return symbol_type (token::TOK_END, l);
+  }
+
+  SqlParser::symbol_type
+  SqlParser::make_S_MINUS (const location_type& l)
+  {
+    return symbol_type (token::TOK_S_MINUS, l);
   }
 
   SqlParser::symbol_type
@@ -1332,7 +1343,7 @@ namespace yy {
 
 
 } // yy
-#line 1336 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.hpp" // lalr1.cc:377
+#line 1347 "/home/yuri/work/bison/sdlSQL/out.bison/sql.tab.hpp" // lalr1.cc:377
 
 
 

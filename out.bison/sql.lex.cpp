@@ -464,8 +464,8 @@ static void yy_fatal_error (yyconst char msg[]  );
 	(yy_c_buf_p) = yy_cp;
 
 /* %% [4.0] data tables for the DFA and the user's section 1 definitions go here */
-#define YY_NUM_RULES 53
-#define YY_END_OF_BUFFER 54
+#define YY_NUM_RULES 54
+#define YY_END_OF_BUFFER 55
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -475,21 +475,21 @@ struct yy_trans_info
 	};
 static yyconst flex_int16_t yy_accept[141] =
     {   0,
-        0,    0,    0,    0,   54,   52,   50,   51,   52,   52,
-       44,   52,   52,   28,   29,   27,   30,   52,   31,   52,
-       17,   32,   37,   35,   36,   41,   41,   41,   41,   41,
-       41,   41,   41,   41,   41,   41,   41,   52,   52,   48,
-       49,   48,   50,   51,   40,    0,   26,   24,    0,   44,
-       33,    0,   25,   23,    0,    0,    0,   17,   19,    0,
-       46,   18,    0,   39,   38,   41,   41,    2,    4,   41,
-       41,   41,   41,   41,   41,   11,   12,   41,   41,   41,
-        0,   43,    0,   34,   47,    0,    0,   24,    0,    0,
-        0,   23,    0,   45,    0,   22,   18,    0,    0,   20,
+        0,    0,    0,    0,   55,   53,   51,   52,   53,   53,
+       45,   53,   53,   29,   30,   28,   31,   27,   32,   53,
+       17,   33,   38,   36,   37,   42,   42,   42,   42,   42,
+       42,   42,   42,   42,   42,   42,   42,   53,   53,   49,
+       50,   49,   51,   52,   41,    0,   26,   24,    0,   45,
+       34,    0,   25,   23,    0,    0,    0,   17,   19,    0,
+       47,   18,    0,   40,   39,   42,   42,    2,    4,   42,
+       42,   42,   42,   42,   42,   11,   12,   42,   42,   42,
+        0,   44,    0,   35,   48,    0,    0,   24,    0,    0,
+        0,   23,    0,   46,    0,   22,   18,    0,    0,   20,
 
-        1,    3,   41,   41,   41,   41,    9,   41,   41,   41,
-       15,   41,   42,    0,   24,    0,   23,   45,    0,   21,
-       41,    6,    7,    8,   10,   41,   41,   41,    0,    0,
-        0,    0,   41,   13,   41,   16,   41,   14,    5,    0
+        1,    3,   42,   42,   42,   42,    9,   42,   42,   42,
+       15,   42,   43,    0,   24,    0,   23,   46,    0,   21,
+       42,    6,    7,    8,   10,   42,   42,   42,    0,    0,
+        0,    0,   42,   13,   42,   16,   42,   14,    5,    0
     } ;
 
 static yyconst YY_CHAR yy_ec[256] =
@@ -679,14 +679,14 @@ static char *yy_last_accepting_cpos;
 extern int yy_flex_debug;
 int yy_flex_debug = 1;
 
-static yyconst flex_int16_t yy_rule_linenum[53] =
+static yyconst flex_int16_t yy_rule_linenum[54] =
     {   0,
        47,   48,   49,   50,   51,   52,   53,   54,   55,   56,
        57,   58,   59,   60,   61,   62,   66,   75,   76,   77,
        78,   79,   90,   91,   94,   95,  100,  101,  102,  103,
-      104,  105,  107,  108,  110,  111,  112,  113,  114,  115,
-      129,  130,  133,  137,  138,  140,  141,  142,  143,  147,
-      148,  149
+      104,  105,  106,  108,  109,  111,  112,  113,  114,  115,
+      116,  130,  131,  134,  138,  139,  141,  142,  143,  144,
+      148,  149,  150
     } ;
 
 /* The intent behind this definition is that it'll catch
@@ -1074,13 +1074,13 @@ do_action:	/* This label is used only to access EOF actions. */
 			{
 			if ( yy_act == 0 )
 				fprintf( stderr, "--scanner backing up\n" );
-			else if ( yy_act < 53 )
+			else if ( yy_act < 54 )
 				fprintf( stderr, "--accepting rule at line %ld (\"%s\")\n",
 				         (long)yy_rule_linenum[yy_act], yytext );
-			else if ( yy_act == 53 )
+			else if ( yy_act == 54 )
 				fprintf( stderr, "--accepting default rule (\"%s\")\n",
 				         yytext );
-			else if ( yy_act == 54 )
+			else if ( yy_act == 55 )
 				fprintf( stderr, "--(end of buffer or a NUL)\n" );
 			else
 				fprintf( stderr, "--EOF (start condition %d)\n", YY_START );
@@ -1239,71 +1239,76 @@ YY_RULE_SETUP
 case 27:
 YY_RULE_SETUP
 #line 100 "src/sql.ll"
-{ return yy::SqlParser::make_S_STAR(loc); }
+{ return yy::SqlParser::make_S_MINUS(loc); }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
 #line 101 "src/sql.ll"
-{ return yy::SqlParser::make_S_LPAREN(loc); }
+{ return yy::SqlParser::make_S_STAR(loc); }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
 #line 102 "src/sql.ll"
-{ return yy::SqlParser::make_S_RPAREN(loc); }
+{ return yy::SqlParser::make_S_LPAREN(loc); }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
 #line 103 "src/sql.ll"
-{ return yy::SqlParser::make_S_COMMA(loc); }
+{ return yy::SqlParser::make_S_RPAREN(loc); }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
 #line 104 "src/sql.ll"
-{ return yy::SqlParser::make_S_DOT(loc); }
+{ return yy::SqlParser::make_S_COMMA(loc); }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
 #line 105 "src/sql.ll"
-{ return yy::SqlParser::make_S_SEMICOLON(loc); }
+{ return yy::SqlParser::make_S_DOT(loc); }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 107 "src/sql.ll"
-{ return yy::SqlParser::make_OP_AND(loc); }
+#line 106 "src/sql.ll"
+{ return yy::SqlParser::make_S_SEMICOLON(loc); }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
 #line 108 "src/sql.ll"
-{ return yy::SqlParser::make_OP_OR(loc); }
+{ return yy::SqlParser::make_OP_AND(loc); }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 110 "src/sql.ll"
-{ return yy::SqlParser::make_COMPARISON(::ExprOperator::CMP_EQ, loc); }
+#line 109 "src/sql.ll"
+{ return yy::SqlParser::make_OP_OR(loc); }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
 #line 111 "src/sql.ll"
-{ return yy::SqlParser::make_COMPARISON(::ExprOperator::CMP_GT, loc); }
+{ return yy::SqlParser::make_COMPARISON(::ExprOperator::CMP_EQ, loc); }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
 #line 112 "src/sql.ll"
-{ return yy::SqlParser::make_COMPARISON(::ExprOperator::CMP_LT, loc); }
+{ return yy::SqlParser::make_COMPARISON(::ExprOperator::CMP_GT, loc); }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
 #line 113 "src/sql.ll"
-{ return yy::SqlParser::make_COMPARISON(::ExprOperator::CMP_GT_EQ, loc); }
+{ return yy::SqlParser::make_COMPARISON(::ExprOperator::CMP_LT, loc); }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
 #line 114 "src/sql.ll"
-{ return yy::SqlParser::make_COMPARISON(::ExprOperator::CMP_LT_EQ, loc); }
+{ return yy::SqlParser::make_COMPARISON(::ExprOperator::CMP_GT_EQ, loc); }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
 #line 115 "src/sql.ll"
+{ return yy::SqlParser::make_COMPARISON(::ExprOperator::CMP_LT_EQ, loc); }
+	YY_BREAK
+case 41:
+YY_RULE_SETUP
+#line 116 "src/sql.ll"
 { return yy::SqlParser::make_COMPARISON(::ExprOperator::CMP_NEQ, loc); }
 	YY_BREAK
 /* functions */
@@ -1316,31 +1321,26 @@ YY_RULE_SETUP
            yylval->strval = strdup(yytext);
            return NAME; }
     */
-case 41:
-YY_RULE_SETUP
-#line 129 "src/sql.ll"
-{ return yy::SqlParser::make_NAME(yytext, loc); }
-	YY_BREAK
 case 42:
 YY_RULE_SETUP
 #line 130 "src/sql.ll"
+{ return yy::SqlParser::make_NAME(yytext, loc); }
+	YY_BREAK
+case 43:
+YY_RULE_SETUP
+#line 131 "src/sql.ll"
 { return yy::SqlParser::make_NAME(
                             std::string(yytext + 1, yyleng - 2), loc); }
 	YY_BREAK
-case 43:
+case 44:
 *yy_cp = (yy_hold_char); /* undo effects of setting up yytext */
 (yy_c_buf_p) = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 133 "src/sql.ll"
+#line 134 "src/sql.ll"
 { driver.error(loc, std::string("unterminated quoted name: ") + yytext); }
 	YY_BREAK
 /* comments */   
-case 44:
-YY_RULE_SETUP
-#line 137 "src/sql.ll"
-;
-	YY_BREAK
 case 45:
 YY_RULE_SETUP
 #line 138 "src/sql.ll"
@@ -1348,56 +1348,61 @@ YY_RULE_SETUP
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 140 "src/sql.ll"
-{ oldstate = YY_START; BEGIN COMMENT; }
+#line 139 "src/sql.ll"
+;
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
 #line 141 "src/sql.ll"
-{ BEGIN oldstate; }
+{ oldstate = YY_START; BEGIN COMMENT; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
 #line 142 "src/sql.ll"
-;
+{ BEGIN oldstate; }
 	YY_BREAK
 case 49:
-/* rule 49 can match eol */
 YY_RULE_SETUP
 #line 143 "src/sql.ll"
+;
+	YY_BREAK
+case 50:
+/* rule 50 can match eol */
+YY_RULE_SETUP
+#line 144 "src/sql.ll"
 { loc.lines(yyleng); loc.step(); }
 	YY_BREAK
 case YY_STATE_EOF(COMMENT):
-#line 144 "src/sql.ll"
+#line 145 "src/sql.ll"
 { driver.error(loc, "unclosed comment"); }
 	YY_BREAK
 /* everything else */
-case 50:
-YY_RULE_SETUP
-#line 147 "src/sql.ll"
-{ loc.step(); }
-	YY_BREAK
 case 51:
-/* rule 51 can match eol */
 YY_RULE_SETUP
 #line 148 "src/sql.ll"
-{ loc.lines(yyleng); loc.step(); }
+{ loc.step(); }
 	YY_BREAK
 case 52:
+/* rule 52 can match eol */
 YY_RULE_SETUP
 #line 149 "src/sql.ll"
-{ driver.error(loc, "invalid character"); }
-	YY_BREAK
-case YY_STATE_EOF(INITIAL):
-#line 150 "src/sql.ll"
-{ return yy::SqlParser::make_END(loc); }
+{ loc.lines(yyleng); loc.step(); }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 153 "src/sql.ll"
+#line 150 "src/sql.ll"
+{ driver.error(loc, "invalid character"); }
+	YY_BREAK
+case YY_STATE_EOF(INITIAL):
+#line 151 "src/sql.ll"
+{ return yy::SqlParser::make_END(loc); }
+	YY_BREAK
+case 54:
+YY_RULE_SETUP
+#line 154 "src/sql.ll"
 ECHO;
 	YY_BREAK
-#line 1401 "/home/yuri/work/bison/sdlSQL/out.bison/sql.lex.cpp"
+#line 1406 "/home/yuri/work/bison/sdlSQL/out.bison/sql.lex.cpp"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2500,7 +2505,7 @@ void yyfree (void * ptr )
 
 /* %ok-for-header */
 
-#line 153 "src/sql.ll"
+#line 154 "src/sql.ll"
 
 
 

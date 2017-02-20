@@ -97,6 +97,7 @@ WHERE   { return yy::SqlParser::make_WHERE(loc); }
    /* operators */
 
     /*[-+&~|^/%*(),.;!]   { return yytext[0]; }*/
+"-"     { return yy::SqlParser::make_S_MINUS(loc); }
 "*"     { return yy::SqlParser::make_S_STAR(loc); }
 "("     { return yy::SqlParser::make_S_LPAREN(loc); }
 ")"     { return yy::SqlParser::make_S_RPAREN(loc); }

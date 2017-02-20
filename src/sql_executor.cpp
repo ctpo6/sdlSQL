@@ -105,8 +105,18 @@ int SqlExecutor::execute_expr(
                 value = !boost::get<bool>(v);
             }
                 break;
+            case ExprOperator::NEG:
+            {
+                Value v;
+                if ((r = execute_expr(record_it, node->right.get(), v)) != 0)
+                    return r;
+                if (v.which() != static_cast<int>(ValueType::INT32_T))
+                    return 2;
+                value = -boost::get<int32_t>(v);
+            }
+                break;
             default:
-                assert(false && "not implemented");
+                assert(false && "unexpected");
             }
 
         }
@@ -116,6 +126,10 @@ int SqlExecutor::execute_expr(
             switch (op) {
             case ExprOperator::CMP_EQ:
             case ExprOperator::CMP_NEQ:
+            case ExprOperator::CMP_GT:
+            case ExprOperator::CMP_LT:
+            case ExprOperator::CMP_GT_EQ:
+            case ExprOperator::CMP_LT_EQ:
             {
                 Value v_left;
                 if ((r = execute_expr(record_it, node->left.get(), v_left)) != 0)
@@ -123,14 +137,38 @@ int SqlExecutor::execute_expr(
                 Value v_right;
                 if ((r = execute_expr(record_it, node->right.get(), v_right)) != 0)
                     return r;
+
+                // TODO
+                // now operand types must be the same
                 if (v_left.which() != v_right.which()) {
                     cerr << "return 2: "
                          << v_left << ' ' << v_left.which() << " : "
                          << v_right << ' ' << v_right.which() << endl;
                     return 2;   // incompatible operand types
                 }
-                value = op == ExprOperator::CMP_EQ ?
-                            v_left == v_right : v_left != v_right;
+
+                switch (op) {
+                case ExprOperator::CMP_EQ:
+                    value = v_left == v_right;
+                    break;
+                case ExprOperator::CMP_NEQ:
+                    value = v_left != v_right;
+                    break;
+                case ExprOperator::CMP_GT:
+                    value = v_left > v_right;
+                    break;
+                case ExprOperator::CMP_LT:
+                    value = v_left < v_right;
+                    break;
+                case ExprOperator::CMP_GT_EQ:
+                    value = v_left >= v_right;
+                    break;
+                case ExprOperator::CMP_LT_EQ:
+                    value = v_left <= v_right;
+                    break;
+                default:
+                    assert(false && "unexpected");
+                }
             }
                 break;
             case ExprOperator::AND:

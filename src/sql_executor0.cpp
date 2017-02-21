@@ -59,17 +59,19 @@ std::ostream& operator<<(
 }
 
 
-void SqlExecutor::dump_expr_tree(const ExpressionNode& node)
+void SqlExecutor::dump_expr_tree(const ExpressionNode* node)
 {
-    if (!node.right) {
+    assert(node);
+
+    if (!node->right) {
         // leaf node
-        cout << node.ot.type << ' ' << node.value << endl;
+        cout << node->ot.type << ' ' << node->value << endl;
     }
     else {
-        cout << "OPERATOR " << node.ot.op << endl;
-        dump_expr_tree(*node.right);
-        if (node.left)
-            dump_expr_tree(*node.left);
+        cout << "OPERATOR " << node->ot.op << endl;
+        dump_expr_tree(node->right.get());
+        if (node->left)
+            dump_expr_tree(node->left.get());
     }
 }
 
@@ -86,6 +88,12 @@ void SqlExecutor::SelectContext::dump() const
     for (const auto& r: from_table_as)
         cout << r.first << ' ' << r.second << endl;
 
+    cout << "\njoin expression(s):\n";
+    for (size_t i = 0; i < join_expr_tree.size(); ++i) {
+        cout << i << ":\n";
+        dump_expr_tree(join_expr_tree[i].get());
+    }
+
     cout << "\nselect columns:\n";
     for (const auto& r: select_columns)
         cout << r << endl;
@@ -95,7 +103,7 @@ void SqlExecutor::SelectContext::dump() const
 
     cout << "\nwhere expression:\n";
     if (where_expr_tree)
-        dump_expr_tree(*where_expr_tree);
+        dump_expr_tree(where_expr_tree.get());
 
     cout << "\norder by:\n";
     for (const auto& r: order_by_list)

@@ -319,14 +319,8 @@ int SqlExecutor::check_select_context(
         const DatabaseContext& db_ctx,
         SelectContext& ctx)
 {
-    // check existence of tables in FROM and JOIN clauses
-    assert(!ctx.from_tables.empty());
-    for (SymbolReference& r: ctx.from_tables) {
-        if (!db_ctx.has_table(r.t_name)) {
-            cerr << "Error: FROM: table doesn't exist: " << r.t_name << endl;
-            return 1;
-        }
-    }
+    if (check_select_context_from_join(db_ctx, ctx) != 0)
+        return 1;
 
     if (check_select_context_select(db_ctx, ctx) != 0)
         return 1;
@@ -341,13 +335,45 @@ int SqlExecutor::check_select_context(
 
     // SELECTALL
     if (ctx.select_columns.empty()) {
-        const string& t_name = ctx.from_tables[0].t_name;
-        vector<string> c_names = db_ctx.get_table_column_names(t_name);
-        for (auto& s: c_names) {
-            SymbolReference r;
-            r.t_name = t_name;
-            r.c_name = std::move(s);
-            ctx.select_columns.push_back(std::move(r));
+        for (SymbolReference const& tr: ctx.from_tables) {
+            vector<string> c_names = db_ctx.get_table_column_names(tr.t_name);
+            for (auto& s: c_names) {
+                SymbolReference r;
+                r.t_name = tr.t_name;
+                r.c_name = std::move(s);
+                ctx.select_columns.push_back(std::move(r));
+            }
+        }
+    }
+
+    return 0;
+}
+
+
+int SqlExecutor::check_select_context_from_join(
+        const DatabaseContext& db_ctx,
+        SelectContext& ctx)
+{
+    assert(!ctx.from_tables.empty());
+    assert(ctx.from_tables.size() - 1 == ctx.join_expr_tree.size());
+
+    // check existence of tables in FROM and JOIN clauses
+    for (SymbolReference& r: ctx.from_tables) {
+        if (!db_ctx.has_table(r.t_name)) {
+            cerr << "Error: FROM: table doesn't exist: " << r.t_name << endl;
+            return 1;
+        }
+    }
+
+    for (size_t i = 0; i < ctx.join_expr_tree.size(); ++i) {
+        sdl::sql::ValueType et;
+        if (check_join_expr(db_ctx, ctx, i, ctx.join_expr_tree[i].get(), et) != 0)
+            return 1;
+
+        if (et != sdl::sql::ValueType::BOOL) {
+            cerr << "Error: JOIN: expression result type is not boolean"
+                 << endl;
+            return 1;
         }
     }
 
@@ -425,9 +451,187 @@ int SqlExecutor::check_select_context_where(
         return 1;
 
     if (et != sdl::sql::ValueType::BOOL) {
-        cerr << "ERROR: WHERE: the expression result type is not boolean"
+        cerr << "ERROR: WHERE: expression result type is not boolean"
              << endl;
         return 1;
+    }
+
+    return 0;
+}
+
+
+int SqlExecutor::check_join_expr(
+        const DatabaseContext& db_ctx,
+        SelectContext& ctx,
+        size_t expr_idx,
+        ExpressionNode* node,
+        sdl::sql::ValueType& expr_type)
+{
+    using sdl::sql::Value;
+    using sdl::sql::ValueType;
+
+    assert(node);
+
+    if (!node->right) {
+        // leaf node
+
+        if (node->ot.type == ExprOperandType::REF) {
+            // column identifier
+
+            SymbolReference& r = boost::get<SymbolReference>(node->value);
+
+            // check identifier
+
+            if (r.t_name.empty()) {
+                cerr << "Error: JOIN: ambiguous column name: "
+                     << r.c_name << endl;
+                return 1;
+            }
+
+            // search in table aliases
+            auto it1 = ctx.from_table_as.find(r.t_name);
+            if (it1 != ctx.from_table_as.end()) {
+                if (it1->second > expr_idx + 1) {
+                    cerr << "Error: JOIN: identifier could not be found: "
+                         << r.t_name << '.' << r.c_name << endl;
+                    return 1;
+                }
+                r.t_name = ctx.from_tables[it1->second].t_name;
+            }
+            else {
+                // search in table names
+                auto it2 = std::find_if(
+                            ctx.from_tables.begin(),
+                            ctx.from_tables.begin() + expr_idx + 2,
+                            [&r](const SymbolReference& t)
+                {
+                    return (t.flags & F_HAS_ALIAS) == 0 &&
+                            t.t_name == r.t_name;
+                });
+                if (it2 == ctx.from_tables.begin() + expr_idx + 2) {
+                    cerr << "Error: JOIN: identifier could not be found: "
+                         << r.t_name << '.' << r.c_name << endl;
+                    return 1;
+                }
+            }
+
+            // check r' t_name c_name
+            if (!db_ctx.has_table_column(r.t_name, r.c_name)) {
+                cerr << "Error: JOIN: table column not found: "
+                     << r.t_name << '.' << r.c_name << endl;
+                return 1;
+            }
+
+            // TODO: now, for simplicity, ref_tables can contain duplicates
+            ColumnRef cref;
+            cref.t_idx = db_ctx.get_table_idx(r.t_name);
+            cref.c_idx = db_ctx.get_column_position(r.t_name, r.c_name);
+            r.idx = ctx.ref_table.size();
+            ctx.ref_table.push_back(cref);
+
+            ValueType type = db_ctx.get_column_value_type(
+                        r.t_name, r.c_name);
+            assert(type != ValueType::UNKNOWN && "data type is not supported");
+
+            expr_type = type;
+        }
+        else {
+            // constant value
+
+            switch (node->ot.type) {
+            case ExprOperandType::INT:
+                assert(boost::get<Value>(node->value).which() ==
+                                (int)ValueType::INT32_T);
+                expr_type = ValueType::INT32_T;
+                break;
+            case ExprOperandType::STRING:
+                assert(boost::get<Value>(node->value).which() ==
+                                (int)ValueType::STRING);
+                expr_type = ValueType::STRING;
+                break;
+            default:
+                assert(false && "unexpected");
+            }
+        }
+    }
+    else {
+        // operation
+
+        auto op = node->ot.op;
+
+        bool unary =
+                op == ExprOperator::NEG
+                || op == ExprOperator::NOT;
+        assert(!(unary && node->left));
+
+        ValueType et_right;
+        if (check_join_expr(db_ctx, ctx, expr_idx, node->right.get(), et_right) != 0)
+            return 1;
+
+        bool error = false;
+
+        if (unary) {
+            switch (op) {
+            case ExprOperator::NOT:
+                if (et_right != ValueType::BOOL)
+                    error = true;
+                else
+                    expr_type = ValueType::BOOL;
+                break;
+            case ExprOperator::NEG:
+                if (et_right != ValueType::INT32_T)
+                    error = true;
+                else
+                    expr_type = et_right;
+                break;
+            default:
+                assert(false && "unexpected");
+            }
+        }
+        else {
+            ValueType et_left;
+            if (check_join_expr(db_ctx, ctx, expr_idx, node->left.get(), et_left) != 0)
+                return 1;
+
+            switch (op) {
+            case ExprOperator::AND:
+            case ExprOperator::OR:
+                if (et_left != ValueType::BOOL
+                        || et_right != ValueType::BOOL)
+                    error = true;
+                else
+                    expr_type = ValueType::BOOL;
+                break;
+            case ExprOperator::CMP_EQ:
+            case ExprOperator::CMP_NEQ:
+            case ExprOperator::CMP_GT:
+            case ExprOperator::CMP_LT:
+            case ExprOperator::CMP_GT_EQ:
+            case ExprOperator::CMP_LT_EQ:
+                if (et_left == ValueType::STRING
+                        && et_right == ValueType::STRING)
+                {
+                    expr_type = ValueType::BOOL;
+                }
+                // TODO add more numeric types here
+                else if (et_left == ValueType::INT32_T
+                         && et_right == ValueType::INT32_T)
+                {
+                    expr_type = ValueType::BOOL;
+                }
+                else {
+                    error = true;
+                }
+                break;
+            default:
+                assert(false && "unexcpected");
+            }
+        }
+
+        if (error) {
+            cerr << "Error: JOIN: incompatible operand types" << endl;
+            return 1;
+        }
     }
 
     return 0;
@@ -507,13 +711,12 @@ int SqlExecutor::check_where_expr(
                 return 1;
             }
 
-            // add to symbol table; not it contains only column indexes
-
-            // TODO
-            // now, for simplicity, don't check duplicates
-            size_t col_idx = db_ctx.get_column_position(r.t_name, r.c_name);
-            r.idx = ctx.where_symbol_table.size();
-            ctx.where_symbol_table.push_back(col_idx);
+            // TODO: now, for simplicity, ref_tables can contain duplicates
+            ColumnRef cref;
+            cref.t_idx = db_ctx.get_table_idx(r.t_name);
+            cref.c_idx = db_ctx.get_column_position(r.t_name, r.c_name);
+            r.idx = ctx.ref_table.size();
+            ctx.ref_table.push_back(cref);
 
             ValueType type = db_ctx.get_column_value_type(
                         r.t_name, r.c_name);
@@ -804,16 +1007,67 @@ int SqlExecutor::init_select_context_from(
      * FROM             <--- end
      */
 
-//    auto ite = end - 1;
-//    if (ite->op_ == EmitOp::JOIN) {
-//        cerr << "Error: JOIN is not implemented" << endl;
-//        return 1;
-//    }
-
     auto itb = start;
+
+    // process the main TABLE statement (which is not a part of JOIN)
     if (init_select_context_from_add_table(itb, itb, ctx) != 0)
         return 1;
-    assert(itb == end);
+
+    // process JOIN parts (if any)
+    /*
+     * ...
+     * TABLE Orders     <--- itb
+     * AS O
+     * FIELD C.custid
+     * FIELD O.custid
+     * COMPARISON 4
+     * JOIN
+     * ...
+     * ...
+     * JOIN
+     * FROM             <--- end
+     */
+    while (itb != end) {
+        if (init_select_context_from_add_table(itb, itb, ctx) != 0)
+            return 1;
+        if (init_select_context_from_add_join(itb, end, itb, ctx) != 0)
+            return 1;
+    }
+
+    return 0;
+}
+
+
+int SqlExecutor::init_select_context_from_add_join(
+        const EmitRecordContainer::const_iterator start,
+        const EmitRecordContainer::const_iterator end,
+        EmitRecordContainer::const_iterator& next_part,
+        SelectContext& ctx)
+{
+    /*
+     * FIELD C.custid   <--- start
+     * FIELD O.custid
+     * COMPARISON 4
+     * JOIN
+     * ...
+     * ...
+     * JOIN
+     * FROM             <--- end
+     */
+
+    auto it_join = std::find_if(start, end, [](auto const& e)
+    {
+        return e.op_ == EmitOp::JOIN;
+    });
+    assert(it_join != end);
+    assert(it_join > start);
+
+    next_part = it_join + 1;
+
+    EmitRecordContainer::const_iterator dummy;
+    ExpressionNodePtr node = build_expr_tree(it_join - 1, start - 1, dummy);
+
+    ctx.join_expr_tree.push_back(std::move(node));
 
     return 0;
 }
@@ -834,7 +1088,8 @@ int SqlExecutor::init_select_context_from_add_table(
     ++it;
 
     if (it->op_ == EmitOp::AS) {
-        auto res = ctx.from_table_as.insert(make_pair(it->name2_, 0));
+        auto res = ctx.from_table_as.insert(
+                    make_pair(it->name2_, ctx.from_tables.size() - 1));
         if (!res.second) {
             cerr << "Error: duplicated table alias: "
                  << it->name2_
@@ -915,6 +1170,14 @@ int SqlExecutor::init_select_context_order_by(
 }
 
 
+/*
+ * FROM             <--- end
+ * ...
+ * OPERATOR 6       <--- start
+ * WHERE
+ *
+ *
+ */
 SqlExecutor::ExpressionNodePtr SqlExecutor::build_expr_tree(
         const EmitRecordContainer::const_iterator start,
         const EmitRecordContainer::const_iterator end,
@@ -975,7 +1238,7 @@ SqlExecutor::ExpressionNodePtr SqlExecutor::build_expr_tree(
             break;
 
         default:
-            assert(false && "unexpected EmitOp");
+            assert(false && "unexpected");
         }
 
         --it;

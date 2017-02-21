@@ -16,11 +16,15 @@ DatabaseContext::DatabaseContext(sdl::db::database& db)
 
 void DatabaseContext::init()
 {
+    datatables_.reserve(db_._datatables.end() - db_._datatables.begin());
+
     size_t table_idx = 0;
     for (auto table_it = db_._datatables.begin();
          table_it != db_._datatables.end();
          ++table_it)
     {
+        datatables_.push_back(table_it);
+
         TableInfo t;
         t.idx = table_idx++;
 
@@ -54,15 +58,26 @@ bool DatabaseContext::has_table(
 const sdl::db::datatable& DatabaseContext::get_table(
         const std::string& table_name) const
 {
-    if (!has_table(table_name))
+    return get_table(get_table_idx(table_name));
+}
+
+
+size_t DatabaseContext::get_table_idx(
+        const std::string& table_name) const
+{
+    auto it = schema_.find(table_name);
+    if (it == schema_.end())
         throw std::invalid_argument("table not found");
-    for (auto const& ptable: db_._datatables) {
-        if (ptable->name() == table_name) {
-            return *ptable;
-        }
-    }
-    assert(false && "table not found");
-    throw std::invalid_argument("table not found");
+    return it->second.idx;
+}
+
+
+const sdl::db::datatable& DatabaseContext::get_table(
+        size_t table_idx) const
+{
+    assert(table_idx < datatables_.size());
+    // *datatables_[i]: shared_ptr
+    return *(datatables_[table_idx]->get());
 }
 
 

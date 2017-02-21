@@ -31,6 +31,9 @@ class DatabaseContext
 
     TableMap schema_;
 
+    using DatatableIterator = decltype(db_._datatables.begin());
+    std::vector<DatatableIterator> datatables_;
+
 public:
     DatabaseContext(sdl::db::database& db);
 
@@ -39,6 +42,7 @@ public:
     void dump_schema();
 
     bool has_table(const std::string& table_name) const noexcept;
+
     bool has_table_column(
             const std::string& table_name,
             const std::string& column_name) const noexcept;
@@ -49,6 +53,11 @@ public:
      */
     const sdl::db::datatable& get_table(
             const std::string& table_name) const;
+
+    size_t get_table_idx(const std::string& table_name) const;
+
+    const sdl::db::datatable& get_table(size_t table_idx) const;
+
 
     /*
      * Throws:

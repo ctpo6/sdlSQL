@@ -81,6 +81,7 @@ private:
                                        const std::string& name1,
                                        const std::string& name2);
 
+    // TODO: better name is Identifier
     struct SymbolReference
     {
         std::string t_name; // table or table alias
@@ -114,7 +115,13 @@ private:
 
     using ExpressionNodePtr = std::unique_ptr<ExpressionNode>;
 
-    static void dump_expr_tree(const ExpressionNode& node);
+    static void dump_expr_tree(const ExpressionNode* node);
+
+    struct ColumnRef
+    {
+        size_t t_idx;   // table
+        size_t c_idx;   // column
+    };
 
     struct SelectContext
     {
@@ -136,9 +143,7 @@ private:
 
         ExpressionNodePtr where_expr_tree;
 
-        // yes, it's not actually a symbol table for now
-        // column idx for each id found in WHERE expression
-        std::deque<size_t> where_symbol_table;
+        std::deque<ColumnRef> ref_table;
 
         std::vector<SymbolReference> order_by_list;
 
@@ -184,6 +189,11 @@ private:
             const EmitRecordContainer::const_iterator start,
             EmitRecordContainer::const_iterator& next_part,
             SelectContext& ctx);
+    int init_select_context_from_add_join(
+            const EmitRecordContainer::const_iterator start,
+            const EmitRecordContainer::const_iterator end,
+            EmitRecordContainer::const_iterator& next_part,
+            SelectContext& ctx);
 
     int init_select_context_where(
             const EmitRecordContainer::const_iterator start,
@@ -197,6 +207,9 @@ private:
     int check_select_context(
             const DatabaseContext& db_ctx,
             SelectContext& ctx);
+    int check_select_context_from_join(
+            const DatabaseContext& db_ctx,
+            SelectContext& ctx);
     int check_select_context_select(
             const DatabaseContext& db_ctx,
             SelectContext& ctx);
@@ -208,10 +221,15 @@ private:
             SelectContext& ctx);
 
     /*
-     * Return:
-     * 0 - ok
-     * 1 - error
+     * expr_idx: expression idx in ctx.join_expr_tree
      */
+    int check_join_expr(
+            const DatabaseContext& db_ctx,
+            SelectContext& ctx,
+            size_t expr_idx,
+            ExpressionNode* node,
+            sdl::sql::ValueType& expr_type);
+
     int check_where_expr(
             const DatabaseContext& db_ctx,
             SelectContext& ctx,

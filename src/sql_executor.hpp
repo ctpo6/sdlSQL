@@ -177,8 +177,6 @@ private:
     void execute2();
     bool execute_where(std::vector<record_iterator> const& row);
 
-    void execute1();
-
     void execute_order_by();
     void dump_result();
 

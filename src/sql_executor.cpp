@@ -24,25 +24,6 @@ int SqlExecutor::execute()
     return 0;
 }
 
-#if 0
-void SqlExecutor::execute1()
-{
-    const sdl::db::datatable& table = db_ctx_.get_table(
-                ctx_.from_tables[0].t_name);
-    for (auto it = table._record.begin();
-         it != table._record.end();
-         ++it)
-    {
-        if (execute_where(it))
-            res_.records.push_back(it);
-    }
-
-    execute_order_by();
-
-    if (ctx_.n_top)
-        res_.records.resize(ctx_.n_top);
-}
-#endif
 
 void SqlExecutor::execute2()
 {

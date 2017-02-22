@@ -17,14 +17,14 @@ int SqlExecutor::execute()
     cout << "\nselect context dump:\n";
     ctx_.dump();
 
-    execute1();
+    execute2();
 
     dump_result();
 
     return 0;
 }
 
-
+#if 0
 void SqlExecutor::execute1()
 {
     const sdl::db::datatable& table = db_ctx_.get_table(
@@ -42,9 +42,52 @@ void SqlExecutor::execute1()
     if (ctx_.n_top)
         res_.records.resize(ctx_.n_top);
 }
+#endif
 
+void SqlExecutor::execute2()
+{
+    if (ctx_.from_tables.size() == 1) {
+        // simple FROM (without JOIN)
+        size_t table_idx = db_ctx_.get_table_idx(ctx_.from_tables[0].t_name);
 
-bool SqlExecutor::execute_where(ExecutionResult::record_iterator it)
+        ctx_.table_idx_to_join_pos[table_idx] = 0;
+
+        const sdl::db::datatable& table = db_ctx_.get_table(table_idx);
+
+        for (auto it = table._record.begin();
+             it != table._record.end();
+             ++it)
+        {
+            std::vector<record_iterator> row {it};
+            if (execute_where(row))
+                eres_.push_back(std::move(row));
+        }
+    }
+    else {
+        assert (false && "not implemented");
+    }
+
+    execute_order_by();
+
+    if (ctx_.n_top)
+        eres_.resize(ctx_.n_top);
+}
+
+#if 0
+void SqlExecutor::execute_init()
+{
+    begin_record_it_.reserve(ctx_.from_tables.size());
+    end_record_it_.reserve(ctx_.from_tables.size());
+    for (SymbolReference const& r: ctx_.from_tables) {
+        const sdl::db::datatable& table = db_ctx_.get_table(r.t_name);
+        begin_record_it_.push_back(table._record.begin());
+        end_record_it_.push_back(table._record.end());
+        cur_record_it_.push_back(table._record.begin());
+    }
+}
+#endif
+
+bool SqlExecutor::execute_where(std::vector<record_iterator> const& row)
 {
     using sdl::sql::Value;
 
@@ -52,7 +95,7 @@ bool SqlExecutor::execute_where(ExecutionResult::record_iterator it)
         return true;
 
     Value value;
-    assert(execute_expr(it, ctx_.where_expr_tree.get(), value) == 0);
+    assert(execute_expr(row, ctx_.where_expr_tree.get(), value) == 0);
     assert(value.which() == static_cast<int>(sdl::sql::ValueType::BOOL));
 
     return boost::get<bool>(value);
@@ -60,7 +103,7 @@ bool SqlExecutor::execute_where(ExecutionResult::record_iterator it)
 
 
 int SqlExecutor::execute_expr(
-        ExecutionResult::record_iterator record_it,
+        std::vector<record_iterator> const& row,
         ExpressionNode* node,
         sdl::sql::Value& value)
 {
@@ -75,10 +118,12 @@ int SqlExecutor::execute_expr(
             value = boost::get<Value>(node->value);
         }
         else {
-            // column identifier
+            // identifier
             SymbolReference& r = boost::get<SymbolReference>(node->value);
-            value = sdl::sql::make_value(
-                        *record_it, ctx_.where_symbol_table[r.idx]);
+            size_t t_idx = ctx_.ref_table[r.idx].t_idx;
+            size_t join_pos = ctx_.table_idx_to_join_pos.at(t_idx);
+            size_t c_idx = ctx_.ref_table[r.idx].c_idx;
+            value = sdl::sql::make_value(*row[join_pos], c_idx);
         }
     }
     else {
@@ -98,7 +143,7 @@ int SqlExecutor::execute_expr(
             case ExprOperator::NOT:
             {
                 Value v;
-                if ((r = execute_expr(record_it, node->right.get(), v)) != 0)
+                if ((r = execute_expr(row, node->right.get(), v)) != 0)
                     return r;
                 if (v.which() != static_cast<int>(ValueType::BOOL))
                     return 2;
@@ -108,7 +153,7 @@ int SqlExecutor::execute_expr(
             case ExprOperator::NEG:
             {
                 Value v;
-                if ((r = execute_expr(record_it, node->right.get(), v)) != 0)
+                if ((r = execute_expr(row, node->right.get(), v)) != 0)
                     return r;
                 if (v.which() != static_cast<int>(ValueType::INT32_T))
                     return 2;
@@ -132,10 +177,10 @@ int SqlExecutor::execute_expr(
             case ExprOperator::CMP_LT_EQ:
             {
                 Value v_left;
-                if ((r = execute_expr(record_it, node->left.get(), v_left)) != 0)
+                if ((r = execute_expr(row, node->left.get(), v_left)) != 0)
                     return r;
                 Value v_right;
-                if ((r = execute_expr(record_it, node->right.get(), v_right)) != 0)
+                if ((r = execute_expr(row, node->right.get(), v_right)) != 0)
                     return r;
 
                 // TODO
@@ -174,7 +219,7 @@ int SqlExecutor::execute_expr(
             case ExprOperator::AND:
             {
                 Value v;
-                if ((r = execute_expr(record_it, node->left.get(), v)) != 0)
+                if ((r = execute_expr(row, node->left.get(), v)) != 0)
                     return r;
                 if (v.which() != static_cast<int>(ValueType::BOOL))
                     return 2;
@@ -182,7 +227,7 @@ int SqlExecutor::execute_expr(
                     value = false;
                 }
                 else {
-                    if ((r = execute_expr(record_it, node->right.get(), v)) != 0)
+                    if ((r = execute_expr(row, node->right.get(), v)) != 0)
                         return r;
                     if (v.which() != static_cast<int>(ValueType::BOOL))
                         return 2;
@@ -193,7 +238,7 @@ int SqlExecutor::execute_expr(
             case ExprOperator::OR:
             {
                 Value v;
-                if ((r = execute_expr(record_it, node->left.get(), v)) != 0)
+                if ((r = execute_expr(row, node->left.get(), v)) != 0)
                     return r;
                 if (v.which() != static_cast<int>(ValueType::BOOL))
                     return 2;
@@ -201,7 +246,7 @@ int SqlExecutor::execute_expr(
                     value = true;
                 }
                 else {
-                    if ((r = execute_expr(record_it, node->right.get(), v)) != 0)
+                    if ((r = execute_expr(row, node->right.get(), v)) != 0)
                         return r;
                     if (v.which() != static_cast<int>(ValueType::BOOL))
                         return 2;
@@ -213,7 +258,6 @@ int SqlExecutor::execute_expr(
                 assert(false && "not implemented");
             }
         }
-
     }
 
     return 0;
@@ -227,30 +271,32 @@ void SqlExecutor::execute_order_by()
 
     struct comparer
     {
-        // pairs: <col_idx, asc/desc flag>
-        vector<pair<size_t, bool>> order_list;
+        SelectContext const& ctx_;
 
-        comparer(DatabaseContext const& db_ctx,
-                 vector<SymbolReference> const& ol) :
-            order_list(ol.size())
+        explicit comparer(SelectContext const& ctx) : ctx_(ctx) {}
+
+        /*
+         * Compares 2 composite rows (join table result) accordingly to
+         * order_list.
+         */
+        bool operator()(std::vector<record_iterator> const& record1,
+                        std::vector<record_iterator> const& record2)
         {
-            for (size_t i = 0; i < order_list.size(); ++i) {
-                order_list[i].first = db_ctx.get_column_position(
-                            ol[i].t_name,
-                            ol[i].c_name);
-                order_list[i].second = (ol[i].flags & F_ORDER_BY_DESC) != 0;
-            }
-        }
+            using sdl::sql::Value;
 
-        bool operator()(ExecutionResult::record_iterator it1,
-                        ExecutionResult::record_iterator it2)
-        {
-            for (size_t i = 0; i < order_list.size(); ++i) {
-                size_t col_idx = order_list[i].first;
-                sdl::sql::Value v1 = sdl::sql::make_value(*it1, col_idx);
-                sdl::sql::Value v2 = sdl::sql::make_value(*it2, col_idx);
+            for (size_t i = 0; i < ctx_.order_by_list.size(); ++i) {
+                size_t ref_idx = ctx_.order_by_list[i].idx;
 
-                bool desc = order_list[i].second;
+                size_t t_idx = ctx_.ref_table[ref_idx].t_idx;
+                size_t c_idx = ctx_.ref_table[ref_idx].c_idx;
+
+                size_t join_pos = ctx_.table_idx_to_join_pos.at(t_idx);
+                assert(join_pos < record1.size());
+
+                Value v1 = sdl::sql::make_value(*record1[join_pos], c_idx);
+                Value v2 = sdl::sql::make_value(*record2[join_pos], c_idx);
+
+                bool desc = (ctx_.order_by_list[i].flags & F_ORDER_BY_DESC) != 0;
                 if (!desc) {
                     if (v1 < v2)
                         return true;
@@ -268,9 +314,9 @@ void SqlExecutor::execute_order_by()
             return false;   // *it1 == *it2
         }
     }
-    custom_less(db_ctx_, ctx_.order_by_list);
+    custom_less(ctx_);
 
-    std::sort(res_.records.begin(), res_.records.end(), custom_less);
+    std::sort(eres_.begin(), eres_.end(), custom_less);
 }
 
 
@@ -283,21 +329,18 @@ void SqlExecutor::dump_result()
     }
     cout << endl;
 
-    vector<size_t> col_idx(ctx_.select_columns.size());
-    for (size_t i = 0; i < ctx_.select_columns.size(); ++i) {
-        col_idx[i] = db_ctx_.get_column_position(
-                    ctx_.select_columns[i].t_name,
-                    ctx_.select_columns[i].c_name);
-    }
-
-    for (auto record_it: res_.records) {
-        for (size_t idx: col_idx) {
-            cout << sdl::sql::make_value(*record_it, idx) << ' ';
+    for (vector<record_iterator> const& row: eres_) {
+        for (SymbolReference const& r: ctx_.select_columns) {
+            assert(r.idx < ctx_.ref_table.size());
+            size_t t_idx = ctx_.ref_table[r.idx].t_idx;
+            size_t c_idx = ctx_.ref_table[r.idx].c_idx;
+            size_t join_pos = ctx_.table_idx_to_join_pos.at(t_idx);
+           cout << sdl::sql::make_value(*row[join_pos], c_idx) << ' ';
         }
         cout << endl;
     }
 
-    cout << '\n' << res_.records.size() << " row(s)" << endl;
+    cout << '\n' << eres_.size() << " row(s)" << endl;
 }
 
 
@@ -344,6 +387,15 @@ int SqlExecutor::check_select_context(
                 ctx.select_columns.push_back(std::move(r));
             }
         }
+    }
+
+    // add entries to ref_table for select_columns
+    for (SymbolReference& r: ctx.select_columns) {
+        ColumnRef cref;
+        cref.t_idx = db_ctx.get_table_idx(r.t_name);
+        cref.c_idx = db_ctx.get_column_position(r.t_name, r.c_name);
+        r.idx = ctx.ref_table.size();
+        ctx.ref_table.push_back(cref);
     }
 
     return 0;
@@ -898,6 +950,13 @@ int SqlExecutor::check_select_context_order_by(
                  << r.t_name << '.' << r.c_name << endl;
             return 1;
         }
+
+        // TODO: now, for simplicity, ref_tables can contain duplicates
+        ColumnRef cref;
+        cref.t_idx = db_ctx.get_table_idx(r.t_name);
+        cref.c_idx = db_ctx.get_column_position(r.t_name, r.c_name);
+        r.idx = ctx.ref_table.size();
+        ctx.ref_table.push_back(cref);
     }
 
     return 0;

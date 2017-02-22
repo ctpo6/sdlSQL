@@ -12,6 +12,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 
 class SqlExecutor
@@ -87,7 +88,7 @@ private:
         std::string t_name; // table or table alias
         std::string c_name; // column or column alias
 
-        // where_expr_tree: idx of entry in where_id_col_idx
+        // where_expr_tree: idx of entry in ref_table
         size_t idx = static_cast<size_t>(-1);
 
         uint32_t flags = 0;
@@ -141,28 +142,43 @@ private:
 
         std::vector<ExpressionNodePtr> join_expr_tree;
 
+        std::unordered_map<size_t, size_t> table_idx_to_join_pos;
+
         ExpressionNodePtr where_expr_tree;
 
-        std::deque<ColumnRef> ref_table;
-
         std::vector<SymbolReference> order_by_list;
+
+        std::deque<ColumnRef> ref_table;
 
         void dump() const;
     };
 
     SelectContext ctx_;
 
+    using record_access = sdl::db::datatable::record_access;
+    using record_iterator = record_access::iterator;
+
+#if 0
     struct ExecutionResult
     {
-        using record_access = sdl::db::datatable::record_access;
-        using record_iterator = record_access::iterator;
         std::deque<record_iterator> records;
     };
-
     ExecutionResult res_;
+#endif
+
+    std::deque<std::vector<record_iterator>> eres_;
+
+#if 0
+    std::vector<record_iterator> begin_record_it_;
+    std::vector<record_iterator> end_record_it_;
+    std::vector<record_iterator> cur_record_it_;
+#endif
+
+    void execute2();
+    bool execute_where(std::vector<record_iterator> const& row);
 
     void execute1();
-    bool execute_where(ExecutionResult::record_iterator it);
+
     void execute_order_by();
     void dump_result();
 
@@ -237,7 +253,7 @@ private:
             sdl::sql::ValueType& expr_type);
 
     int execute_expr(
-            ExecutionResult::record_iterator record_it,
+            std::vector<record_iterator> const& row,
             ExpressionNode* node,
             sdl::sql::Value& value);
 };

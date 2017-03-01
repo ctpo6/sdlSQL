@@ -29,6 +29,7 @@ void SqlExecutor::execute2()
 {
     if (ctx_.from_tables.size() == 1) {
         // simple FROM (without JOIN)
+
         size_t table_idx = db_ctx_.get_table_idx(ctx_.from_tables[0].t_name);
 
         ctx_.table_idx_to_join_pos[table_idx] = 0;
@@ -39,13 +40,72 @@ void SqlExecutor::execute2()
              it != table._record.end();
              ++it)
         {
-            std::vector<record_iterator> row {it};
+            vector<record_iterator> row {it};
             if (execute_where(row))
                 eres_.push_back(std::move(row));
         }
     }
     else {
-        assert (false && "not implemented");
+        // FROM + inner JOIN
+
+        assert(ctx_.from_tables.size() == ctx_.join_expr_tree.size() + 1);
+
+        deque<vector<record_iterator>> prev_res;
+
+        // initialize prev_res with all rows of the FROM table
+        {
+            size_t table_idx = db_ctx_.get_table_idx(ctx_.from_tables[0].t_name);
+            ctx_.table_idx_to_join_pos[table_idx] = 0;
+
+            const sdl::db::datatable& table = db_ctx_.get_table(table_idx);
+
+            for (auto it = table._record.begin();
+                 it != table._record.end();
+                 ++it)
+            {
+                prev_res.push_back({it});
+            }
+        }
+
+        // iterate over JOIN tables;
+        // each pass produces prev_res elements of increased size
+        for (size_t join_idx = 0;
+             join_idx < ctx_.join_expr_tree.size();
+             ++join_idx)
+        {
+            size_t table_idx = db_ctx_.get_table_idx(
+                        ctx_.from_tables[join_idx + 1].t_name);
+            ctx_.table_idx_to_join_pos[table_idx] = join_idx + 1;
+
+            // current JOIN table
+            const sdl::db::datatable& table = db_ctx_.get_table(table_idx);
+
+            deque<vector<record_iterator>> cur_res;
+
+            vector<record_iterator> row(join_idx + 2);
+
+            // iterate over results of the previous JOIN
+            for (size_t i = 0; i < prev_res.size(); ++i) {
+                std::copy(prev_res[i].begin(), prev_res[i].end(), row.begin());
+
+                // iterate over records of current JOIN table
+                row.back() = table._record.begin();
+                while (row.back() != table._record.end()) {
+                    if (execute_join(row)
+                            // if the final JOIN, also apply WHERE
+                            && (join_idx < ctx_.join_expr_tree.size() - 1
+                                || execute_where(row)))
+                    {
+                        cur_res.push_back(row);
+                    }
+                    ++row.back();
+                }
+            }
+
+            prev_res.swap(cur_res);
+        }
+
+        eres_.swap(prev_res);
     }
 
     execute_order_by();
@@ -54,19 +114,21 @@ void SqlExecutor::execute2()
         eres_.resize(ctx_.n_top);
 }
 
-#if 0
-void SqlExecutor::execute_init()
+
+bool SqlExecutor::execute_join(std::vector<record_iterator> const& row)
 {
-    begin_record_it_.reserve(ctx_.from_tables.size());
-    end_record_it_.reserve(ctx_.from_tables.size());
-    for (SymbolReference const& r: ctx_.from_tables) {
-        const sdl::db::datatable& table = db_ctx_.get_table(r.t_name);
-        begin_record_it_.push_back(table._record.begin());
-        end_record_it_.push_back(table._record.end());
-        cur_record_it_.push_back(table._record.begin());
-    }
+    using sdl::sql::Value;
+
+    assert(row.size() >= 2);
+    assert(row.size() <= ctx_.join_expr_tree.size() + 1);
+
+    Value value;
+    assert(execute_expr(row, ctx_.join_expr_tree[row.size() - 2].get(), value) == 0);
+    assert(value.which() == static_cast<int>(sdl::sql::ValueType::BOOL));
+
+    return boost::get<bool>(value);
 }
-#endif
+
 
 bool SqlExecutor::execute_where(std::vector<record_iterator> const& row)
 {

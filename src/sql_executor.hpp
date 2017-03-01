@@ -129,7 +129,6 @@ private:
         int n_top;
         int n_select;
 
-        // if empty -> SELECT *
         std::vector<SymbolReference> select_columns;
         std::map<std::string, size_t> select_column_as;
 
@@ -142,6 +141,7 @@ private:
 
         std::vector<ExpressionNodePtr> join_expr_tree;
 
+        // table idx in db -> table pos in join
         std::unordered_map<size_t, size_t> table_idx_to_join_pos;
 
         ExpressionNodePtr where_expr_tree;
@@ -158,26 +158,16 @@ private:
     using record_access = sdl::db::datatable::record_access;
     using record_iterator = record_access::iterator;
 
-#if 0
-    struct ExecutionResult
-    {
-        std::deque<record_iterator> records;
-    };
-    ExecutionResult res_;
-#endif
-
     std::deque<std::vector<record_iterator>> eres_;
 
-#if 0
-    std::vector<record_iterator> begin_record_it_;
-    std::vector<record_iterator> end_record_it_;
-    std::vector<record_iterator> cur_record_it_;
-#endif
 
     void execute2();
+
+    bool execute_join(std::vector<record_iterator> const& row);
     bool execute_where(std::vector<record_iterator> const& row);
 
     void execute_order_by();
+
     void dump_result();
 
     /*

@@ -10,7 +10,6 @@ using namespace std;
 
 int SqlExecutor::execute()
 {
-    cout << "init_select_context...\n";
     if (init_select_context(emit_, ctx_) != 0) {
         return 1;
     }
@@ -31,7 +30,6 @@ void SqlExecutor::execute2()
         // simple FROM (without JOIN)
 
         size_t table_idx = db_ctx_.get_table_idx(ctx_.from_tables[0].t_name);
-
         ctx_.table_idx_to_join_pos[table_idx] = 0;
 
         const sdl::db::datatable& table = db_ctx_.get_table(table_idx);
@@ -89,16 +87,18 @@ void SqlExecutor::execute2()
                 std::copy(prev_res[i].begin(), prev_res[i].end(), row.begin());
 
                 // iterate over records of current JOIN table
-                row.back() = table._record.begin();
-                while (row.back() != table._record.end()) {
+
+                for (row.back() = table._record.begin();
+                     row.back() != table._record.end();
+                     ++row.back())
+                {
                     if (execute_join(row)
-                            // if the final JOIN, also apply WHERE
+                            // for the final JOIN also apply WHERE
                             && (join_idx < ctx_.join_expr_tree.size() - 1
                                 || execute_where(row)))
                     {
                         cur_res.push_back(row);
                     }
-                    ++row.back();
                 }
             }
 
@@ -123,6 +123,12 @@ bool SqlExecutor::execute_join(std::vector<record_iterator> const& row)
     assert(row.size() <= ctx_.join_expr_tree.size() + 1);
 
     Value value;
+
+    // given N = row.size(),
+    // row[0] points to the record of the FROM table,
+    // row[1] - of the JOIN table [0], ..., row[N-1] - of the JOIN table [N-2]
+    // row[0], row[1], ..., row[N-2] records are already checked
+    // so we use JOIN expr [N-2] to check a tuple <row[0], ..., row[N-1]>
     assert(execute_expr(row, ctx_.join_expr_tree[row.size() - 2].get(), value) == 0);
     assert(value.which() == static_cast<int>(sdl::sql::ValueType::BOOL));
 

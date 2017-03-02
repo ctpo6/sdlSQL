@@ -168,7 +168,7 @@ int SqlExecutor::execute_expr(
         }
         else {
             // identifier
-            SymbolReference& r = boost::get<SymbolReference>(node->value);
+            Identifier& r = boost::get<Identifier>(node->value);
             size_t t_idx = ctx_.ref_table[r.idx].t_idx;
             size_t join_pos = ctx_.table_idx_to_join_pos.at(t_idx);
             size_t c_idx = ctx_.ref_table[r.idx].c_idx;
@@ -373,13 +373,13 @@ void SqlExecutor::dump_result()
 {
     cout << "\nResult:\n";
 
-    for (const SymbolReference& r: ctx_.select_columns) {
+    for (const Identifier& r: ctx_.select_columns) {
         cout << r.t_name << '.' << r.c_name << ' ';
     }
     cout << endl;
 
     for (vector<record_iterator> const& row: eres_) {
-        for (SymbolReference const& r: ctx_.select_columns) {
+        for (Identifier const& r: ctx_.select_columns) {
             assert(r.idx < ctx_.ref_table.size());
             size_t t_idx = ctx_.ref_table[r.idx].t_idx;
             size_t c_idx = ctx_.ref_table[r.idx].c_idx;
@@ -425,10 +425,10 @@ int SqlExecutor::check_select_context(
 
     // SELECTALL
     if (ctx.select_columns.empty()) {
-        for (SymbolReference const& tr: ctx.from_tables) {
+        for (Identifier const& tr: ctx.from_tables) {
             vector<string> c_names = db_ctx.get_table_column_names(tr.t_name);
             for (auto& s: c_names) {
-                SymbolReference r;
+                Identifier r;
                 r.t_name = tr.t_name;
                 r.c_name = std::move(s);
                 ctx.select_columns.push_back(std::move(r));
@@ -437,7 +437,7 @@ int SqlExecutor::check_select_context(
     }
 
     // add entries to ref_table for select_columns
-    for (SymbolReference& r: ctx.select_columns) {
+    for (Identifier& r: ctx.select_columns) {
         ColumnRef cref;
         cref.t_idx = db_ctx.get_table_idx(r.t_name);
         cref.c_idx = db_ctx.get_column_position(r.t_name, r.c_name);
@@ -457,7 +457,7 @@ int SqlExecutor::check_select_context_from_join(
     assert(ctx.from_tables.size() - 1 == ctx.join_expr_tree.size());
 
     // check existence of tables in FROM and JOIN clauses
-    for (SymbolReference& r: ctx.from_tables) {
+    for (Identifier& r: ctx.from_tables) {
         if (!db_ctx.has_table(r.t_name)) {
             cerr << "Error: FROM: table doesn't exist: " << r.t_name << endl;
             return 1;
@@ -485,7 +485,7 @@ int SqlExecutor::check_select_context_select(
         SelectContext& ctx)
 {
     // check identifiers in SELECT
-    for (SymbolReference& r: ctx.select_columns) {
+    for (Identifier& r: ctx.select_columns) {
         if (r.t_name.empty()) {
             if (ctx.from_tables.size() > 1) {
                 cerr << "Error: SELECT: missing table name for column: "
@@ -500,7 +500,7 @@ int SqlExecutor::check_select_context_select(
                 auto it2 = find_if(
                             ctx.from_tables.begin(),
                             ctx.from_tables.end(),
-                            [&r](const SymbolReference& t)
+                            [&r](const Identifier& t)
                 {
                     /*
                      * name of the table which have an alias can't be used for
@@ -577,7 +577,7 @@ int SqlExecutor::check_join_expr(
         if (node->ot.type == ExprOperandType::IDENTIFIER) {
             // column identifier
 
-            SymbolReference& r = boost::get<SymbolReference>(node->value);
+            Identifier& r = boost::get<Identifier>(node->value);
 
             // check identifier
 
@@ -602,7 +602,7 @@ int SqlExecutor::check_join_expr(
                 auto it2 = std::find_if(
                             ctx.from_tables.begin(),
                             ctx.from_tables.begin() + expr_idx + 2,
-                            [&r](const SymbolReference& t)
+                            [&r](const Identifier& t)
                 {
                     return (t.flags & F_HAS_ALIAS) == 0 &&
                             t.t_name == r.t_name;
@@ -754,7 +754,7 @@ int SqlExecutor::check_where_expr(
         if (node->ot.type == ExprOperandType::IDENTIFIER) {
             // column identifier
 
-            SymbolReference& r = boost::get<SymbolReference>(node->value);
+            Identifier& r = boost::get<Identifier>(node->value);
 
             // first check identifier
 
@@ -785,7 +785,7 @@ int SqlExecutor::check_where_expr(
                     auto it2 = find_if(
                                 ctx.from_tables.begin(),
                                 ctx.from_tables.end(),
-                                [&r](const SymbolReference& t)
+                                [&r](const Identifier& t)
                     {
                         return (t.flags & F_HAS_ALIAS) == 0 &&
                                 t.t_name == r.t_name;
@@ -930,7 +930,7 @@ int SqlExecutor::check_select_context_order_by(
         const DatabaseContext& db_ctx,
         SelectContext& ctx)
 {
-    for (SymbolReference& r: ctx.order_by_list) {
+    for (Identifier& r: ctx.order_by_list) {
         if (r.t_name.empty()) {
             auto it = ctx.select_column_as.find(r.c_name);
             if (it != ctx.select_column_as.end()) {
@@ -972,7 +972,7 @@ int SqlExecutor::check_select_context_order_by(
                 auto it2 = find_if(
                             ctx.from_tables.begin(),
                             ctx.from_tables.end(),
-                            [&r](const SymbolReference& t)
+                            [&r](const Identifier& t)
                 {
                     return (t.flags & F_HAS_ALIAS) == 0 &&
                             t.t_name == r.t_name;
@@ -1041,7 +1041,7 @@ int SqlExecutor::init_select_context1(
         for (int i = 0; i < ctx.n_select; ++i) {
             assert(itb->op_ == ParserOpCode::FIELD || itb->op_ == ParserOpCode::NAME);
 
-            SymbolReference ref;
+            Identifier ref;
             if (itb->op_ == ParserOpCode::FIELD)
                 ref.t_name = itb->name1_;
             ref.c_name = itb->name2_;
@@ -1188,7 +1188,7 @@ int SqlExecutor::init_select_context_from_add_table(
 
     assert(it->op_ == ParserOpCode::TABLE);
 
-    SymbolReference ref;
+    Identifier ref;
     ref.t_name = it->name2_;
     ctx.from_tables.push_back(std::move(ref));
     ++it;
@@ -1254,7 +1254,7 @@ int SqlExecutor::init_select_context_order_by(
     while (it->op_ != ParserOpCode::ORDER_BY) {
         assert(it->op_ == ParserOpCode::FIELD || it->op_ == ParserOpCode::NAME);
 
-        SymbolReference ref;
+        Identifier ref;
 
         if (it->op_ == ParserOpCode::FIELD)
             ref.t_name = it->name1_;
@@ -1314,7 +1314,7 @@ SqlExecutor::ExpressionNodePtr SqlExecutor::build_expr_tree(
 
         case ParserOpCode::NAME:
         {
-            SymbolReference ref;
+            Identifier ref;
             ref.c_name = it->name2_;
 
             node->ot.type = ExprOperandType::IDENTIFIER;
@@ -1324,7 +1324,7 @@ SqlExecutor::ExpressionNodePtr SqlExecutor::build_expr_tree(
 
         case ParserOpCode::FIELD:
         {
-            SymbolReference ref;
+            Identifier ref;
             ref.t_name = it->name1_;
             ref.c_name = it->name2_;
 

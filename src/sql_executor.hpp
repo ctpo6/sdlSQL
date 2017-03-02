@@ -35,8 +35,7 @@ private:
         F_HAS_ALIAS = 0x80000000,
     };
 
-    // TODO: better name is Identifier
-    struct SymbolReference
+    struct Identifier
     {
         std::string t_name; // table or table alias
         std::string c_name; // column or column alias
@@ -47,7 +46,7 @@ private:
         uint32_t flags = 0;
     };
     friend std::ostream& operator<<(std::ostream& os,
-                                    const SqlExecutor::SymbolReference& r);
+                                    const SqlExecutor::Identifier& r);
 
     struct ExpressionNode
     {
@@ -61,7 +60,7 @@ private:
             ExprOperandType type;
         } ot;
 
-        sdl::sql::variant<sdl::sql::Value, SymbolReference> value;
+        sdl::sql::variant<sdl::sql::Value, Identifier> value;
 
         std::unique_ptr<ExpressionNode> left;
         std::unique_ptr<ExpressionNode> right;
@@ -82,14 +81,14 @@ private:
         int n_top;
         int n_select;
 
-        std::vector<SymbolReference> select_columns;
+        std::vector<Identifier> select_columns;
         std::map<std::string, size_t> select_column_as;
 
         // [0] : FROM
         // [1] : JOIN 0
         // ...
         // [N] : JOIN N-1
-        std::vector<SymbolReference> from_tables;
+        std::vector<Identifier> from_tables;
         std::map<std::string, size_t> from_table_as;
 
         std::vector<ExpressionNodePtr> join_expr_tree;
@@ -99,7 +98,7 @@ private:
 
         ExpressionNodePtr where_expr_tree;
 
-        std::vector<SymbolReference> order_by_list;
+        std::vector<Identifier> order_by_list;
 
         std::deque<ColumnRef> ref_table;
 
@@ -200,7 +199,7 @@ private:
 
 std::ostream& operator<<(
         std::ostream& os,
-        const SqlExecutor::SymbolReference& r);
+        const SqlExecutor::Identifier& r);
 
 
 #endif

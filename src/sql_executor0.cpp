@@ -50,7 +50,7 @@ std::ostream& operator<<(std::ostream& os, const ExprOperandType e)
 
 std::ostream& operator<<(
         std::ostream& os,
-        const SqlExecutor::SymbolReference& r)
+        const SqlExecutor::Identifier& r)
 {
     r.t_name.empty() ?
                 os << r.c_name :

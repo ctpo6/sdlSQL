@@ -2,6 +2,60 @@
 #define SQL_EXECUTOR_TYPES_HPP
 
 #include <iostream>
+#include <string>
+#include <utility>
+
+
+enum class ParserOpCode
+{
+    AS,
+    ASC,
+    COMPARISON,
+    DESC,
+    FIELD,
+    FROM,
+    JOIN,
+    NAME,
+    NUMBER,
+    OPERATOR,
+    ORDER_BY,
+    STRING,
+    TABLE,
+    TOP,
+    SELECT,
+    SELECT_ALL,
+    WHERE,
+};
+
+
+struct ParserCommand
+{
+    ParserOpCode op_;
+
+    int int_;
+    std::string string_;
+
+    // column or table identifier: name1_.name2_
+    // column or table alias: name2_
+    std::string name1_;
+    std::string name2_;
+
+    explicit ParserCommand(ParserOpCode op) : op_(op) {}
+
+    explicit ParserCommand(ParserOpCode op,
+                           int param)
+        : op_(op), int_(param) {}
+
+    explicit ParserCommand(ParserOpCode op,
+                           std::string param)
+        : op_(op), string_(std::move(param)) {}
+
+    explicit ParserCommand(ParserOpCode op,
+                           std::string name1,
+                           std::string name2)
+        : op_(op), name1_(std::move(name1)), name2_(std::move(name2)) {}
+};
+
 
 enum class ExprOperator
 {
@@ -24,7 +78,7 @@ std::ostream& operator<<(std::ostream& os, const ExprOperator e);
 
 enum class ExprOperandType
 {
-    REF = 0,
+    IDENTIFIER = 0,
     INT,
     STRING,
 

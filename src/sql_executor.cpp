@@ -8,12 +8,12 @@
 using namespace std;
 
 
-int SqlExecutor::execute()
+int SqlExecutor::execute(ParserCommandContainer const& commands)
 {
-    if (init_select_context(emit_, ctx_) != 0) {
+    if (init_select_context(commands, ctx_) != 0) {
         return 1;
     }
-    cout << "\nselect context dump:\n";
+    cout << "\nSELECT context dump:\n";
     ctx_.dump();
 
     execute2();
@@ -162,7 +162,7 @@ int SqlExecutor::execute_expr(
     assert(node);
 
     if (!node->right) {
-        if (node->ot.type != ExprOperandType::REF) {
+        if (node->ot.type != ExprOperandType::IDENTIFIER) {
             // constant value
             value = boost::get<Value>(node->value);
         }
@@ -394,15 +394,13 @@ void SqlExecutor::dump_result()
 
 
 int SqlExecutor::init_select_context(
-        const EmitRecordContainer& em,
+        const ParserCommandContainer& cmd,
         SelectContext& ctx)
 {
-    if (init_select_context1(emit_, ctx_) != 0) {
+    if (init_select_context1(cmd, ctx_) != 0)
         return 1;
-    }
-    if (check_select_context(db_ctx_, ctx_) != 0) {
+    if (check_select_context(db_ctx_, ctx_) != 0)
         return 1;
-    }
     return 0;
 }
 
@@ -576,7 +574,7 @@ int SqlExecutor::check_join_expr(
     if (!node->right) {
         // leaf node
 
-        if (node->ot.type == ExprOperandType::REF) {
+        if (node->ot.type == ExprOperandType::IDENTIFIER) {
             // column identifier
 
             SymbolReference& r = boost::get<SymbolReference>(node->value);
@@ -753,7 +751,7 @@ int SqlExecutor::check_where_expr(
     if (!node->right) {
         // leaf node
 
-        if (node->ot.type == ExprOperandType::REF) {
+        if (node->ot.type == ExprOperandType::IDENTIFIER) {
             // column identifier
 
             SymbolReference& r = boost::get<SymbolReference>(node->value);
@@ -1013,14 +1011,14 @@ int SqlExecutor::check_select_context_order_by(
 
 
 int SqlExecutor::init_select_context1(
-        const EmitRecordContainer& em,
+        const ParserCommandContainer& cmd,
         SelectContext& ctx)
 {
-    if (em.empty())
+    if (cmd.empty())
         return 1;
 
-    auto ite = em.end() - 1;
-    if (ite->op_ != EmitOp::SELECT)
+    auto ite = cmd.end() - 1;
+    if (ite->op_ != ParserOpCode::SELECT)
         return 1;
 
     ctx.n_select = ite->int_;
@@ -1029,29 +1027,29 @@ int SqlExecutor::init_select_context1(
     --ite;
 
     ctx.n_top = 0;
-    auto itb = em.begin();
-    if (itb->op_ == EmitOp::TOP) {
+    auto itb = cmd.begin();
+    if (itb->op_ == ParserOpCode::TOP) {
         ctx.n_top = itb->int_;
         ++itb;
     }
 
     // SELECT
-    if (ctx.n_select == 1 && itb->op_ == EmitOp::SELECT_ALL) {
+    if (ctx.n_select == 1 && itb->op_ == ParserOpCode::SELECT_ALL) {
         ++itb;
     }
     else {
         for (int i = 0; i < ctx.n_select; ++i) {
-            assert(itb->op_ == EmitOp::FIELD || itb->op_ == EmitOp::NAME);
+            assert(itb->op_ == ParserOpCode::FIELD || itb->op_ == ParserOpCode::NAME);
 
             SymbolReference ref;
-            if (itb->op_ == EmitOp::FIELD)
+            if (itb->op_ == ParserOpCode::FIELD)
                 ref.t_name = itb->name1_;
             ref.c_name = itb->name2_;
             ctx.select_columns.push_back(std::move(ref));
 
             ++itb;
 
-            if (itb->op_ == EmitOp::AS) {
+            if (itb->op_ == ParserOpCode::AS) {
                 auto res = ctx.select_column_as.insert(
                             make_pair(itb->name2_,
                                       ctx.select_columns.size() - 1));
@@ -1069,14 +1067,14 @@ int SqlExecutor::init_select_context1(
     // itb now points to the begin of FROM part
 
     // ORDER BY
-    if (ite->op_ == EmitOp::ORDER_BY) {
+    if (ite->op_ == ParserOpCode::ORDER_BY) {
         if (init_select_context_order_by(ite, ite, ctx) != 0) {
             return 1;
         }
     }
 
     // WHERE
-    if (ite->op_ == EmitOp::WHERE) {
+    if (ite->op_ == ParserOpCode::WHERE) {
         if (init_select_context_where(ite, ite, ctx) != 0) {
             return 1;
         }
@@ -1090,7 +1088,7 @@ int SqlExecutor::init_select_context1(
      * JOIN
      * FROM             <--- ite
      */
-    assert(ite->op_ == EmitOp::FROM);
+    assert(ite->op_ == ParserOpCode::FROM);
     assert(ite - itb >= 1);
 
     // FROM
@@ -1103,8 +1101,8 @@ int SqlExecutor::init_select_context1(
 
 
 int SqlExecutor::init_select_context_from(
-        const EmitRecordContainer::const_iterator start,
-        const EmitRecordContainer::const_iterator end,
+        const ParserCommandContainer::const_iterator start,
+        const ParserCommandContainer::const_iterator end,
         SelectContext& ctx)
 {
     /*
@@ -1147,9 +1145,9 @@ int SqlExecutor::init_select_context_from(
 
 
 int SqlExecutor::init_select_context_from_add_join(
-        const EmitRecordContainer::const_iterator start,
-        const EmitRecordContainer::const_iterator end,
-        EmitRecordContainer::const_iterator& next_part,
+        const ParserCommandContainer::const_iterator start,
+        const ParserCommandContainer::const_iterator end,
+        ParserCommandContainer::const_iterator& next_part,
         SelectContext& ctx)
 {
     /*
@@ -1165,14 +1163,14 @@ int SqlExecutor::init_select_context_from_add_join(
 
     auto it_join = std::find_if(start, end, [](auto const& e)
     {
-        return e.op_ == EmitOp::JOIN;
+        return e.op_ == ParserOpCode::JOIN;
     });
     assert(it_join != end);
     assert(it_join > start);
 
     next_part = it_join + 1;
 
-    EmitRecordContainer::const_iterator dummy;
+    ParserCommandContainer::const_iterator dummy;
     ExpressionNodePtr node = build_expr_tree(it_join - 1, start - 1, dummy);
 
     ctx.join_expr_tree.push_back(std::move(node));
@@ -1182,20 +1180,20 @@ int SqlExecutor::init_select_context_from_add_join(
 
 
 int SqlExecutor::init_select_context_from_add_table(
-        const EmitRecordContainer::const_iterator start,
-        EmitRecordContainer::const_iterator& next_part,
+        const ParserCommandContainer::const_iterator start,
+        ParserCommandContainer::const_iterator& next_part,
         SelectContext& ctx)
 {
     auto it = start;
 
-    assert(it->op_ == EmitOp::TABLE);
+    assert(it->op_ == ParserOpCode::TABLE);
 
     SymbolReference ref;
     ref.t_name = it->name2_;
     ctx.from_tables.push_back(std::move(ref));
     ++it;
 
-    if (it->op_ == EmitOp::AS) {
+    if (it->op_ == ParserOpCode::AS) {
         auto res = ctx.from_table_as.insert(
                     make_pair(it->name2_, ctx.from_tables.size() - 1));
         if (!res.second) {
@@ -1215,14 +1213,14 @@ int SqlExecutor::init_select_context_from_add_table(
 
 
 int SqlExecutor::init_select_context_where(
-        const EmitRecordContainer::const_iterator start,
-        EmitRecordContainer::const_iterator& next_part,
+        const ParserCommandContainer::const_iterator start,
+        ParserCommandContainer::const_iterator& next_part,
         SelectContext& ctx)
 {
-    assert(start->op_ == EmitOp::WHERE);
+    assert(start->op_ == ParserOpCode::WHERE);
 
     auto it = start - 1;
-    while (it->op_ != EmitOp::FROM) {
+    while (it->op_ != ParserOpCode::FROM) {
         --it;
     }
     assert(start - it > 1);
@@ -1237,15 +1235,15 @@ int SqlExecutor::init_select_context_where(
 
 
 int SqlExecutor::init_select_context_order_by(
-        const EmitRecordContainer::const_iterator start,
-        EmitRecordContainer::const_iterator& next_part,
+        const ParserCommandContainer::const_iterator start,
+        ParserCommandContainer::const_iterator& next_part,
         SelectContext& ctx)
 {
-    assert(start->op_ == EmitOp::ORDER_BY);
+    assert(start->op_ == ParserOpCode::ORDER_BY);
 //    cout << "ORDER BY" << endl;
 
     auto it = start - 1;
-    while (it->op_ != EmitOp::WHERE && it->op_ != EmitOp::FROM) {
+    while (it->op_ != ParserOpCode::WHERE && it->op_ != ParserOpCode::FROM) {
         --it;
     }
     assert(start - it > 1);
@@ -1253,20 +1251,20 @@ int SqlExecutor::init_select_context_order_by(
     next_part = it;
 
     ++it;
-    while (it->op_ != EmitOp::ORDER_BY) {
-        assert(it->op_ == EmitOp::FIELD || it->op_ == EmitOp::NAME);
+    while (it->op_ != ParserOpCode::ORDER_BY) {
+        assert(it->op_ == ParserOpCode::FIELD || it->op_ == ParserOpCode::NAME);
 
         SymbolReference ref;
 
-        if (it->op_ == EmitOp::FIELD)
+        if (it->op_ == ParserOpCode::FIELD)
             ref.t_name = it->name1_;
         ref.c_name = it->name2_;
         ++it;
 
-        if (it->op_ == EmitOp::ASC) {
+        if (it->op_ == ParserOpCode::ASC) {
             ++it;
         }
-        else if (it->op_ == EmitOp::DESC) {
+        else if (it->op_ == ParserOpCode::DESC) {
             ref.flags = F_ORDER_BY_DESC;
             ++it;
         }
@@ -1287,14 +1285,14 @@ int SqlExecutor::init_select_context_order_by(
  *
  */
 SqlExecutor::ExpressionNodePtr SqlExecutor::build_expr_tree(
-        const EmitRecordContainer::const_iterator start,
-        const EmitRecordContainer::const_iterator end,
-        EmitRecordContainer::const_iterator& out)
+        const ParserCommandContainer::const_iterator start,
+        const ParserCommandContainer::const_iterator end,
+        ParserCommandContainer::const_iterator& out)
 {
     ExpressionNodePtr node(new ExpressionNode);
 
     auto it = start;
-    if (it->op_ == EmitOp::OPERATOR || it->op_ == EmitOp::COMPARISON) {
+    if (it->op_ == ParserOpCode::OPERATOR || it->op_ == ParserOpCode::COMPARISON) {
         node->ot.op = static_cast<ExprOperator>(it->int_);
 
         --it;
@@ -1314,33 +1312,33 @@ SqlExecutor::ExpressionNodePtr SqlExecutor::build_expr_tree(
         switch (it->op_)
         {
 
-        case EmitOp::NAME:
+        case ParserOpCode::NAME:
         {
             SymbolReference ref;
             ref.c_name = it->name2_;
 
-            node->ot.type = ExprOperandType::REF;
+            node->ot.type = ExprOperandType::IDENTIFIER;
             node->value = std::move(ref);
         }
             break;
 
-        case EmitOp::FIELD:
+        case ParserOpCode::FIELD:
         {
             SymbolReference ref;
             ref.t_name = it->name1_;
             ref.c_name = it->name2_;
 
-            node->ot.type = ExprOperandType::REF;
+            node->ot.type = ExprOperandType::IDENTIFIER;
             node->value = std::move(ref);
         }
             break;
 
-        case EmitOp::NUMBER:
+        case ParserOpCode::NUMBER:
             node->ot.type = ExprOperandType::INT;
             node->value = it->int_;
             break;
 
-        case EmitOp::STRING:
+        case ParserOpCode::STRING:
             node->ot.type = ExprOperandType::STRING;
             node->value = it->string_;
             break;

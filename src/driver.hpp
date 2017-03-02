@@ -1,12 +1,13 @@
 #ifndef DRIVER_HPP
 #define DRIVER_HPP
 
-#include "sql_executor.hpp"
+#include "sql_executor_types.hpp"
 
 #include "sql.tab.hpp"
 
-#include <map>
+#include <deque>
 #include <string>
+#include <utility>
 
 
 // Tell Flex the lexer's prototype ...
@@ -15,13 +16,37 @@
 // ... and declare it for the parser's sake.
 YY_DECL;
 
+
 // Conducting the whole scanning and parsing of Calc++.
 class Driver
 {
-    SqlExecutor& exec_;
+    using ParserCommandContainer = std::deque<ParserCommand>;
+
+    ParserCommandContainer emit_;
+
+    inline void emit(ParserOpCode op)
+    {
+        emit_.emplace_back(op);
+    }
+
+    inline void emit(ParserOpCode op, int param)
+    {
+        emit_.emplace_back(op, param);
+    }
+
+    inline void emit(ParserOpCode op, std::string param)
+    {
+        emit_.emplace_back(op, std::move(param));
+    }
+
+    inline void emit(ParserOpCode op,
+                     std::string name1,
+                     std::string name2)
+    {
+        emit_.emplace_back(op, std::move(name1), std::move(name2));
+    }
 
 public:
-    std::map<std::string, int> variables;
 
     int result;
 
@@ -34,9 +59,7 @@ public:
 
 public:
 
-    explicit Driver(SqlExecutor& e) : exec_(e)
-    {
-    }
+    ParserCommandContainer const& get_parser_commands() const { return emit_; }
 
     // Handling the scanner.
     void scan_begin();

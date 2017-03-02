@@ -23,7 +23,7 @@ const char* expr_operator_str[static_cast<size_t>(ExprOperator::MAX_)] =
 };
 const char* expr_operand_type_str[static_cast<size_t>(ExprOperandType::MAX_)] =
 {
-    "REF",
+    "IDENTIFIER",
     "INT",
     "STRING"
 };
@@ -108,66 +108,4 @@ void SqlExecutor::SelectContext::dump() const
     cout << "\norder by:\n";
     for (const auto& r: order_by_list)
         cout << r << endl;
-}
-
-SqlExecutor::EmitRecord SqlExecutor::make_emit_record(EmitOp op)
-{
-    EmitRecord e;
-    e.op_ = op;
-    return e;
-}
-
-
-SqlExecutor::EmitRecord SqlExecutor::make_emit_record(
-        EmitOp op,
-        int param)
-{
-    EmitRecord e;
-    e.op_ = op;
-    e.int_ = param;
-    return e;
-}
-
-SqlExecutor::EmitRecord SqlExecutor::make_emit_record(
-        EmitOp op,
-        const std::string& param)
-{
-    EmitRecord e;
-    e.op_ = op;
-    e.string_ = param;
-    return e;
-}
-
-SqlExecutor::EmitRecord SqlExecutor::make_emit_record(
-        EmitOp op,
-        const std::string& name1,
-        const std::string& name2)
-{
-    EmitRecord e;
-    e.op_ = op;
-    e.name1_ = name1;
-    e.name2_ = name2;
-    return e;
-}
-
-void SqlExecutor::emit(EmitOp op)
-{
-    emit_.push_back(make_emit_record(op));
-}
-
-void SqlExecutor::emit(EmitOp op, int param)
-{
-    emit_.push_back(make_emit_record(op, param));
-}
-
-void SqlExecutor::emit(EmitOp op, const std::string& param)
-{
-    emit_.push_back(make_emit_record(op, param));
-}
-
-void SqlExecutor::emit(EmitOp op,
-                    const std::string& name1,
-                    const std::string& name2)
-{
-    emit_.push_back(make_emit_record(op, name1, name2));
 }

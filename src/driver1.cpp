@@ -13,25 +13,25 @@ using namespace std;
 void Driver::sqlp_alias(const std::string& alias)
 {
     printf("AS %s\n", alias.c_str());
-    exec_.emit(SqlExecutor::EmitOp::AS, string(), alias);
+    emit(ParserOpCode::AS, string(), alias);
 }
 
 void Driver::sqlp_expr_cmp(ExprOperator comp)
 {
     printf("COMPARISON %d\n", (int)comp);
-    exec_.emit(SqlExecutor::EmitOp::COMPARISON, (int)comp);
+    emit(ParserOpCode::COMPARISON, (int)comp);
 }
 
 void Driver::sqlp_expr_op(ExprOperator op)
 {
     printf("OPERATOR %d\n", (int)op);
-    exec_.emit(SqlExecutor::EmitOp::OPERATOR, (int)op);
+    emit(ParserOpCode::OPERATOR, (int)op);
 }
 
 void Driver::sqlp_field(const std::string& tbl_name, const std::string& col_name)
 {
     printf("FIELD %s.%s\n", tbl_name.c_str(), col_name.c_str());
-    exec_.emit(SqlExecutor::EmitOp::FIELD, tbl_name, col_name);
+    emit(ParserOpCode::FIELD, tbl_name, col_name);
 }
 
 void Driver::sqlp_float(double val)
@@ -42,49 +42,49 @@ void Driver::sqlp_float(double val)
 void Driver::sqlp_from_table_reference()
 {
     printf("FROM\n");
-    exec_.emit(SqlExecutor::EmitOp::FROM);
+    emit(ParserOpCode::FROM);
 }
 
 void Driver::sqlp_join()
 {
     printf("JOIN\n");
-    exec_.emit(SqlExecutor::EmitOp::JOIN);
+    emit(ParserOpCode::JOIN);
 }
 
 void Driver::sqlp_name(const std::string& name)
 {
     printf("NAME %s\n", name.c_str());
-    exec_.emit(SqlExecutor::EmitOp::NAME, string(), name);
+    emit(ParserOpCode::NAME, string(), name);
 }
 
 void Driver::sqlp_number(int val)
 {
     printf("NUMBER %d\n", val);
-    exec_.emit(SqlExecutor::EmitOp::NUMBER, val);
+    emit(ParserOpCode::NUMBER, val);
 }
 
 void Driver::sqlp_order_by(int desc)
 {
     printf("%s\n", desc ? "DESC" : "ASC");
-    exec_.emit(desc ? SqlExecutor::EmitOp::DESC : SqlExecutor::EmitOp::ASC);
+    emit(desc ? ParserOpCode::DESC : ParserOpCode::ASC);
 }
 
 void Driver::sqlp_order_by_list(int n_list)
 {
     printf("ORDER BY %d\n", n_list);
-    exec_.emit(SqlExecutor::EmitOp::ORDER_BY, n_list);
+    emit(ParserOpCode::ORDER_BY, n_list);
 }
 
 void Driver::sqlp_select(int n_expr)
 {
     printf("SELECT %d\n", n_expr);
-    exec_.emit(SqlExecutor::EmitOp::SELECT, n_expr);
+    emit(ParserOpCode::SELECT, n_expr);
 }
 
 void Driver::sqlp_select_all()
 {
     printf("SELECTALL\n");
-    exec_.emit(SqlExecutor::EmitOp::SELECT_ALL);
+    emit(ParserOpCode::SELECT_ALL);
 }
 
 void Driver::sqlp_stmt()
@@ -95,29 +95,29 @@ void Driver::sqlp_stmt()
 void Driver::sqlp_string(const std::string& s)
 {
     printf("STRING %s\n", s.c_str());
-    exec_.emit(SqlExecutor::EmitOp::STRING, s);
+    emit(ParserOpCode::STRING, s);
 }
 
 void Driver::sqlp_table(const std::string& db_name, const std::string& tbl_name)
 {
     if (db_name.empty()) {
         printf("TABLE %s\n", tbl_name.c_str());
-        exec_.emit(SqlExecutor::EmitOp::TABLE, string(), tbl_name);
+        emit(ParserOpCode::TABLE, string(), tbl_name);
     }
     else {
         printf("TABLE %s.%s\n", db_name.c_str(), tbl_name.c_str());
-        exec_.emit(SqlExecutor::EmitOp::TABLE, db_name, tbl_name);
+        emit(ParserOpCode::TABLE, db_name, tbl_name);
     }
 }
 
 void Driver::sqlp_top(int num)
 {
     printf("TOP %d\n", num);
-    exec_.emit(SqlExecutor::EmitOp::TOP, num);
+    emit(ParserOpCode::TOP, num);
 }
 
 void Driver::sqlp_where()
 {
     printf("WHERE\n");
-    exec_.emit(SqlExecutor::EmitOp::WHERE);
+    emit(ParserOpCode::WHERE);
 }

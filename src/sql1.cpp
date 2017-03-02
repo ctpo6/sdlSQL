@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 //    cout << endl;
 
     SqlExecutor exec(db_context);
-    Driver driver(exec);
+    Driver driver;
 
     int arg_pos = 1;
     for (; arg_pos < argc; ++arg_pos) {
@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    if (exec.execute() != 0) {
+    if (exec.execute(driver.get_parser_commands()) != 0) {
         exit(1);
     }
 

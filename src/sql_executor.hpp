@@ -18,69 +18,22 @@
 class SqlExecutor
 {
     const DatabaseContext& db_ctx_;
-public:
-    enum class EmitOp
-    {
-        AS,
-        ASC,
-        COMPARISON,
-        DESC,
-        FIELD,
-        FROM,
-        JOIN,
-        NAME,
-        NUMBER,
-        OPERATOR,
-        ORDER_BY,
-        STRING,
-        TABLE,
-        TOP,
-        SELECT,
-        SELECT_ALL,
-        WHERE,
-    };
+
+    using ParserCommandContainer = std::deque<ParserCommand>;
 
 public:
     explicit SqlExecutor(const DatabaseContext& db_ctx)
         : db_ctx_(db_ctx)
     {}
 
-    void emit(EmitOp op);
-    void emit(EmitOp op, int param);
-    void emit(EmitOp op, const std::string& param);
-    void emit(EmitOp op, const std::string& name1, const std::string& name2);
-
-    int execute();
+    int execute(ParserCommandContainer const& cmd);
 
 private:
+
     enum : uint32_t {
         F_ORDER_BY_DESC = 0x00000001,
         F_HAS_ALIAS = 0x80000000,
     };
-
-    struct EmitRecord
-    {
-        EmitOp op_;
-
-        int int_;               // for int values
-        std::string string_;    // for string values
-
-        // column or table reference: name1_.name2_
-        // alias: name2_
-        std::string name1_;
-        std::string name2_;
-    };
-
-    using EmitRecordContainer = std::deque<EmitRecord>;
-
-    EmitRecordContainer emit_;
-
-    static EmitRecord make_emit_record(EmitOp op);
-    static EmitRecord make_emit_record(EmitOp op, int param);
-    static EmitRecord make_emit_record(EmitOp op, const std::string& param);
-    static EmitRecord make_emit_record(EmitOp op,
-                                       const std::string& name1,
-                                       const std::string& name2);
 
     // TODO: better name is Identifier
     struct SymbolReference
@@ -174,38 +127,37 @@ private:
      * Only start iterator is really needed, end is for safety check only.
      */
     ExpressionNodePtr build_expr_tree(
-            const EmitRecordContainer::const_iterator start,
-            const EmitRecordContainer::const_iterator end,
-            EmitRecordContainer::const_iterator& out);
+            const ParserCommandContainer::const_iterator start,
+            const ParserCommandContainer::const_iterator end,
+            ParserCommandContainer::const_iterator& out);
 
     int init_select_context(
-            const EmitRecordContainer& em,
+            const ParserCommandContainer& cmd,
             SelectContext& ctx);
-    int init_select_context1(
-            const EmitRecordContainer& em,
+    int init_select_context1(const ParserCommandContainer& cmd,
             SelectContext& ctx);
 
     int init_select_context_from(
-            const EmitRecordContainer::const_iterator start,
-            const EmitRecordContainer::const_iterator end,
+            const ParserCommandContainer::const_iterator start,
+            const ParserCommandContainer::const_iterator end,
             SelectContext& ctx);
     int init_select_context_from_add_table(
-            const EmitRecordContainer::const_iterator start,
-            EmitRecordContainer::const_iterator& next_part,
+            const ParserCommandContainer::const_iterator start,
+            ParserCommandContainer::const_iterator& next_part,
             SelectContext& ctx);
     int init_select_context_from_add_join(
-            const EmitRecordContainer::const_iterator start,
-            const EmitRecordContainer::const_iterator end,
-            EmitRecordContainer::const_iterator& next_part,
+            const ParserCommandContainer::const_iterator start,
+            const ParserCommandContainer::const_iterator end,
+            ParserCommandContainer::const_iterator& next_part,
             SelectContext& ctx);
 
     int init_select_context_where(
-            const EmitRecordContainer::const_iterator start,
-            EmitRecordContainer::const_iterator& next_part,
+            const ParserCommandContainer::const_iterator start,
+            ParserCommandContainer::const_iterator& next_part,
             SelectContext& ctx);
     int init_select_context_order_by(
-            const EmitRecordContainer::const_iterator start,
-            EmitRecordContainer::const_iterator& next_part,
+            const ParserCommandContainer::const_iterator start,
+            ParserCommandContainer::const_iterator& next_part,
             SelectContext& ctx);
 
     int check_select_context(

@@ -112,12 +112,9 @@ private:
 
     std::deque<std::vector<record_iterator>> eres_;
 
-
     void execute2();
-
     bool execute_join(std::vector<record_iterator> const& row);
     bool execute_where(std::vector<record_iterator> const& row);
-
     void execute_order_by();
 
     void dump_result();
@@ -130,64 +127,42 @@ private:
             const ParserCommandContainer::const_iterator end,
             ParserCommandContainer::const_iterator& out);
 
-    int init_select_context(
-            const ParserCommandContainer& cmd,
-            SelectContext& ctx);
-    int init_select_context1(const ParserCommandContainer& cmd,
-            SelectContext& ctx);
+    int init_select_context(const ParserCommandContainer& cmd);
+    int init_select_context1(const ParserCommandContainer& cmd);
 
     int init_select_context_from(
             const ParserCommandContainer::const_iterator start,
-            const ParserCommandContainer::const_iterator end,
-            SelectContext& ctx);
+            const ParserCommandContainer::const_iterator end);
     int init_select_context_from_add_table(
             const ParserCommandContainer::const_iterator start,
-            ParserCommandContainer::const_iterator& next_part,
-            SelectContext& ctx);
+            ParserCommandContainer::const_iterator& next_part);
     int init_select_context_from_add_join(
             const ParserCommandContainer::const_iterator start,
             const ParserCommandContainer::const_iterator end,
-            ParserCommandContainer::const_iterator& next_part,
-            SelectContext& ctx);
+            ParserCommandContainer::const_iterator& next_part);
 
     int init_select_context_where(
             const ParserCommandContainer::const_iterator start,
-            ParserCommandContainer::const_iterator& next_part,
-            SelectContext& ctx);
+            ParserCommandContainer::const_iterator& next_part);
     int init_select_context_order_by(
             const ParserCommandContainer::const_iterator start,
-            ParserCommandContainer::const_iterator& next_part,
-            SelectContext& ctx);
+            ParserCommandContainer::const_iterator& next_part);
 
-    int check_select_context(
-            const DatabaseContext& db_ctx,
-            SelectContext& ctx);
-    int check_select_context_from_join(
-            const DatabaseContext& db_ctx,
-            SelectContext& ctx);
-    int check_select_context_select(
-            const DatabaseContext& db_ctx,
-            SelectContext& ctx);
-    int check_select_context_where(
-            const DatabaseContext& db_ctx,
-            SelectContext& ctx);
-    int check_select_context_order_by(
-            const DatabaseContext& db_ctx,
-            SelectContext& ctx);
+    int check_select_context();
+    int check_select_context_from_join();
+    int check_select_context_select();
+    int check_select_context_where();
+    int check_select_context_order_by();
 
     /*
      * expr_idx: expression idx in ctx.join_expr_tree
      */
     int check_join_expr(
-            const DatabaseContext& db_ctx,
-            SelectContext& ctx,
             size_t expr_idx,
             ExpressionNode* node,
             sdl::sql::ValueType& expr_type);
 
     int check_where_expr(
-            const DatabaseContext& db_ctx,
-            SelectContext& ctx,
             ExpressionNode* node,
             sdl::sql::ValueType& expr_type);
 

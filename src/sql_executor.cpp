@@ -10,7 +10,7 @@ using namespace std;
 
 int SqlExecutor::execute(ParserCommandContainer const& commands)
 {
-    if (init_select_context(commands, ctx_) != 0) {
+    if (init_select_context(commands) != 0) {
         return 1;
     }
     cout << "\nSELECT context dump:\n";
@@ -393,80 +393,74 @@ void SqlExecutor::dump_result()
 }
 
 
-int SqlExecutor::init_select_context(
-        const ParserCommandContainer& cmd,
-        SelectContext& ctx)
+int SqlExecutor::init_select_context(const ParserCommandContainer& cmd)
 {
-    if (init_select_context1(cmd, ctx_) != 0)
+    if (init_select_context1(cmd) != 0)
         return 1;
-    if (check_select_context(db_ctx_, ctx_) != 0)
+    if (check_select_context() != 0)
         return 1;
     return 0;
 }
 
 
-int SqlExecutor::check_select_context(
-        const DatabaseContext& db_ctx,
-        SelectContext& ctx)
+int SqlExecutor::check_select_context()
 {
-    if (check_select_context_from_join(db_ctx, ctx) != 0)
+    if (check_select_context_from_join() != 0)
         return 1;
 
-    if (check_select_context_select(db_ctx, ctx) != 0)
+    if (check_select_context_select() != 0)
         return 1;
 
     // check WHERE
-    if (check_select_context_where(db_ctx, ctx) != 0)
+    if (check_select_context_where() != 0)
         return 1;
 
     // check ORDER BY
-    if (check_select_context_order_by(db_ctx, ctx) != 0)
+    if (check_select_context_order_by() != 0)
         return 1;
 
     // SELECTALL
-    if (ctx.select_columns.empty()) {
-        for (Identifier const& tr: ctx.from_tables) {
-            vector<string> c_names = db_ctx.get_table_column_names(tr.t_name);
+    if (ctx_.select_columns.empty()) {
+        for (Identifier const& tr: ctx_.from_tables) {
+            vector<string> c_names = db_ctx_.get_table_column_names(tr.t_name);
             for (auto& s: c_names) {
                 Identifier r;
                 r.t_name = tr.t_name;
                 r.c_name = std::move(s);
-                ctx.select_columns.push_back(std::move(r));
+                ctx_.select_columns.push_back(std::move(r));
             }
         }
     }
 
     // add entries to ref_table for select_columns
-    for (Identifier& r: ctx.select_columns) {
+    for (Identifier& r: ctx_.select_columns) {
         ColumnRef cref;
-        cref.t_idx = db_ctx.get_table_idx(r.t_name);
-        cref.c_idx = db_ctx.get_column_position(r.t_name, r.c_name);
-        r.idx = ctx.ref_table.size();
-        ctx.ref_table.push_back(cref);
+        cref.t_idx = db_ctx_.get_table_idx(r.t_name);
+        cref.c_idx = db_ctx_.get_column_position(r.t_name, r.c_name);
+        r.idx = ctx_.ref_table.size();
+        ctx_.ref_table.push_back(cref);
     }
 
     return 0;
 }
 
 
-int SqlExecutor::check_select_context_from_join(
-        const DatabaseContext& db_ctx,
-        SelectContext& ctx)
+int SqlExecutor::check_select_context_from_join()
 {
-    assert(!ctx.from_tables.empty());
-    assert(ctx.from_tables.size() - 1 == ctx.join_expr_tree.size());
+    assert(!ctx_.from_tables.empty());
+    assert(ctx_.from_tables.size() - 1 == ctx_.join_expr_tree.size());
 
     // check existence of tables in FROM and JOIN clauses
-    for (Identifier& r: ctx.from_tables) {
-        if (!db_ctx.has_table(r.t_name)) {
+    for (Identifier& r: ctx_.from_tables) {
+        if (!db_ctx_.has_table(r.t_name)) {
             cerr << "Error: FROM: table doesn't exist: " << r.t_name << endl;
             return 1;
         }
     }
 
-    for (size_t i = 0; i < ctx.join_expr_tree.size(); ++i) {
+    for (size_t i = 0; i < ctx_.join_expr_tree.size(); ++i) {
         sdl::sql::ValueType et;
-        if (check_join_expr(db_ctx, ctx, i, ctx.join_expr_tree[i].get(), et) != 0)
+        if (check_join_expr(i, ctx_.join_expr_tree[i].get(), et) != 0)
             return 1;
 
         if (et != sdl::sql::ValueType::BOOL) {
@@ -480,26 +474,24 @@ int SqlExecutor::check_select_context_from_join(
 }
 
 
-int SqlExecutor::check_select_context_select(
-        const DatabaseContext& db_ctx,
-        SelectContext& ctx)
+int SqlExecutor::check_select_context_select()
 {
     // check identifiers in SELECT
-    for (Identifier& r: ctx.select_columns) {
+    for (Identifier& r: ctx_.select_columns) {
         if (r.t_name.empty()) {
-            if (ctx.from_tables.size() > 1) {
-                cerr << "Error: SELECT: missing table name for column: "
+            if (ctx_.from_tables.size() > 1) {
+                cerr << "Error: SELECT: identifier is ambiguous: "
                      << r.c_name << endl;
                 return 1;
             }
-            r.t_name = ctx.from_tables[0].t_name;
+            r.t_name = ctx_.from_tables[0].t_name;
         }
         else {
-            auto it1 = ctx.from_table_as.find(r.t_name);
-            if (it1 == ctx.from_table_as.end()) {
+            auto it1 = ctx_.from_table_as.find(r.t_name);
+            if (it1 == ctx_.from_table_as.end()) {
                 auto it2 = find_if(
-                            ctx.from_tables.begin(),
-                            ctx.from_tables.end(),
+                            ctx_.from_tables.begin(),
+                            ctx_.from_tables.end(),
                             [&r](const Identifier& t)
                 {
                     /*
@@ -513,20 +505,19 @@ int SqlExecutor::check_select_context_select(
                     return (t.flags & F_HAS_ALIAS) == 0 &&
                             t.t_name == r.t_name;
                 });
-                if (it2 == ctx.from_tables.end()) {
-                    cerr << "Error: SELECT: The multi-part identifier '"
-                         << r.t_name << '.' << r.c_name
-                         << "' could not be found" << endl;
+                if (it2 == ctx_.from_tables.end()) {
+                    cerr << "Error: SELECT: identifier could not be found: "
+                         << r.t_name << '.' << r.c_name << endl;
                     return 1;
                 }
             }
             else {
                 // replace alias with real table name
-                r.t_name = ctx.from_tables[it1->second].t_name;
+                r.t_name = ctx_.from_tables[it1->second].t_name;
             }
         }
 
-        if (!db_ctx.has_table_column(r.t_name, r.c_name)) {
+        if (!db_ctx_.has_table_column(r.t_name, r.c_name)) {
             cerr << "Error: SELECT: field references unknown column: "
                  << r.t_name << '.' << r.c_name << endl;
             return 1;
@@ -537,16 +528,14 @@ int SqlExecutor::check_select_context_select(
 }
 
 
-int SqlExecutor::check_select_context_where(
-        const DatabaseContext& db_ctx,
-        SelectContext& ctx)
+int SqlExecutor::check_select_context_where()
 {
     // WHERE isn't specified
-    if (!ctx.where_expr_tree)
+    if (!ctx_.where_expr_tree)
         return 0;
 
     sdl::sql::ValueType et;
-    if (check_where_expr(db_ctx, ctx, ctx.where_expr_tree.get(), et) != 0)
+    if (check_where_expr(ctx_.where_expr_tree.get(), et) != 0)
         return 1;
 
     if (et != sdl::sql::ValueType::BOOL) {
@@ -560,8 +549,6 @@ int SqlExecutor::check_select_context_where(
 
 
 int SqlExecutor::check_join_expr(
-        const DatabaseContext& db_ctx,
-        SelectContext& ctx,
         size_t expr_idx,
         ExpressionNode* node,
         sdl::sql::ValueType& expr_type)
@@ -582,32 +569,32 @@ int SqlExecutor::check_join_expr(
             // check identifier
 
             if (r.t_name.empty()) {
-                cerr << "Error: JOIN: ambiguous column name: "
+                cerr << "Error: JOIN: identifier is ambiguous: "
                      << r.c_name << endl;
                 return 1;
             }
 
             // search in table aliases
-            auto it1 = ctx.from_table_as.find(r.t_name);
-            if (it1 != ctx.from_table_as.end()) {
+            auto it1 = ctx_.from_table_as.find(r.t_name);
+            if (it1 != ctx_.from_table_as.end()) {
                 if (it1->second > expr_idx + 1) {
                     cerr << "Error: JOIN: identifier could not be found: "
                          << r.t_name << '.' << r.c_name << endl;
                     return 1;
                 }
-                r.t_name = ctx.from_tables[it1->second].t_name;
+                r.t_name = ctx_.from_tables[it1->second].t_name;
             }
             else {
                 // search in table names
                 auto it2 = std::find_if(
-                            ctx.from_tables.begin(),
-                            ctx.from_tables.begin() + expr_idx + 2,
+                            ctx_.from_tables.begin(),
+                            ctx_.from_tables.begin() + expr_idx + 2,
                             [&r](const Identifier& t)
                 {
                     return (t.flags & F_HAS_ALIAS) == 0 &&
                             t.t_name == r.t_name;
                 });
-                if (it2 == ctx.from_tables.begin() + expr_idx + 2) {
+                if (it2 == ctx_.from_tables.begin() + expr_idx + 2) {
                     cerr << "Error: JOIN: identifier could not be found: "
                          << r.t_name << '.' << r.c_name << endl;
                     return 1;
@@ -615,7 +602,7 @@ int SqlExecutor::check_join_expr(
             }
 
             // check r' t_name c_name
-            if (!db_ctx.has_table_column(r.t_name, r.c_name)) {
+            if (!db_ctx_.has_table_column(r.t_name, r.c_name)) {
                 cerr << "Error: JOIN: table column not found: "
                      << r.t_name << '.' << r.c_name << endl;
                 return 1;
@@ -623,12 +610,12 @@ int SqlExecutor::check_join_expr(
 
             // TODO: now, for simplicity, ref_tables can contain duplicates
             ColumnRef cref;
-            cref.t_idx = db_ctx.get_table_idx(r.t_name);
-            cref.c_idx = db_ctx.get_column_position(r.t_name, r.c_name);
-            r.idx = ctx.ref_table.size();
-            ctx.ref_table.push_back(cref);
+            cref.t_idx = db_ctx_.get_table_idx(r.t_name);
+            cref.c_idx = db_ctx_.get_column_position(r.t_name, r.c_name);
+            r.idx = ctx_.ref_table.size();
+            ctx_.ref_table.push_back(cref);
 
-            ValueType type = db_ctx.get_column_value_type(
+            ValueType type = db_ctx_.get_column_value_type(
                         r.t_name, r.c_name);
             assert(type != ValueType::UNKNOWN && "data type is not supported");
 
@@ -664,7 +651,7 @@ int SqlExecutor::check_join_expr(
         assert(!(unary && node->left));
 
         ValueType et_right;
-        if (check_join_expr(db_ctx, ctx, expr_idx, node->right.get(), et_right) != 0)
+        if (check_join_expr(expr_idx, node->right.get(), et_right) != 0)
             return 1;
 
         bool error = false;
@@ -689,7 +676,7 @@ int SqlExecutor::check_join_expr(
         }
         else {
             ValueType et_left;
-            if (check_join_expr(db_ctx, ctx, expr_idx, node->left.get(), et_left) != 0)
+            if (check_join_expr(expr_idx, node->left.get(), et_left) != 0)
                 return 1;
 
             switch (op) {
@@ -738,8 +725,6 @@ int SqlExecutor::check_join_expr(
 
 
 int SqlExecutor::check_where_expr(
-        const DatabaseContext& db_ctx,
-        SelectContext& ctx,
         ExpressionNode* node,
         sdl::sql::ValueType& expr_type)
 {
@@ -764,33 +749,33 @@ int SqlExecutor::check_where_expr(
                  * from Orders
                  * where shipcountry = 'Brazil';
                  */
-                if (ctx.from_tables.size() > 1) {
+                if (ctx_.from_tables.size() > 1) {
                     cerr << "Error: WHERE: identifier could not be found: "
                          << r.c_name << endl;
                     return 1;
                 }
-                r.t_name = ctx.from_tables[0].t_name;
+                r.t_name = ctx_.from_tables[0].t_name;
             }
             else {
-                auto it1 = ctx.from_table_as.find(r.t_name);
-                if (it1 != ctx.from_table_as.end()) {
+                auto it1 = ctx_.from_table_as.find(r.t_name);
+                if (it1 != ctx_.from_table_as.end()) {
                     /*
                      * select *
                      * from Orders O
                      * where O.shipcountry = 'Brazil';
                      */
-                    r.t_name = ctx.from_tables[it1->second].t_name;
+                    r.t_name = ctx_.from_tables[it1->second].t_name;
                 }
                 else {
                     auto it2 = find_if(
-                                ctx.from_tables.begin(),
-                                ctx.from_tables.end(),
+                                ctx_.from_tables.begin(),
+                                ctx_.from_tables.end(),
                                 [&r](const Identifier& t)
                     {
                         return (t.flags & F_HAS_ALIAS) == 0 &&
                                 t.t_name == r.t_name;
                     });
-                    if (it2 == ctx.from_tables.end()) {
+                    if (it2 == ctx_.from_tables.end()) {
                         /*
                          * select shipname
                          * from Orders O
@@ -804,7 +789,7 @@ int SqlExecutor::check_where_expr(
             }
 
             // check r' t_name c_name
-            if (!db_ctx.has_table_column(r.t_name, r.c_name)) {
+            if (!db_ctx_.has_table_column(r.t_name, r.c_name)) {
                 cerr << "Error: WHERE: table column not found: "
                      << r.t_name << '.' << r.c_name << endl;
                 return 1;
@@ -812,12 +797,12 @@ int SqlExecutor::check_where_expr(
 
             // TODO: now, for simplicity, ref_tables can contain duplicates
             ColumnRef cref;
-            cref.t_idx = db_ctx.get_table_idx(r.t_name);
-            cref.c_idx = db_ctx.get_column_position(r.t_name, r.c_name);
-            r.idx = ctx.ref_table.size();
-            ctx.ref_table.push_back(cref);
+            cref.t_idx = db_ctx_.get_table_idx(r.t_name);
+            cref.c_idx = db_ctx_.get_column_position(r.t_name, r.c_name);
+            r.idx = ctx_.ref_table.size();
+            ctx_.ref_table.push_back(cref);
 
-            ValueType type = db_ctx.get_column_value_type(
+            ValueType type = db_ctx_.get_column_value_type(
                         r.t_name, r.c_name);
             assert(type != ValueType::UNKNOWN && "data type is not supported");
 
@@ -853,7 +838,7 @@ int SqlExecutor::check_where_expr(
         assert(!(unary && node->left));
 
         ValueType et_right;
-        if (check_where_expr(db_ctx, ctx, node->right.get(), et_right) != 0)
+        if (check_where_expr(node->right.get(), et_right) != 0)
             return 1;
 
         bool error = false;
@@ -878,7 +863,7 @@ int SqlExecutor::check_where_expr(
         }
         else {
             ValueType et_left;
-            if (check_where_expr(db_ctx, ctx, node->left.get(), et_left) != 0)
+            if (check_where_expr(node->left.get(), et_left) != 0)
                 return 1;
 
             switch (op) {
@@ -926,22 +911,20 @@ int SqlExecutor::check_where_expr(
 }
 
 
-int SqlExecutor::check_select_context_order_by(
-        const DatabaseContext& db_ctx,
-        SelectContext& ctx)
+int SqlExecutor::check_select_context_order_by()
 {
-    for (Identifier& r: ctx.order_by_list) {
+    for (Identifier& r: ctx_.order_by_list) {
         if (r.t_name.empty()) {
-            auto it = ctx.select_column_as.find(r.c_name);
-            if (it != ctx.select_column_as.end()) {
+            auto it = ctx_.select_column_as.find(r.c_name);
+            if (it != ctx_.select_column_as.end()) {
                 /*
                  * select shipname as sname
                  * from Orders O
                  * order by sname;
                  */
                 // replace field alias with real table.column
-                r.t_name = ctx.select_columns[it->second].t_name;
-                r.c_name = ctx.select_columns[it->second].c_name;
+                r.t_name = ctx_.select_columns[it->second].t_name;
+                r.c_name = ctx_.select_columns[it->second].c_name;
             }
             else {
                 /*
@@ -950,34 +933,34 @@ int SqlExecutor::check_select_context_order_by(
                  * order by shipcountry;
                  */
                 // if there is a single table in FROM, we can take it's name
-                if (ctx.from_tables.size() > 1) {
+                if (ctx_.from_tables.size() > 1) {
                     cerr << "Error: ORDER BY: field reference is ambiguous: "
                          << r.c_name << endl;
                     return 1;
                 }
-                r.t_name = ctx.from_tables[0].t_name;
+                r.t_name = ctx_.from_tables[0].t_name;
             }
         }
         else {
-            auto it1 = ctx.from_table_as.find(r.t_name);
-            if (it1 != ctx.from_table_as.end()) {
+            auto it1 = ctx_.from_table_as.find(r.t_name);
+            if (it1 != ctx_.from_table_as.end()) {
                 /*
                  * select shipname
                  * from Orders O
                  * order by O.shipcountry;
                  */
-                r.t_name = ctx.from_tables[it1->second].t_name;
+                r.t_name = ctx_.from_tables[it1->second].t_name;
             }
             else {
                 auto it2 = find_if(
-                            ctx.from_tables.begin(),
-                            ctx.from_tables.end(),
+                            ctx_.from_tables.begin(),
+                            ctx_.from_tables.end(),
                             [&r](const Identifier& t)
                 {
                     return (t.flags & F_HAS_ALIAS) == 0 &&
                             t.t_name == r.t_name;
                 });
-                if (it2 == ctx.from_tables.end()) {
+                if (it2 == ctx_.from_tables.end()) {
                     /*
                      * select shipname
                      * from Orders O
@@ -992,7 +975,7 @@ int SqlExecutor::check_select_context_order_by(
         }
 
         // check r' t_name c_name
-        if (!db_ctx.has_table_column(r.t_name, r.c_name)) {
+        if (!db_ctx_.has_table_column(r.t_name, r.c_name)) {
             cerr << "Error: ORDER BY: field references unknown column: "
                  << r.t_name << '.' << r.c_name << endl;
             return 1;
@@ -1000,19 +983,17 @@ int SqlExecutor::check_select_context_order_by(
 
         // TODO: now, for simplicity, ref_tables can contain duplicates
         ColumnRef cref;
-        cref.t_idx = db_ctx.get_table_idx(r.t_name);
-        cref.c_idx = db_ctx.get_column_position(r.t_name, r.c_name);
-        r.idx = ctx.ref_table.size();
-        ctx.ref_table.push_back(cref);
+        cref.t_idx = db_ctx_.get_table_idx(r.t_name);
+        cref.c_idx = db_ctx_.get_column_position(r.t_name, r.c_name);
+        r.idx = ctx_.ref_table.size();
+        ctx_.ref_table.push_back(cref);
     }
 
     return 0;
 }
 
 
-int SqlExecutor::init_select_context1(
-        const ParserCommandContainer& cmd,
-        SelectContext& ctx)
+int SqlExecutor::init_select_context1(const ParserCommandContainer& cmd)
 {
     if (cmd.empty())
         return 1;
@@ -1021,38 +1002,38 @@ int SqlExecutor::init_select_context1(
     if (ite->op_ != ParserOpCode::SELECT)
         return 1;
 
-    ctx.n_select = ite->int_;
-    if (ctx.n_select < 1)
+    ctx_.n_select = ite->int_;
+    if (ctx_.n_select < 1)
         return 1;
     --ite;
 
-    ctx.n_top = 0;
+    ctx_.n_top = 0;
     auto itb = cmd.begin();
     if (itb->op_ == ParserOpCode::TOP) {
-        ctx.n_top = itb->int_;
+        ctx_.n_top = itb->int_;
         ++itb;
     }
 
     // SELECT
-    if (ctx.n_select == 1 && itb->op_ == ParserOpCode::SELECT_ALL) {
+    if (ctx_.n_select == 1 && itb->op_ == ParserOpCode::SELECT_ALL) {
         ++itb;
     }
     else {
-        for (int i = 0; i < ctx.n_select; ++i) {
+        for (int i = 0; i < ctx_.n_select; ++i) {
             assert(itb->op_ == ParserOpCode::FIELD || itb->op_ == ParserOpCode::NAME);
 
             Identifier ref;
             if (itb->op_ == ParserOpCode::FIELD)
                 ref.t_name = itb->name1_;
             ref.c_name = itb->name2_;
-            ctx.select_columns.push_back(std::move(ref));
+            ctx_.select_columns.push_back(std::move(ref));
 
             ++itb;
 
             if (itb->op_ == ParserOpCode::AS) {
-                auto res = ctx.select_column_as.insert(
+                auto res = ctx_.select_column_as.insert(
                             make_pair(itb->name2_,
-                                      ctx.select_columns.size() - 1));
+                                      ctx_.select_columns.size() - 1));
                 if (!res.second) {
                     cerr << "Error: duplicated column alias: "
                          << itb->name2_
@@ -1068,17 +1049,17 @@ int SqlExecutor::init_select_context1(
 
     // ORDER BY
     if (ite->op_ == ParserOpCode::ORDER_BY) {
-        if (init_select_context_order_by(ite, ite, ctx) != 0) {
+        if (init_select_context_order_by(ite, ite) != 0) {
             return 1;
         }
     }
 
     // WHERE
     if (ite->op_ == ParserOpCode::WHERE) {
-        if (init_select_context_where(ite, ite, ctx) != 0) {
+        if (init_select_context_where(ite, ite) != 0) {
             return 1;
         }
-        assert(ctx.where_expr_tree);
+        assert(ctx_.where_expr_tree);
     }
 
     /*
@@ -1092,7 +1073,7 @@ int SqlExecutor::init_select_context1(
     assert(ite - itb >= 1);
 
     // FROM
-    if (init_select_context_from(itb, ite, ctx) != 0) {
+    if (init_select_context_from(itb, ite) != 0) {
         return 1;
     }
 
@@ -1102,8 +1083,7 @@ int SqlExecutor::init_select_context1(
 
 int SqlExecutor::init_select_context_from(
         const ParserCommandContainer::const_iterator start,
-        const ParserCommandContainer::const_iterator end,
-        SelectContext& ctx)
+        const ParserCommandContainer::const_iterator end)
 {
     /*
      * TABLE Customers  <--- start
@@ -1116,7 +1096,7 @@ int SqlExecutor::init_select_context_from(
     auto itb = start;
 
     // process the main TABLE statement (which is not a part of JOIN)
-    if (init_select_context_from_add_table(itb, itb, ctx) != 0)
+    if (init_select_context_from_add_table(itb, itb) != 0)
         return 1;
 
     // process JOIN parts (if any)
@@ -1134,9 +1114,9 @@ int SqlExecutor::init_select_context_from(
      * FROM             <--- end
      */
     while (itb != end) {
-        if (init_select_context_from_add_table(itb, itb, ctx) != 0)
+        if (init_select_context_from_add_table(itb, itb) != 0)
             return 1;
-        if (init_select_context_from_add_join(itb, end, itb, ctx) != 0)
+        if (init_select_context_from_add_join(itb, end, itb) != 0)
             return 1;
     }
 
@@ -1147,8 +1127,7 @@ int SqlExecutor::init_select_context_from(
 int SqlExecutor::init_select_context_from_add_join(
         const ParserCommandContainer::const_iterator start,
         const ParserCommandContainer::const_iterator end,
-        ParserCommandContainer::const_iterator& next_part,
-        SelectContext& ctx)
+        ParserCommandContainer::const_iterator& next_part)
 {
     /*
      * FIELD C.custid   <--- start
@@ -1173,7 +1152,7 @@ int SqlExecutor::init_select_context_from_add_join(
     ParserCommandContainer::const_iterator dummy;
     ExpressionNodePtr node = build_expr_tree(it_join - 1, start - 1, dummy);
 
-    ctx.join_expr_tree.push_back(std::move(node));
+    ctx_.join_expr_tree.push_back(std::move(node));
 
     return 0;
 }
@@ -1181,8 +1160,7 @@ int SqlExecutor::init_select_context_from_add_join(
 
 int SqlExecutor::init_select_context_from_add_table(
         const ParserCommandContainer::const_iterator start,
-        ParserCommandContainer::const_iterator& next_part,
-        SelectContext& ctx)
+        ParserCommandContainer::const_iterator& next_part)
 {
     auto it = start;
 
@@ -1190,19 +1168,19 @@ int SqlExecutor::init_select_context_from_add_table(
 
     Identifier ref;
     ref.t_name = it->name2_;
-    ctx.from_tables.push_back(std::move(ref));
+    ctx_.from_tables.push_back(std::move(ref));
     ++it;
 
     if (it->op_ == ParserOpCode::AS) {
-        auto res = ctx.from_table_as.insert(
-                    make_pair(it->name2_, ctx.from_tables.size() - 1));
+        auto res = ctx_.from_table_as.insert(
+                    make_pair(it->name2_, ctx_.from_tables.size() - 1));
         if (!res.second) {
             cerr << "Error: duplicated table alias: "
                  << it->name2_
                  << endl;
             return 1;
         }
-        ctx.from_tables.back().flags |= F_HAS_ALIAS;
+        ctx_.from_tables.back().flags |= F_HAS_ALIAS;
         ++it;
     }
 
@@ -1214,8 +1192,7 @@ int SqlExecutor::init_select_context_from_add_table(
 
 int SqlExecutor::init_select_context_where(
         const ParserCommandContainer::const_iterator start,
-        ParserCommandContainer::const_iterator& next_part,
-        SelectContext& ctx)
+        ParserCommandContainer::const_iterator& next_part)
 {
     assert(start->op_ == ParserOpCode::WHERE);
 
@@ -1227,7 +1204,7 @@ int SqlExecutor::init_select_context_where(
 
     next_part = it;
 
-    ctx.where_expr_tree = build_expr_tree(start - 1, it, it);
+    ctx_.where_expr_tree = build_expr_tree(start - 1, it, it);
     assert(it == next_part); // check that PN was visited completely
 
     return 0;
@@ -1236,8 +1213,7 @@ int SqlExecutor::init_select_context_where(
 
 int SqlExecutor::init_select_context_order_by(
         const ParserCommandContainer::const_iterator start,
-        ParserCommandContainer::const_iterator& next_part,
-        SelectContext& ctx)
+        ParserCommandContainer::const_iterator& next_part)
 {
     assert(start->op_ == ParserOpCode::ORDER_BY);
 //    cout << "ORDER BY" << endl;
@@ -1269,7 +1245,7 @@ int SqlExecutor::init_select_context_order_by(
             ++it;
         }
 
-        ctx.order_by_list.push_back(std::move(ref));
+        ctx_.order_by_list.push_back(std::move(ref));
     }
 
     return 0;

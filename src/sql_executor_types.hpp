@@ -1,6 +1,8 @@
 #ifndef SQL_EXECUTOR_TYPES_HPP
 #define SQL_EXECUTOR_TYPES_HPP
 
+#include "types.hpp"
+
 #include <iostream>
 #include <string>
 #include <utility>
@@ -32,8 +34,7 @@ struct ParserCommand
 {
     ParserOpCode op_;
 
-    int int_;
-    std::string string_;
+    sdl::sql::Value param;
 
     // column or table identifier: name1_.name2_
     // column or table alias: name2_
@@ -44,11 +45,11 @@ struct ParserCommand
 
     explicit ParserCommand(ParserOpCode op,
                            int param)
-        : op_(op), int_(param) {}
+        : op_(op), param(param) {}
 
     explicit ParserCommand(ParserOpCode op,
                            std::string param)
-        : op_(op), string_(std::move(param)) {}
+        : op_(op), param(std::move(param)) {}
 
     explicit ParserCommand(ParserOpCode op,
                            std::string name1,

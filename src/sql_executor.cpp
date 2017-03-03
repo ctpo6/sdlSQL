@@ -1002,7 +1002,7 @@ int SqlExecutor::init_select_context1(const ParserCommandContainer& cmd)
     if (ite->op_ != ParserOpCode::SELECT)
         return 1;
 
-    ctx_.n_select = ite->int_;
+    ctx_.n_select = boost::get<int32_t>(ite->param);
     if (ctx_.n_select < 1)
         return 1;
     --ite;
@@ -1010,7 +1010,7 @@ int SqlExecutor::init_select_context1(const ParserCommandContainer& cmd)
     ctx_.n_top = 0;
     auto itb = cmd.begin();
     if (itb->op_ == ParserOpCode::TOP) {
-        ctx_.n_top = itb->int_;
+        ctx_.n_top = boost::get<int32_t>(itb->param);
         ++itb;
     }
 
@@ -1269,7 +1269,7 @@ SqlExecutor::ExpressionNodePtr SqlExecutor::build_expr_tree(
 
     auto it = start;
     if (it->op_ == ParserOpCode::OPERATOR || it->op_ == ParserOpCode::COMPARISON) {
-        node->ot.op = static_cast<ExprOperator>(it->int_);
+        node->ot.op = static_cast<ExprOperator>(boost::get<int32_t>(it->param));
 
         --it;
         assert(it >= end);
@@ -1311,12 +1311,12 @@ SqlExecutor::ExpressionNodePtr SqlExecutor::build_expr_tree(
 
         case ParserOpCode::NUMBER:
             node->ot.type = ExprOperandType::INT;
-            node->value = it->int_;
+            node->value = it->param;
             break;
 
         case ParserOpCode::STRING:
             node->ot.type = ExprOperandType::STRING;
-            node->value = it->string_;
+            node->value = it->param;
             break;
 
         default:

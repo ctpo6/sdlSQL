@@ -12,11 +12,9 @@
 
 namespace sdl { namespace sql {
 
-template <typename... T>
-using variant = boost::variant<T...>;
-
 struct null_t
 {
+    // required by boost::variant
     inline bool operator==(const null_t&) const { return true; }
     inline bool operator<(const null_t&) const { return false; }
 };
@@ -26,6 +24,9 @@ inline std::ostream& operator<<(std::ostream& os, const null_t)
     return os;
 }
 
+
+template <typename... T>
+using variant = boost::variant<T...>;
 
 using Value = variant<null_t, bool, int32_t, std::string>;
 

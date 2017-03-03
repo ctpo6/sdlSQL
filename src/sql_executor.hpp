@@ -78,8 +78,8 @@ private:
 
     struct SelectContext
     {
-        int n_top;
-        int n_select;
+        size_t n_top = 0;
+        size_t n_select = 0;
 
         std::vector<Identifier> select_columns;
         std::map<std::string, size_t> select_column_as;

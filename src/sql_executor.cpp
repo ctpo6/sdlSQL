@@ -110,7 +110,7 @@ void SqlExecutor::execute2()
 
     execute_order_by();
 
-    if (ctx_.n_top)
+    if (ctx_.n_top && eres_.size() > ctx_.n_top)
         eres_.resize(ctx_.n_top);
 }
 
@@ -1003,11 +1003,9 @@ int SqlExecutor::init_select_context1(const ParserCommandContainer& cmd)
         return 1;
 
     ctx_.n_select = boost::get<int32_t>(ite->param);
-    if (ctx_.n_select < 1)
-        return 1;
+    assert(ctx_.n_select);
     --ite;
 
-    ctx_.n_top = 0;
     auto itb = cmd.begin();
     if (itb->op_ == ParserOpCode::TOP) {
         ctx_.n_top = boost::get<int32_t>(itb->param);
@@ -1019,7 +1017,7 @@ int SqlExecutor::init_select_context1(const ParserCommandContainer& cmd)
         ++itb;
     }
     else {
-        for (int i = 0; i < ctx_.n_select; ++i) {
+        for (size_t i = 0; i < ctx_.n_select; ++i) {
             assert(itb->op_ == ParserOpCode::FIELD || itb->op_ == ParserOpCode::NAME);
 
             Identifier ref;

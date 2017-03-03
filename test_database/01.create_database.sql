@@ -65,8 +65,8 @@ select @SQL =
 		replace(
             replace (
 N'create database [%DB%]
-on primary (name=N''%DB%'', filename=N''%DATA%%DB%.mdf'', size=500MB, filegrowth = 50MB)
-log on (name=N''%DB%_log'', filename=N''%LOG%%DB%.ldf'', size=500MB, filegrowth = 50MB);
+on primary (name=N''%DB%'', filename=N''%DATA%%DB%.mdf'', size=10MB, filegrowth = 10MB)
+log on (name=N''%DB%_log'', filename=N''%LOG%%DB%.ldf'', size=10MB, filegrowth = 10MB);
 
 alter database [%DB%] set recovery simple
 '

@@ -12,7 +12,7 @@ CREATE TABLE dbo.Customers
 (
   custid       INT          NOT NULL IDENTITY,
   companyname  NVARCHAR(40) NOT NULL,
-  contactname  NVARCHAR(30) NOT NULL,
+  contactname  NVARCHAR(30),
   city         NVARCHAR(30) NOT NULL,
   CONSTRAINT PK_Customers PRIMARY KEY(custid)
 );
@@ -39,6 +39,8 @@ INSERT INTO dbo.Customers(custid, companyname, contactname, city)
   VALUES(9, 'Customer RTXGC', 'Raghav, Amritansh', 'Paris');
 INSERT INTO dbo.Customers(custid, companyname, contactname, city)
   VALUES(10, 'Customer EEALV', 'Bassols, Pilar Colome', 'Tsawassen');
+INSERT INTO dbo.Customers(custid, companyname, contactname, city)
+  VALUES(11, 'Customer NULL1', NULL, 'Moscow');
 SET IDENTITY_INSERT dbo.Customers OFF;
 go
 

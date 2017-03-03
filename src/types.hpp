@@ -21,7 +21,7 @@ struct null_t
 
 inline std::ostream& operator<<(std::ostream& os, const null_t)
 {
-    return os;
+    return os << "NULL";
 }
 
 

@@ -303,7 +303,7 @@ namespace yy {
       // orderby_list
       // opt_asc_desc
       // select_expr_list
-      char dummy3[sizeof(int)];
+      char dummy3[sizeof(int32_t)];
 
       // "NAME"
       // "STRING"
@@ -403,7 +403,7 @@ namespace yy {
 
   basic_symbol (typename Base::kind_type t, const double v, const location_type& l);
 
-  basic_symbol (typename Base::kind_type t, const int v, const location_type& l);
+  basic_symbol (typename Base::kind_type t, const int32_t v, const location_type& l);
 
   basic_symbol (typename Base::kind_type t, const std::string v, const location_type& l);
 
@@ -516,7 +516,7 @@ namespace yy {
 
     static inline
     symbol_type
-    make_INTNUM (const int& v, const location_type& l);
+    make_INTNUM (const int32_t& v, const location_type& l);
 
     static inline
     symbol_type
@@ -524,7 +524,7 @@ namespace yy {
 
     static inline
     symbol_type
-    make_BOOL (const int& v, const location_type& l);
+    make_BOOL (const int32_t& v, const location_type& l);
 
     static inline
     symbol_type
@@ -807,7 +807,7 @@ namespace yy {
     enum
     {
       yyeof_ = 0,
-      yylast_ = 76,     ///< Last index in yytable_.
+      yylast_ = 75,     ///< Last index in yytable_.
       yynnts_ = 19,  ///< Number of nonterminal symbols.
       yyfinal_ = 9, ///< Termination state number.
       yyterror_ = 1,
@@ -905,7 +905,7 @@ namespace yy {
       case 46: // orderby_list
       case 47: // opt_asc_desc
       case 48: // select_expr_list
-        value.copy< int > (other.value);
+        value.copy< int32_t > (other.value);
         break;
 
       case 10: // "NAME"
@@ -943,7 +943,7 @@ namespace yy {
       case 46: // orderby_list
       case 47: // opt_asc_desc
       case 48: // select_expr_list
-        value.copy< int > (v);
+        value.copy< int32_t > (v);
         break;
 
       case 10: // "NAME"
@@ -981,7 +981,7 @@ namespace yy {
   {}
 
   template <typename Base>
-  SqlParser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t, const int v, const location_type& l)
+  SqlParser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t, const int32_t v, const location_type& l)
     : Base (t)
     , value (v)
     , location (l)
@@ -1033,7 +1033,7 @@ namespace yy {
       case 46: // orderby_list
       case 47: // opt_asc_desc
       case 48: // select_expr_list
-        value.template destroy< int > ();
+        value.template destroy< int32_t > ();
         break;
 
       case 10: // "NAME"
@@ -1077,7 +1077,7 @@ namespace yy {
       case 46: // orderby_list
       case 47: // opt_asc_desc
       case 48: // select_expr_list
-        value.move< int > (s.value);
+        value.move< int32_t > (s.value);
         break;
 
       case 10: // "NAME"
@@ -1209,7 +1209,7 @@ namespace yy {
   }
 
   SqlParser::symbol_type
-  SqlParser::make_INTNUM (const int& v, const location_type& l)
+  SqlParser::make_INTNUM (const int32_t& v, const location_type& l)
   {
     return symbol_type (token::TOK_INTNUM, v, l);
   }
@@ -1221,7 +1221,7 @@ namespace yy {
   }
 
   SqlParser::symbol_type
-  SqlParser::make_BOOL (const int& v, const location_type& l)
+  SqlParser::make_BOOL (const int32_t& v, const location_type& l)
   {
     return symbol_type (token::TOK_BOOL, v, l);
   }

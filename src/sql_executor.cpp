@@ -183,31 +183,29 @@ int SqlExecutor::execute_expr(
 
         bool unary =
                 op == ExprOperator::NEG
-                || op == ExprOperator::NOT;
+                || op == ExprOperator::NOT
+                || op == ExprOperator::IS_NULL;
 
         if (unary) {
             assert(node->right && !node->left);
 
+            Value v;
+            if ((r = execute_expr(row, node->right.get(), v)) != 0)
+                return r;
+
             switch (op) {
+            case ExprOperator::IS_NULL:
+                value = (v.which() == static_cast<int>(ValueType::NULL_T));
+                break;
             case ExprOperator::NOT:
-            {
-                Value v;
-                if ((r = execute_expr(row, node->right.get(), v)) != 0)
-                    return r;
                 if (v.which() != static_cast<int>(ValueType::BOOL))
                     return 2;
                 value = !boost::get<bool>(v);
-            }
                 break;
             case ExprOperator::NEG:
-            {
-                Value v;
-                if ((r = execute_expr(row, node->right.get(), v)) != 0)
-                    return r;
                 if (v.which() != static_cast<int>(ValueType::INT32_T))
                     return 2;
                 value = -boost::get<int32_t>(v);
-            }
                 break;
             default:
                 assert(false && "unexpected");
@@ -647,7 +645,8 @@ int SqlExecutor::check_join_expr(
 
         bool unary =
                 op == ExprOperator::NEG
-                || op == ExprOperator::NOT;
+                || op == ExprOperator::NOT
+                || op == ExprOperator::IS_NULL;
         assert(!(unary && node->left));
 
         ValueType et_right;
@@ -658,6 +657,9 @@ int SqlExecutor::check_join_expr(
 
         if (unary) {
             switch (op) {
+            case ExprOperator::IS_NULL:
+                expr_type = ValueType::BOOL;
+                break;
             case ExprOperator::NOT:
                 if (et_right != ValueType::BOOL)
                     error = true;
@@ -834,7 +836,8 @@ int SqlExecutor::check_where_expr(
 
         bool unary =
                 op == ExprOperator::NEG
-                || op == ExprOperator::NOT;
+                || op == ExprOperator::NOT
+                || op == ExprOperator::IS_NULL;
         assert(!(unary && node->left));
 
         ValueType et_right;
@@ -845,6 +848,9 @@ int SqlExecutor::check_where_expr(
 
         if (unary) {
             switch (op) {
+            case ExprOperator::IS_NULL:
+                expr_type = ValueType::BOOL;
+                break;
             case ExprOperator::NOT:
                 if (et_right != ValueType::BOOL)
                     error = true;
@@ -1266,7 +1272,9 @@ SqlExecutor::ExpressionNodePtr SqlExecutor::build_expr_tree(
     ExpressionNodePtr node(new ExpressionNode);
 
     auto it = start;
-    if (it->op_ == ParserOpCode::OPERATOR || it->op_ == ParserOpCode::COMPARISON) {
+    if (it->op_ == ParserOpCode::OPERATOR
+            || it->op_ == ParserOpCode::COMPARISON)
+    {
         node->ot.op = static_cast<ExprOperator>(boost::get<int32_t>(it->param));
 
         --it;

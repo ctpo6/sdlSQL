@@ -51,6 +51,7 @@ BY      { return yy::SqlParser::make_BY(loc); }
 COMMENT { return yy::SqlParser::make_COMMENT(loc); }
 DESC    { return yy::SqlParser::make_DESC(loc); }
 FROM    { return yy::SqlParser::make_FROM(loc); }
+IS      { return yy::SqlParser::make_IS(loc); }
 JOIN    { return yy::SqlParser::make_JOIN(loc); }
 NOT     { return yy::SqlParser::make_NOT(loc); }
 NULL    { return yy::SqlParser::make_NULLX(loc); }

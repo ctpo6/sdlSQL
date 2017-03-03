@@ -15,6 +15,10 @@ Value make_value(
 {
     using sdl::db::scalartype;
 
+    if (record.is_null(col_idx)) {
+        return {null_t{}};
+    }
+
     Value value;
 
     auto const& col = record.usercol(col_idx);
@@ -53,6 +57,8 @@ ValueType db_scalartype_to_value_type(sdl::db::scalartype::type t)
 {
     using st = sdl::db::scalartype;
     switch (t) {
+    case st::t_none:
+        return ValueType::NULL_T;
     case st::t_int:
         return ValueType::INT32_T;
     case st::t_char:

@@ -3,7 +3,7 @@
 
 #include "types.hpp"
 
-#include <iostream>
+#include <ostream>
 #include <string>
 #include <utility>
 

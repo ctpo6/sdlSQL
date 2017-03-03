@@ -50,9 +50,9 @@ class Driver;
 
 %token <std::string>    NAME        "NAME"
 %token <std::string>    STRING      "STRING"
-%token <int>            INTNUM      "INTNUM"
+%token <int32_t>        INTNUM      "INTNUM"
 %token <double>         APPROXNUM   "APPROXNUM"
-%token <int>            BOOL        "BOOL"
+%token <int32_t>        BOOL        "BOOL"
 
 /* operators and precedence levels */
 %left OP_OR
@@ -77,9 +77,9 @@ class Driver;
 %token TOP
 %token WHERE
 
-%type <int> opt_asc_desc
-%type <int> orderby_list
-%type <int> select_expr_list
+%type <int32_t> opt_asc_desc
+%type <int32_t> orderby_list
+%type <int32_t> select_expr_list
 
 %printer { yyoutput << $$; } <*>;
 
@@ -226,9 +226,9 @@ expr:
     ;
 
 expr:
-    expr IS NULLX
+    field_name IS NULLX
         { driver.sqlp_expr_op(ExprOperator::IS_NULL); }
-|   expr IS NOT NULLX
+|   field_name IS NOT NULLX
         { driver.sqlp_expr_op(ExprOperator::IS_NULL); driver.sqlp_expr_op(ExprOperator::NOT); }
     ;
 

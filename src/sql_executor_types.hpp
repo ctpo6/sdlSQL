@@ -18,6 +18,7 @@ enum class ParserOpCode
     FROM,
     JOIN,
     NAME,
+    NULLX,
     NUMBER,
     OPERATOR,
     ORDER_BY,
@@ -43,13 +44,16 @@ struct ParserCommand
 
     explicit ParserCommand(ParserOpCode op) : op_(op) {}
 
-    explicit ParserCommand(ParserOpCode op,
-                           int param)
-        : op_(op), param(param) {}
+    explicit ParserCommand(sdl::sql::null_t)
+        : op_(ParserOpCode::NULLX), param(sdl::sql::null_t{}) {}
 
     explicit ParserCommand(ParserOpCode op,
-                           std::string param)
-        : op_(op), param(std::move(param)) {}
+                           int v)
+        : op_(op), param(v) {}
+
+    explicit ParserCommand(ParserOpCode op,
+                           std::string v)
+        : op_(op), param(std::move(v)) {}
 
     explicit ParserCommand(ParserOpCode op,
                            std::string name1,
@@ -82,6 +86,7 @@ enum class ExprOperandType
     IDENTIFIER = 0,
     INT,
     STRING,
+    NULLX,
 
     // add new values above
     MAX_

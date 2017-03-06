@@ -57,6 +57,12 @@ void Driver::sqlp_name(const std::string& name)
     emit(ParserOpCode::NAME, string(), name);
 }
 
+void Driver::sqlp_null()
+{
+    printf("NULL\n");
+    emit(ParserOpCode::NULLX);
+}
+
 void Driver::sqlp_number(int val)
 {
     printf("NUMBER %d\n", val);

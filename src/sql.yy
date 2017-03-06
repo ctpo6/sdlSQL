@@ -202,6 +202,8 @@ field_name:
 
 expr:
     field_name
+|   NULLX
+        { driver.sqlp_null(); }
 |   STRING
         { driver.sqlp_string($1); }
 |   INTNUM

@@ -26,7 +26,10 @@ class Driver
 
     inline void emit(ParserOpCode op)
     {
-        emit_.emplace_back(op);
+        if (op == ParserOpCode::NULLX)
+            emit_.emplace_back(sdl::sql::null_t{});
+        else
+            emit_.emplace_back(op);
     }
 
     inline void emit(ParserOpCode op, int param)
@@ -77,6 +80,7 @@ public:
     void sqlp_from_table_reference();
     void sqlp_join();
     void sqlp_name(const std::string& name);
+    void sqlp_null();
     void sqlp_number(int val);
     void sqlp_order_by(int desc);
     void sqlp_order_by_list(int n_list);

@@ -183,6 +183,7 @@ int SqlExecutor::execute_expr(
     }
     else {
         // operation
+
         int r;
 
         auto op = node->ot.op;
@@ -555,6 +556,8 @@ int SqlExecutor::check_select_context_select()
 
 int SqlExecutor::check_select_context_where()
 {
+    using sdl::sql::ValueType;
+
     // WHERE isn't specified
     if (!ctx_.where_expr_tree)
         return 0;
@@ -563,7 +566,9 @@ int SqlExecutor::check_select_context_where()
     if (check_where_expr(ctx_.where_expr_tree.get(), et) != 0)
         return 1;
 
-    if (et != sdl::sql::ValueType::BOOL) {
+    if (et != ValueType::BOOL
+            // it is acceptable for expression to have a constant operand NULL
+            && et != ValueType::NULL_T) {
         cerr << "ERROR: WHERE: expression result type is not boolean"
              << endl;
         return 1;
@@ -841,14 +846,19 @@ int SqlExecutor::check_where_expr(
             // constant value
 
             switch (node->ot.type) {
+            case ExprOperandType::NULLX:
+                assert(boost::get<Value>(node->value).which() ==
+                                static_cast<int>(ValueType::NULL_T));
+                expr_type = ValueType::NULL_T;
+                break;
             case ExprOperandType::INT:
                 assert(boost::get<Value>(node->value).which() ==
-                                (int)ValueType::INT32_T);
+                                static_cast<int>(ValueType::INT32_T));
                 expr_type = ValueType::INT32_T;
                 break;
             case ExprOperandType::STRING:
                 assert(boost::get<Value>(node->value).which() ==
-                                (int)ValueType::STRING);
+                                static_cast<int>(ValueType::STRING));
                 expr_type = ValueType::STRING;
                 break;
             default:
@@ -879,16 +889,18 @@ int SqlExecutor::check_where_expr(
                 expr_type = ValueType::BOOL;
                 break;
             case ExprOperator::NOT:
-                if (et_right != ValueType::BOOL)
-                    error = true;
+                if (et_right == ValueType::NULL_T
+                        || et_right == ValueType::BOOL)
+                    expr_type = et_right;
                 else
-                    expr_type = ValueType::BOOL;
+                    error = true;
                 break;
             case ExprOperator::NEG:
-                if (et_right != ValueType::INT32_T)
-                    error = true;
-                else
+                if (et_right == ValueType::NULL_T
+                        || et_right == ValueType::INT32_T)
                     expr_type = et_right;
+                else
+                    error = true;
                 break;
             default:
                 assert(false && "unexpected");
@@ -899,38 +911,46 @@ int SqlExecutor::check_where_expr(
             if (check_where_expr(node->left.get(), et_left) != 0)
                 return 1;
 
-            switch (op) {
-            case ExprOperator::AND:
-            case ExprOperator::OR:
-                if (et_left != ValueType::BOOL
-                        || et_right != ValueType::BOOL)
-                    error = true;
-                else
-                    expr_type = ValueType::BOOL;
-                break;
-            case ExprOperator::CMP_EQ:
-            case ExprOperator::CMP_NEQ:
-            case ExprOperator::CMP_GT:
-            case ExprOperator::CMP_LT:
-            case ExprOperator::CMP_GT_EQ:
-            case ExprOperator::CMP_LT_EQ:
-                if (et_left == ValueType::STRING
-                        && et_right == ValueType::STRING)
-                {
-                    expr_type = ValueType::BOOL;
+            if (et_left == ValueType::NULL_T
+                    || et_right == ValueType::NULL_T)
+            {
+                expr_type = ValueType::NULL_T;
+            }
+            else
+            {
+                switch (op) {
+                case ExprOperator::AND:
+                case ExprOperator::OR:
+                    if (et_left != ValueType::BOOL
+                            || et_right != ValueType::BOOL)
+                        error = true;
+                    else
+                        expr_type = ValueType::BOOL;
+                    break;
+                case ExprOperator::CMP_EQ:
+                case ExprOperator::CMP_NEQ:
+                case ExprOperator::CMP_GT:
+                case ExprOperator::CMP_LT:
+                case ExprOperator::CMP_GT_EQ:
+                case ExprOperator::CMP_LT_EQ:
+                    if (et_left == ValueType::STRING
+                            && et_right == ValueType::STRING)
+                    {
+                        expr_type = ValueType::BOOL;
+                    }
+                    // TODO add more numeric types here
+                    else if (et_left == ValueType::INT32_T
+                             && et_right == ValueType::INT32_T)
+                    {
+                        expr_type = ValueType::BOOL;
+                    }
+                    else {
+                        error = true;
+                    }
+                    break;
+                default:
+                    assert(false && "unexcpected");
                 }
-                // TODO add more numeric types here
-                else if (et_left == ValueType::INT32_T
-                         && et_right == ValueType::INT32_T)
-                {
-                    expr_type = ValueType::BOOL;
-                }
-                else {
-                    error = true;
-                }
-                break;
-            default:
-                assert(false && "unexcpected");
             }
         }
 
@@ -1340,6 +1360,11 @@ SqlExecutor::ExpressionNodePtr SqlExecutor::build_expr_tree(
             node->ot.type = ExprOperandType::IDENTIFIER;
             node->value = std::move(ref);
         }
+            break;
+
+        case ParserOpCode::NULLX:
+            node->ot.type = ExprOperandType::NULLX;
+            node->value = sdl::sql::null_t{};
             break;
 
         case ParserOpCode::NUMBER:

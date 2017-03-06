@@ -25,7 +25,8 @@ const char* expr_operand_type_str[static_cast<size_t>(ExprOperandType::MAX_)] =
 {
     "IDENTIFIER",
     "INT",
-    "STRING"
+    "STRING",
+    "NULL"
 };
 }
 

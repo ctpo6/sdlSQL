@@ -118,6 +118,7 @@ void SqlExecutor::execute2()
 bool SqlExecutor::execute_join(std::vector<record_iterator> const& row)
 {
     using sdl::sql::Value;
+    using sdl::sql::ValueType;
 
     assert(row.size() >= 2);
     assert(row.size() <= ctx_.join_expr_tree.size() + 1);
@@ -130,7 +131,9 @@ bool SqlExecutor::execute_join(std::vector<record_iterator> const& row)
     // row[0], row[1], ..., row[N-2] records are already checked
     // so we use JOIN expr [N-2] to check a tuple <row[0], ..., row[N-1]>
     assert(execute_expr(row, ctx_.join_expr_tree[row.size() - 2].get(), value) == 0);
-    assert(value.which() == static_cast<int>(sdl::sql::ValueType::BOOL));
+    if (value.which() == static_cast<int>(ValueType::NULL_T))
+        return false;
+    assert(value.which() == static_cast<int>(ValueType::BOOL));
 
     return boost::get<bool>(value);
 }
@@ -139,13 +142,16 @@ bool SqlExecutor::execute_join(std::vector<record_iterator> const& row)
 bool SqlExecutor::execute_where(std::vector<record_iterator> const& row)
 {
     using sdl::sql::Value;
+    using sdl::sql::ValueType;
 
     if (!ctx_.where_expr_tree)
         return true;
 
     Value value;
     assert(execute_expr(row, ctx_.where_expr_tree.get(), value) == 0);
-    assert(value.which() == static_cast<int>(sdl::sql::ValueType::BOOL));
+    if (value.which() == static_cast<int>(ValueType::NULL_T))
+        return false;
+    assert(value.which() == static_cast<int>(ValueType::BOOL));
 
     return boost::get<bool>(value);
 }
@@ -193,10 +199,17 @@ int SqlExecutor::execute_expr(
             if ((r = execute_expr(row, node->right.get(), v)) != 0)
                 return r;
 
-            switch (op) {
-            case ExprOperator::IS_NULL:
+            // special handling of NULL value
+            if (op == ExprOperator::IS_NULL) {
                 value = (v.which() == static_cast<int>(ValueType::NULL_T));
-                break;
+                return 0;
+            }
+            else if (v.which() == static_cast<int>(ValueType::NULL_T)) {
+                value = sdl::sql::null_t{};
+                return 0;
+            }
+
+            switch (op) {
             case ExprOperator::NOT:
                 if (v.which() != static_cast<int>(ValueType::BOOL))
                     return 2;
@@ -210,7 +223,6 @@ int SqlExecutor::execute_expr(
             default:
                 assert(false && "unexpected");
             }
-
         }
         else {
             assert(node->left && node->right);
@@ -226,9 +238,18 @@ int SqlExecutor::execute_expr(
                 Value v_left;
                 if ((r = execute_expr(row, node->left.get(), v_left)) != 0)
                     return r;
+                if (v_left.which() == static_cast<int>(ValueType::NULL_T)) {
+                    value = sdl::sql::null_t{};
+                    return 0;
+                }
+
                 Value v_right;
                 if ((r = execute_expr(row, node->right.get(), v_right)) != 0)
                     return r;
+                if (v_right.which() == static_cast<int>(ValueType::NULL_T)) {
+                    value = sdl::sql::null_t{};
+                    return 0;
+                }
 
                 // TODO
                 // now operand types must be the same
@@ -268,6 +289,10 @@ int SqlExecutor::execute_expr(
                 Value v;
                 if ((r = execute_expr(row, node->left.get(), v)) != 0)
                     return r;
+                if (v.which() == static_cast<int>(ValueType::NULL_T)) {
+                    value = sdl::sql::null_t{};
+                    return 0;
+                }
                 if (v.which() != static_cast<int>(ValueType::BOOL))
                     return 2;
                 if (boost::get<bool>(v) == false) {
@@ -276,7 +301,8 @@ int SqlExecutor::execute_expr(
                 else {
                     if ((r = execute_expr(row, node->right.get(), v)) != 0)
                         return r;
-                    if (v.which() != static_cast<int>(ValueType::BOOL))
+                    if (v.which() != static_cast<int>(ValueType::BOOL) &&
+                            v.which() != static_cast<int>(ValueType::NULL_T))
                         return 2;
                     value = v;
                 }
@@ -295,7 +321,8 @@ int SqlExecutor::execute_expr(
                 else {
                     if ((r = execute_expr(row, node->right.get(), v)) != 0)
                         return r;
-                    if (v.which() != static_cast<int>(ValueType::BOOL))
+                    if (v.which() != static_cast<int>(ValueType::BOOL) &&
+                            v.which() != static_cast<int>(ValueType::NULL_T))
                         return 2;
                     value = v;
                 }

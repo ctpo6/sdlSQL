@@ -15,7 +15,7 @@ const char* expr_operator_str[static_cast<size_t>(ExprOperator::MAX_)] =
     "'NOT'",
     "'IS NULL'",
     "'='",
-    "'!='"
+    "'!='",
     "'>'",
     "'<'",
     "'>='",

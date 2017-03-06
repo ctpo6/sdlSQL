@@ -371,6 +371,11 @@ void SqlExecutor::execute_order_by()
                 Value v1 = sdl::sql::make_value(*record1[join_pos], c_idx);
                 Value v2 = sdl::sql::make_value(*record2[join_pos], c_idx);
 
+                // If v1 is null_t (field value is NULL) and v2 is not null_t,
+                // then v1 < v2 because v1.which() < v2.which().
+                // This gives the desired behaviour of ORDER BY for NULLable
+                // columns.
+
                 bool desc = (ctx_.order_by_list[i].flags & F_ORDER_BY_DESC) != 0;
                 if (!desc) {
                     if (v1 < v2)

@@ -1,5 +1,5 @@
 select *
 from Customers
-where not (city = 'Paris' or city = 'Mexico')
+where custid > -(-(5))
 order by custid desc;
 

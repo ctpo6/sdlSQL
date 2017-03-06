@@ -26,21 +26,27 @@ INSERT INTO dbo.Customers(custid, companyname, contactname, city)
 INSERT INTO dbo.Customers(custid, companyname, contactname, city)
   VALUES(3, 'Customer KBUDE', 'Peoples, John', 'Mexico');
 INSERT INTO dbo.Customers(custid, companyname, contactname, city)
-  VALUES(4, 'Customer HFBZG', 'Arndt, Torsten', 'London');
+  VALUES(4, 'Customer Empty 2', '', 'Minsk');
 INSERT INTO dbo.Customers(custid, companyname, contactname, city)
-  VALUES(5, 'Customer HGVLZ', 'Higginbotham, Tom', 'Paris');
+  VALUES(5, 'Customer HFBZG', 'Arndt, Torsten', 'London');
 INSERT INTO dbo.Customers(custid, companyname, contactname, city)
-  VALUES(6, 'Customer XHXJV', 'Poland, Carole', 'Berlin');
+  VALUES(6, 'Customer HGVLZ', 'Higginbotham, Tom', 'Paris');
 INSERT INTO dbo.Customers(custid, companyname, contactname, city)
-  VALUES(7, 'Customer QXVLA', 'Bansal, Dushyant', 'Strasbourg');
+  VALUES(7, 'Customer XHXJV', 'Poland, Carole', 'Berlin');
 INSERT INTO dbo.Customers(custid, companyname, contactname, city)
-  VALUES(8, 'Customer QUHWH', 'Ilyina, Julia', 'Madrid');
+  VALUES(8, 'Customer NULL 2', NULL, 'Vladivostok');
 INSERT INTO dbo.Customers(custid, companyname, contactname, city)
-  VALUES(9, 'Customer RTXGC', 'Raghav, Amritansh', 'Paris');
+  VALUES(9, 'Customer QXVLA', 'Bansal, Dushyant', 'Strasbourg');
 INSERT INTO dbo.Customers(custid, companyname, contactname, city)
-  VALUES(10, 'Customer EEALV', 'Bassols, Pilar Colome', 'Tsawassen');
+  VALUES(10, 'Customer QUHWH', 'Ilyina, Julia', 'Madrid');
 INSERT INTO dbo.Customers(custid, companyname, contactname, city)
-  VALUES(11, 'Customer NULL1', NULL, 'Moscow');
+  VALUES(11, 'Customer Empty 1', '', 'Kiev');
+INSERT INTO dbo.Customers(custid, companyname, contactname, city)
+  VALUES(12, 'Customer RTXGC', 'Raghav, Amritansh', 'Paris');
+INSERT INTO dbo.Customers(custid, companyname, contactname, city)
+  VALUES(13, 'Customer EEALV', 'Bassols, Pilar Colome', 'Tsawassen');
+INSERT INTO dbo.Customers(custid, companyname, contactname, city)
+  VALUES(14, 'Customer NULL 1', NULL, 'Moscow');
 SET IDENTITY_INSERT dbo.Customers OFF;
 go
 

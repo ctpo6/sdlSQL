@@ -455,10 +455,7 @@ int SqlExecutor::check_select_context()
         for (Identifier const& tr: ctx_.from_tables) {
             vector<string> c_names = db_ctx_.get_table_column_names(tr.t_name);
             for (auto& s: c_names) {
-                Identifier r;
-                r.t_name = tr.t_name;
-                r.c_name = std::move(s);
-                ctx_.select_columns.push_back(std::move(r));
+                ctx_.select_columns.push_back({tr.t_name, std::move(s)});
             }
         }
     }
@@ -467,7 +464,7 @@ int SqlExecutor::check_select_context()
     for (Identifier& r: ctx_.select_columns) {
         ColumnRef cref;
         cref.t_idx = db_ctx_.get_table_idx(r.t_name);
-        cref.c_idx = db_ctx_.get_column_position(r.t_name, r.c_name);
+        cref.c_idx = db_ctx_.get_column_idx(r.t_name, r.c_name);
         r.idx = ctx_.ref_table.size();
         ctx_.ref_table.push_back(cref);
     }
@@ -646,7 +643,7 @@ int SqlExecutor::check_join_expr(
             // TODO: now, for simplicity, ref_tables can contain duplicates
             ColumnRef cref;
             cref.t_idx = db_ctx_.get_table_idx(r.t_name);
-            cref.c_idx = db_ctx_.get_column_position(r.t_name, r.c_name);
+            cref.c_idx = db_ctx_.get_column_idx(r.t_name, r.c_name);
             r.idx = ctx_.ref_table.size();
             ctx_.ref_table.push_back(cref);
 
@@ -837,7 +834,7 @@ int SqlExecutor::check_where_expr(
             // TODO: now, for simplicity, ref_tables can contain duplicates
             ColumnRef cref;
             cref.t_idx = db_ctx_.get_table_idx(r.t_name);
-            cref.c_idx = db_ctx_.get_column_position(r.t_name, r.c_name);
+            cref.c_idx = db_ctx_.get_column_idx(r.t_name, r.c_name);
             r.idx = ctx_.ref_table.size();
             ctx_.ref_table.push_back(cref);
 
@@ -1042,7 +1039,7 @@ int SqlExecutor::check_select_context_order_by()
         // TODO: now, for simplicity, ref_tables can contain duplicates
         ColumnRef cref;
         cref.t_idx = db_ctx_.get_table_idx(r.t_name);
-        cref.c_idx = db_ctx_.get_column_position(r.t_name, r.c_name);
+        cref.c_idx = db_ctx_.get_column_idx(r.t_name, r.c_name);
         r.idx = ctx_.ref_table.size();
         ctx_.ref_table.push_back(cref);
     }

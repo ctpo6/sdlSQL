@@ -6,14 +6,14 @@
 #include "dataserver/system/database.h"
 
 #include <map>
-#include <set>
+#include <memory>
 #include <string>
 #include <vector>
 
 
 class DatabaseContext
 {
-    sdl::db::database& db_;
+    std::shared_ptr<sdl::db::database> pdb_;
 
     struct ColumnInfo
     {
@@ -31,15 +31,15 @@ class DatabaseContext
 
     TableMap schema_;
 
-    using DatatableIterator = decltype(db_._datatables.begin());
+    using DatatableIterator = decltype(pdb_->_datatables.begin());
     std::vector<DatatableIterator> datatables_;
-
-public:
-    DatabaseContext(sdl::db::database& db);
 
     void init();
 
-    void dump_schema();
+public:
+    DatabaseContext(std::shared_ptr<sdl::db::database> db);
+
+    void dump_schema() const noexcept;
 
     bool has_table(const std::string& table_name) const noexcept;
 
@@ -70,7 +70,7 @@ public:
      * Throws:
      * std::invalid_argument    Database doesn't have specified column.
      */
-    size_t get_column_position(
+    size_t get_column_idx(
             const std::string& table_name,
             const std::string& column_name) const;
 

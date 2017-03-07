@@ -103,19 +103,19 @@ stmt_list:
 
 stmt:
     select_stmt
-        { driver.sqlp_stmt(); }
+        { driver.emit_stmt(); }
     ;
 
 select_stmt:
     SELECT opt_top select_expr_list
     FROM from_table_reference
     opt_where opt_orderby
-        { driver.sqlp_select($3); } ;
+        { driver.emit_select($3); } ;
     ;
 
 from_table_reference:
     table_reference
-        { driver.sqlp_from_table_reference(); }
+        { driver.emit_from_table_reference(); }
 
 table_reference:
     table_name_expr
@@ -128,36 +128,36 @@ table_name_expr:
 
 table_name:
     NAME
-        { driver.sqlp_table("", $1); }
+        { driver.emit_table("", $1); }
 |   NAME "." NAME
-        { driver.sqlp_table($1, $3); }
+        { driver.emit_table($1, $3); }
     ;
 
 join_table:
     table_reference JOIN table_name_expr ON expr   /* inner join */
-        { driver.sqlp_join(); }
+        { driver.emit_join(); }
 
 opt_top:
     %empty {}
 |   TOP "(" INTNUM ")"
-        { driver.sqlp_top($3); }
+        { driver.emit_top($3); }
 
 opt_where:
     %empty {}
 |   WHERE expr
-        { driver.sqlp_where(); };
+        { driver.emit_where(); };
 
 opt_orderby:
     %empty {}
 |   ORDER BY orderby_list
-        { driver.sqlp_order_by_list($3); }
+        { driver.emit_order_by_list($3); }
     ;
 
 orderby_list:
     field_name opt_asc_desc
-        { driver.sqlp_order_by($2); $$ = 1; }
+        { driver.emit_order_by($2); $$ = 1; }
 |   orderby_list "," field_name opt_asc_desc
-        { driver.sqlp_order_by($4); $$ = $1 + 1; }
+        { driver.emit_order_by($4); $$ = $1 + 1; }
     ;
 
 opt_asc_desc:
@@ -175,7 +175,7 @@ select_expr_list:
 |   select_expr_list "," select_expr
         {$$ = $1 + 1; }
 |   "*"
-        { driver.sqlp_select_all(); $$ = 1; }
+        { driver.emit_select_all(); $$ = 1; }
     ;
 
 select_expr:
@@ -186,9 +186,9 @@ select_expr:
 opt_as_alias:
     %empty {}
 |   AS NAME
-        { driver.sqlp_alias($2); }
+        { driver.emit_alias($2); }
 |   NAME
-        { driver.sqlp_alias($1); }
+        { driver.emit_alias($1); }
     ;
 
    /**** expressions ****/
@@ -196,48 +196,48 @@ opt_as_alias:
 
 field_name:
     NAME
-        { driver.sqlp_name($1); }
+        { driver.emit_name($1); }
 |   NAME "." NAME
-        { driver.sqlp_field($1, $3); }
+        { driver.emit_field($1, $3); }
 
 expr:
     field_name
 |   NULLX
-        { driver.sqlp_null(); }
+        { driver.emit_null(); }
 |   STRING
-        { driver.sqlp_string($1); }
+        { driver.emit_string($1); }
 |   INTNUM
-        { driver.sqlp_number($1); }
+        { driver.emit_number($1); }
 |   APPROXNUM
-        { driver.sqlp_float($1); }
+        { driver.emit_float($1); }
     ;
 
 expr:
     "(" expr ")"
         {}
 |   "-" expr %prec UMINUS
-        { driver.sqlp_expr_op(ExprOperator::NEG); }
+        { driver.emit_expr_op(ExprOperator::NEG); }
 |   expr OP_AND expr
-        { driver.sqlp_expr_op(ExprOperator::AND); }
+        { driver.emit_expr_op(ExprOperator::AND); }
 |   expr OP_OR expr
-        { driver.sqlp_expr_op(ExprOperator::OR); }
+        { driver.emit_expr_op(ExprOperator::OR); }
 |   expr COMPARISON expr
-        { driver.sqlp_expr_cmp($2); }
+        { driver.emit_expr_cmp($2); }
 |   NOT expr
-        { driver.sqlp_expr_op(ExprOperator::NOT); }
+        { driver.emit_expr_op(ExprOperator::NOT); }
     ;
 
 expr:
     field_name IS NULLX
-        { driver.sqlp_expr_op(ExprOperator::IS_NULL); }
+        { driver.emit_expr_op(ExprOperator::IS_NULL); }
 |   field_name IS NOT NULLX
-        { driver.sqlp_expr_op(ExprOperator::IS_NULL); driver.sqlp_expr_op(ExprOperator::NOT); }
+        { driver.emit_expr_op(ExprOperator::IS_NULL); driver.emit_expr_op(ExprOperator::NOT); }
     ;
 
   /* functions with special syntax */
 /*
-expr: FCOUNT '(' '*' ')' { driver.sqlp_call(0, "COUNTALL"); }
-   | FCOUNT '(' expr ')' { driver.sqlp_call(1, "COUNT"); }
+expr: FCOUNT '(' '*' ')' { driver.emit_call(0, "COUNTALL"); }
+   | FCOUNT '(' expr ')' { driver.emit_call(1, "COUNT"); }
 */
 
 %%

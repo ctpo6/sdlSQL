@@ -7,6 +7,7 @@
 #include <clocale>
 #include <cstdlib>
 #include <iostream>
+#include <memory>
 #include <string>
 
 using namespace std;
@@ -17,16 +18,14 @@ int main(int argc, char *argv[])
 {
     std::setlocale(LC_ALL, "en_US.utf8");
 
-    sdl::db::database db(db_file_path);
-    if (!db.is_open()) {
+    auto db = make_shared<sdl::db::database>(db_file_path);
+    if (!db->is_open()) {
         cerr << "Failed to open database: " << db_file_path << endl;
         exit(1);
     }
-
     cout << "\nDatabase successfully opened: " << db_file_path << "\n\n";
 
     DatabaseContext db_context(db);
-    db_context.init();
 //    db_context.dump_schema();
 //    cout << endl;
 

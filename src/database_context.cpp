@@ -8,19 +8,20 @@
 using namespace std;
 
 
-DatabaseContext::DatabaseContext(sdl::db::database& db)
-    : db_(db)
+DatabaseContext::DatabaseContext(shared_ptr<sdl::db::database> db)
+    : pdb_(db)
 {
+    init();
 }
 
 
 void DatabaseContext::init()
 {
-    datatables_.reserve(db_._datatables.end() - db_._datatables.begin());
+    datatables_.reserve(pdb_->_datatables.end() - pdb_->_datatables.begin());
 
     size_t table_idx = 0;
-    for (auto table_it = db_._datatables.begin();
-         table_it != db_._datatables.end();
+    for (auto table_it = pdb_->_datatables.begin();
+         table_it != pdb_->_datatables.end();
          ++table_it)
     {
         datatables_.push_back(table_it);
@@ -94,18 +95,16 @@ std::vector<std::string> DatabaseContext::get_table_column_names(
 }
 
 
-size_t DatabaseContext::get_column_position(
+size_t DatabaseContext::get_column_idx(
         const std::string& table_name,
         const std::string& column_name) const
 {
-    size_t pos;
     try {
-        pos = schema_.at(table_name).columns.at(column_name).idx;
+        return schema_.at(table_name).columns.at(column_name).idx;
     }
     catch (const std::out_of_range&) {
         throw std::invalid_argument("table or column not found");
     }
-    return pos;
 }
 
 
@@ -113,14 +112,12 @@ sdl::sql::ValueType DatabaseContext::get_column_value_type(
         const std::string& table_name,
         const std::string& column_name) const
 {
-    sdl::sql::ValueType type;
     try {
-        type = schema_.at(table_name).columns.at(column_name).type;
+        return schema_.at(table_name).columns.at(column_name).type;
     }
     catch (const std::out_of_range&) {
         throw std::invalid_argument("table or column not found");
     }
-    return type;
 }
 
 
@@ -135,9 +132,9 @@ bool DatabaseContext::has_table_column(
 }
 
 
-void DatabaseContext::dump_schema()
+void DatabaseContext::dump_schema() const noexcept
 {
-    cout << db_.dbi_dbname() << endl;
+    cout << pdb_->dbi_dbname() << endl;
     for (auto const& table : schema_) {
         cout << "Table: " << table.first << endl;
         for (auto const& col : table.second.columns) {

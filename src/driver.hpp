@@ -72,25 +72,25 @@ public:
     // Return 0 on success.
     int parse(const std::string& f);
 
-    void sqlp_alias(const std::string& alias);
-    void sqlp_expr_cmp(ExprOperator comp);
-    void sqlp_expr_op(ExprOperator op);
-    void sqlp_field(const std::string& tbl_name, const std::string& col_name);
-    void sqlp_float(double val);
-    void sqlp_from_table_reference();
-    void sqlp_join();
-    void sqlp_name(const std::string& name);
-    void sqlp_null();
-    void sqlp_number(int val);
-    void sqlp_order_by(int desc);
-    void sqlp_order_by_list(int n_list);
-    void sqlp_select(int n_expr);
-    void sqlp_select_all();
-    void sqlp_stmt();
-    void sqlp_string(const std::string& str);
-    void sqlp_table(const std::string& db_name, const std::string& tbl_name);
-    void sqlp_top(int num);
-    void sqlp_where();
+    void emit_alias(const std::string& alias);
+    void emit_expr_cmp(ExprOperator comp);
+    void emit_expr_op(ExprOperator op);
+    void emit_field(const std::string& tbl_name, const std::string& col_name);
+    void emit_float(double val);
+    void emit_from_table_reference();
+    void emit_join();
+    void emit_name(const std::string& name);
+    void emit_null();
+    void emit_number(int val);
+    void emit_order_by(int desc);
+    void emit_order_by_list(int n_list);
+    void emit_select(int n_expr);
+    void emit_select_all();
+    void emit_stmt();
+    void emit_string(const std::string& str);
+    void emit_table(const std::string& db_name, const std::string& tbl_name);
+    void emit_top(int num);
+    void emit_where();
 
     // Error handling.
     void error(const yy::location& l, const std::string& m);

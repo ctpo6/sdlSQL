@@ -155,16 +155,18 @@ private:
     int check_select_context_order_by();
 
     /*
-     * expr_idx: expression idx in ctx.join_expr_tree
+     * join_expr_idx: expression idx in ctx.join_expr_tree
      */
-    int check_join_expr(
-            size_t expr_idx,
+    int rectify_expr(
             ExpressionNode* node,
-            sdl::sql::ValueType& expr_type);
-
-    int check_where_expr(
-            ExpressionNode* node,
-            sdl::sql::ValueType& expr_type);
+            bool is_join_expr,
+            size_t join_expr_idx,
+            sdl::sql::ValueType& value_type);
+    int rectify_expr_identifier(
+            Identifier& idtf,
+            bool is_join_expr,
+            size_t join_expr_idx,
+            sdl::sql::ValueType& value_type);
 
     int execute_expr(
             std::vector<record_iterator> const& row,

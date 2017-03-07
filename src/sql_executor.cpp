@@ -488,7 +488,7 @@ int SqlExecutor::check_select_context_from_join()
 
     for (size_t i = 0; i < ctx_.join_expr_tree.size(); ++i) {
         sdl::sql::ValueType et;
-        if (check_join_expr(i, ctx_.join_expr_tree[i].get(), et) != 0)
+        if (rectify_expr(ctx_.join_expr_tree[i].get(), true, i, et) != 0)
             return 1;
 
         if (et != sdl::sql::ValueType::BOOL) {
@@ -565,7 +565,7 @@ int SqlExecutor::check_select_context_where()
         return 0;
 
     sdl::sql::ValueType et;
-    if (check_where_expr(ctx_.where_expr_tree.get(), et) != 0)
+    if (rectify_expr(ctx_.where_expr_tree.get(), false, 0, et) != 0)
         return 1;
 
     if (et != ValueType::BOOL
@@ -580,10 +580,11 @@ int SqlExecutor::check_select_context_where()
 }
 
 
-int SqlExecutor::check_join_expr(
-        size_t expr_idx,
+int SqlExecutor::rectify_expr(
         ExpressionNode* node,
-        sdl::sql::ValueType& expr_type)
+        bool is_join_expr,
+        size_t join_expr_idx,
+        sdl::sql::ValueType& value_type)
 {
     using sdl::sql::Value;
     using sdl::sql::ValueType;
@@ -596,253 +597,13 @@ int SqlExecutor::check_join_expr(
         if (node->ot.type == ExprOperandType::IDENTIFIER) {
             // column identifier
 
-            Identifier& r = boost::get<Identifier>(node->value);
+            Identifier& idtf = boost::get<Identifier>(node->value);
 
-            // check identifier
-
-            if (r.t_name.empty()) {
-                cerr << "Error: JOIN: identifier is ambiguous: "
-                     << r.c_name << endl;
+            if (rectify_expr_identifier(
+                        idtf, is_join_expr, join_expr_idx, value_type) != 0)
+            {
                 return 1;
             }
-
-            // search in table aliases
-            auto it1 = ctx_.from_table_as.find(r.t_name);
-            if (it1 != ctx_.from_table_as.end()) {
-                if (it1->second > expr_idx + 1) {
-                    cerr << "Error: JOIN: identifier could not be found: "
-                         << r.t_name << '.' << r.c_name << endl;
-                    return 1;
-                }
-                r.t_name = ctx_.from_tables[it1->second].t_name;
-            }
-            else {
-                // search in table names
-                auto it2 = std::find_if(
-                            ctx_.from_tables.begin(),
-                            ctx_.from_tables.begin() + expr_idx + 2,
-                            [&r](const Identifier& t)
-                {
-                    return (t.flags & F_HAS_ALIAS) == 0 &&
-                            t.t_name == r.t_name;
-                });
-                if (it2 == ctx_.from_tables.begin() + expr_idx + 2) {
-                    cerr << "Error: JOIN: identifier could not be found: "
-                         << r.t_name << '.' << r.c_name << endl;
-                    return 1;
-                }
-            }
-
-            // check r' t_name c_name
-            if (!db_ctx_.has_table_column(r.t_name, r.c_name)) {
-                cerr << "Error: JOIN: table column not found: "
-                     << r.t_name << '.' << r.c_name << endl;
-                return 1;
-            }
-
-            // TODO: now, for simplicity, ref_tables can contain duplicates
-            ColumnRef cref;
-            cref.t_idx = db_ctx_.get_table_idx(r.t_name);
-            cref.c_idx = db_ctx_.get_column_idx(r.t_name, r.c_name);
-            r.idx = ctx_.ref_table.size();
-            ctx_.ref_table.push_back(cref);
-
-            ValueType type = db_ctx_.get_column_value_type(
-                        r.t_name, r.c_name);
-            assert(type != ValueType::UNKNOWN && "data type is not supported");
-
-            expr_type = type;
-        }
-        else {
-            // constant value
-
-            switch (node->ot.type) {
-            case ExprOperandType::INT:
-                assert(boost::get<Value>(node->value).which() ==
-                                (int)ValueType::INT32_T);
-                expr_type = ValueType::INT32_T;
-                break;
-            case ExprOperandType::STRING:
-                assert(boost::get<Value>(node->value).which() ==
-                                (int)ValueType::STRING);
-                expr_type = ValueType::STRING;
-                break;
-            default:
-                assert(false && "unexpected");
-            }
-        }
-    }
-    else {
-        // operation
-
-        auto op = node->ot.op;
-
-        bool unary =
-                op == ExprOperator::NEG
-                || op == ExprOperator::NOT
-                || op == ExprOperator::IS_NULL;
-        assert(!(unary && node->left));
-
-        ValueType et_right;
-        if (check_join_expr(expr_idx, node->right.get(), et_right) != 0)
-            return 1;
-
-        bool error = false;
-
-        if (unary) {
-            switch (op) {
-            case ExprOperator::IS_NULL:
-                expr_type = ValueType::BOOL;
-                break;
-            case ExprOperator::NOT:
-                if (et_right != ValueType::BOOL)
-                    error = true;
-                else
-                    expr_type = ValueType::BOOL;
-                break;
-            case ExprOperator::NEG:
-                if (et_right != ValueType::INT32_T)
-                    error = true;
-                else
-                    expr_type = et_right;
-                break;
-            default:
-                assert(false && "unexpected");
-            }
-        }
-        else {
-            ValueType et_left;
-            if (check_join_expr(expr_idx, node->left.get(), et_left) != 0)
-                return 1;
-
-            switch (op) {
-            case ExprOperator::AND:
-            case ExprOperator::OR:
-                if (et_left != ValueType::BOOL
-                        || et_right != ValueType::BOOL)
-                    error = true;
-                else
-                    expr_type = ValueType::BOOL;
-                break;
-            case ExprOperator::CMP_EQ:
-            case ExprOperator::CMP_NEQ:
-            case ExprOperator::CMP_GT:
-            case ExprOperator::CMP_LT:
-            case ExprOperator::CMP_GT_EQ:
-            case ExprOperator::CMP_LT_EQ:
-                if (et_left == ValueType::STRING
-                        && et_right == ValueType::STRING)
-                {
-                    expr_type = ValueType::BOOL;
-                }
-                // TODO add more numeric types here
-                else if (et_left == ValueType::INT32_T
-                         && et_right == ValueType::INT32_T)
-                {
-                    expr_type = ValueType::BOOL;
-                }
-                else {
-                    error = true;
-                }
-                break;
-            default:
-                assert(false && "unexcpected");
-            }
-        }
-
-        if (error) {
-            cerr << "Error: JOIN: incompatible operand types" << endl;
-            return 1;
-        }
-    }
-
-    return 0;
-}
-
-
-int SqlExecutor::check_where_expr(
-        ExpressionNode* node,
-        sdl::sql::ValueType& expr_type)
-{
-    using sdl::sql::Value;
-    using sdl::sql::ValueType;
-
-    assert(node);
-
-    if (!node->right) {
-        // leaf node
-
-        if (node->ot.type == ExprOperandType::IDENTIFIER) {
-            // column identifier
-
-            Identifier& r = boost::get<Identifier>(node->value);
-
-            // first check identifier
-
-            if (r.t_name.empty()) {
-                /*
-                 * select *
-                 * from Orders
-                 * where shipcountry = 'Brazil';
-                 */
-                if (ctx_.from_tables.size() > 1) {
-                    cerr << "Error: WHERE: identifier could not be found: "
-                         << r.c_name << endl;
-                    return 1;
-                }
-                r.t_name = ctx_.from_tables[0].t_name;
-            }
-            else {
-                auto it1 = ctx_.from_table_as.find(r.t_name);
-                if (it1 != ctx_.from_table_as.end()) {
-                    /*
-                     * select *
-                     * from Orders O
-                     * where O.shipcountry = 'Brazil';
-                     */
-                    r.t_name = ctx_.from_tables[it1->second].t_name;
-                }
-                else {
-                    auto it2 = find_if(
-                                ctx_.from_tables.begin(),
-                                ctx_.from_tables.end(),
-                                [&r](const Identifier& t)
-                    {
-                        return (t.flags & F_HAS_ALIAS) == 0 &&
-                                t.t_name == r.t_name;
-                    });
-                    if (it2 == ctx_.from_tables.end()) {
-                        /*
-                         * select shipname
-                         * from Orders O
-                         * where Orders.shipcountry = 'Brazil';
-                         */
-                        cerr << "Error: WHERE: identifier could not be found: "
-                             << r.t_name << '.' << r.c_name << endl;
-                        return 1;
-                    }
-                }
-            }
-
-            // check r' t_name c_name
-            if (!db_ctx_.has_table_column(r.t_name, r.c_name)) {
-                cerr << "Error: WHERE: table column not found: "
-                     << r.t_name << '.' << r.c_name << endl;
-                return 1;
-            }
-
-            // TODO: now, for simplicity, ref_tables can contain duplicates
-            ColumnRef cref;
-            cref.t_idx = db_ctx_.get_table_idx(r.t_name);
-            cref.c_idx = db_ctx_.get_column_idx(r.t_name, r.c_name);
-            r.idx = ctx_.ref_table.size();
-            ctx_.ref_table.push_back(cref);
-
-            ValueType type = db_ctx_.get_column_value_type(
-                        r.t_name, r.c_name);
-            assert(type != ValueType::UNKNOWN && "data type is not supported");
-
-            expr_type = type;
         }
         else {
             // constant value
@@ -851,17 +612,17 @@ int SqlExecutor::check_where_expr(
             case ExprOperandType::NULLX:
                 assert(boost::get<Value>(node->value).which() ==
                                 static_cast<int>(ValueType::NULL_T));
-                expr_type = ValueType::NULL_T;
+                value_type = ValueType::NULL_T;
                 break;
             case ExprOperandType::INT:
                 assert(boost::get<Value>(node->value).which() ==
                                 static_cast<int>(ValueType::INT32_T));
-                expr_type = ValueType::INT32_T;
+                value_type = ValueType::INT32_T;
                 break;
             case ExprOperandType::STRING:
                 assert(boost::get<Value>(node->value).which() ==
                                 static_cast<int>(ValueType::STRING));
-                expr_type = ValueType::STRING;
+                value_type = ValueType::STRING;
                 break;
             default:
                 assert(false && "unexpected");
@@ -880,27 +641,33 @@ int SqlExecutor::check_where_expr(
         assert(!(unary && node->left));
 
         ValueType et_right;
-        if (check_where_expr(node->right.get(), et_right) != 0)
+        if (rectify_expr(
+                    node->right.get(),
+                    is_join_expr,
+                    join_expr_idx,
+                    et_right) != 0)
+        {
             return 1;
+        }
 
         bool error = false;
 
         if (unary) {
             switch (op) {
             case ExprOperator::IS_NULL:
-                expr_type = ValueType::BOOL;
+                value_type = ValueType::BOOL;
                 break;
             case ExprOperator::NOT:
                 if (et_right == ValueType::NULL_T
                         || et_right == ValueType::BOOL)
-                    expr_type = et_right;
+                    value_type = et_right;
                 else
                     error = true;
                 break;
             case ExprOperator::NEG:
                 if (et_right == ValueType::NULL_T
                         || et_right == ValueType::INT32_T)
-                    expr_type = et_right;
+                    value_type = et_right;
                 else
                     error = true;
                 break;
@@ -910,13 +677,19 @@ int SqlExecutor::check_where_expr(
         }
         else {
             ValueType et_left;
-            if (check_where_expr(node->left.get(), et_left) != 0)
+            if (rectify_expr(
+                        node->left.get(),
+                        is_join_expr,
+                        join_expr_idx,
+                        et_left) != 0)
+            {
                 return 1;
+            }
 
             if (et_left == ValueType::NULL_T
                     || et_right == ValueType::NULL_T)
             {
-                expr_type = ValueType::NULL_T;
+                value_type = ValueType::NULL_T;
             }
             else
             {
@@ -927,7 +700,7 @@ int SqlExecutor::check_where_expr(
                             || et_right != ValueType::BOOL)
                         error = true;
                     else
-                        expr_type = ValueType::BOOL;
+                        value_type = ValueType::BOOL;
                     break;
                 case ExprOperator::CMP_EQ:
                 case ExprOperator::CMP_NEQ:
@@ -938,13 +711,13 @@ int SqlExecutor::check_where_expr(
                     if (et_left == ValueType::STRING
                             && et_right == ValueType::STRING)
                     {
-                        expr_type = ValueType::BOOL;
+                        value_type = ValueType::BOOL;
                     }
                     // TODO add more numeric types here
                     else if (et_left == ValueType::INT32_T
                              && et_right == ValueType::INT32_T)
                     {
-                        expr_type = ValueType::BOOL;
+                        value_type = ValueType::BOOL;
                     }
                     else {
                         error = true;
@@ -957,10 +730,93 @@ int SqlExecutor::check_where_expr(
         }
 
         if (error) {
-            cerr << "Error: WHERE: incompatible operand types" << endl;
+            cerr << "Error: incompatible operand types" << endl;
             return 1;
         }
     }
+
+    return 0;
+}
+
+
+int SqlExecutor::rectify_expr_identifier(
+        Identifier& idtf,
+        bool is_join_expr,
+        size_t join_expr_idx,
+        sdl::sql::ValueType& value_type)
+{
+    using sdl::sql::ValueType;
+
+    if (idtf.t_name.empty()) {
+        /*
+         * select *
+         * from Orders
+         * where shipcountry = 'Brazil';
+         */
+        if (is_join_expr || ctx_.from_tables.size() > 1) {
+            cerr << "Error: identifier is ambiguous: " << idtf.c_name << endl;
+            return 1;
+        }
+        idtf.t_name = ctx_.from_tables[0].t_name;
+    }
+    else {
+        // search in table aliases
+        auto it1 = ctx_.from_table_as.find(idtf.t_name);
+        if (it1 != ctx_.from_table_as.end()) {
+            /*
+             * select *
+             * from Orders O
+             * where O.shipcountry = 'Brazil';
+             */
+            if (is_join_expr && it1->second > join_expr_idx + 1) {
+                cerr << "Error: identifier could not be found: "
+                     << idtf.t_name << '.' << idtf.c_name << endl;
+                return 1;
+            }
+            idtf.t_name = ctx_.from_tables[it1->second].t_name;
+        }
+        else {
+            // search in table names
+            auto it2_end = is_join_expr ?
+                        ctx_.from_tables.begin() + join_expr_idx + 2 :
+                        ctx_.from_tables.end();
+
+            auto it2 = std::find_if(
+                        ctx_.from_tables.begin(),
+                        it2_end,
+                        [&idtf](const Identifier& t)
+            {
+                return (t.flags & F_HAS_ALIAS) == 0 &&
+                        t.t_name == idtf.t_name;
+            });
+            if (it2 == it2_end) {
+                /*
+                 * select shipname
+                 * from Orders O
+                 * where Orders.shipcountry = 'Brazil';
+                 */
+                cerr << "Error: identifier could not be found: "
+                     << idtf.t_name << '.' << idtf.c_name << endl;
+                return 1;
+            }
+        }
+    }
+
+    if (!db_ctx_.has_table_column(idtf.t_name, idtf.c_name)) {
+        cerr << "Error: identifier could not be found: "
+             << idtf.t_name << '.' << idtf.c_name << endl;
+        return 1;
+    }
+
+    // TODO: now, for simplicity, ref_tables can contain duplicates
+    ColumnRef cref;
+    cref.t_idx = db_ctx_.get_table_idx(idtf.t_name);
+    cref.c_idx = db_ctx_.get_column_idx(idtf.t_name, idtf.c_name);
+    idtf.idx = ctx_.ref_table.size();
+    ctx_.ref_table.push_back(cref);
+
+    value_type = db_ctx_.get_column_value_type(idtf.t_name, idtf.c_name);
+    assert(value_type != ValueType::UNKNOWN && "data type is not supported");
 
     return 0;
 }

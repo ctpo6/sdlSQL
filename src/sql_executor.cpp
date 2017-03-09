@@ -130,11 +130,11 @@ bool SqlExecutor::execute_join(std::vector<record_iterator> const& row)
     // row[1] - of the JOIN table [0], ..., row[N-1] - of the JOIN table [N-2]
     // row[0], row[1], ..., row[N-2] records are already checked
     // so we use JOIN expr [N-2] to check a tuple <row[0], ..., row[N-1]>
-    assert(execute_expr(row, ctx_.join_expr_tree[row.size() - 2].get(), value) == 0);
+    int r = execute_expr(row, ctx_.join_expr_tree[row.size() - 2].get(), value);
+    assert(r == 0);
     if (value.which() == static_cast<int>(ValueType::NULL_T))
         return false;
     assert(value.which() == static_cast<int>(ValueType::BOOL));
-
     return boost::get<bool>(value);
 }
 
@@ -148,7 +148,8 @@ bool SqlExecutor::execute_where(std::vector<record_iterator> const& row)
         return true;
 
     Value value;
-    assert(execute_expr(row, ctx_.where_expr_tree.get(), value) == 0);
+    int r = execute_expr(row, ctx_.where_expr_tree.get(), value);
+    assert(r == 0);
     if (value.which() == static_cast<int>(ValueType::NULL_T))
         return false;
     assert(value.which() == static_cast<int>(ValueType::BOOL));
@@ -222,7 +223,7 @@ int SqlExecutor::execute_expr(
                 value = -boost::get<int32_t>(v);
                 break;
             default:
-                assert(false && "unexpected");
+                assert(false);
             }
         }
         else {
@@ -281,7 +282,7 @@ int SqlExecutor::execute_expr(
                     value = v_left <= v_right;
                     break;
                 default:
-                    assert(false && "unexpected");
+                    assert(false);
                 }
             }
                 break;
@@ -330,7 +331,7 @@ int SqlExecutor::execute_expr(
             }
                 break;
             default:
-                assert(false && "not implemented");
+                assert(false);
             }
         }
     }
@@ -625,7 +626,7 @@ int SqlExecutor::rectify_expr(
                 value_type = ValueType::STRING;
                 break;
             default:
-                assert(false && "unexpected");
+                assert(false);
             }
         }
     }
@@ -672,7 +673,7 @@ int SqlExecutor::rectify_expr(
                     error = true;
                 break;
             default:
-                assert(false && "unexpected");
+                assert(false);
             }
         }
         else {
@@ -724,7 +725,7 @@ int SqlExecutor::rectify_expr(
                     }
                     break;
                 default:
-                    assert(false && "unexcpected");
+                    assert(false);
                 }
             }
         }
@@ -1125,7 +1126,6 @@ int SqlExecutor::init_select_context_order_by(
         ParserCommandContainer::const_iterator& next_part)
 {
     assert(start->op_ == ParserOpCode::ORDER_BY);
-//    cout << "ORDER BY" << endl;
 
     auto it = start - 1;
     while (it->op_ != ParserOpCode::WHERE && it->op_ != ParserOpCode::FROM) {
@@ -1236,7 +1236,7 @@ SqlExecutor::ExpressionNodePtr SqlExecutor::build_expr_tree(
             break;
 
         default:
-            assert(false && "unexpected");
+            assert(false);
         }
 
         --it;
